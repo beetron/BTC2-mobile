@@ -1,13 +1,8 @@
-import { Text, View } from "react-native";
-import React, { Component } from "react";
-import styles from "./styles";
+import React from "react";
+import Content from "@/app/components/index/content";
 
 const Index = () => {
-  return (
-    <View style={styles.contentContainer}>
-      <Text style={styles.whiteText}>Hello, world!</Text>
-    </View>
-  );
+  return <Content />;
 };
 
 export default Index;

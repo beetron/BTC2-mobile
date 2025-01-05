@@ -1,16 +1,35 @@
-import FontAwesome from "@expo/vector-icons/FontAwesome";
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { Tabs } from "expo-router";
 
-export default function TabLayout() {
+const TabLayout = () => {
   return (
-    <Tabs screenOptions={{ tabBarActiveTintColor: "blue" }}>
+    <Tabs
+      screenOptions={{
+        tabBarActiveTintColor: "skyblue",
+        tabBarStyle: {
+          backgroundColor: "#2a2a3c",
+        },
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{
           title: "Home",
           tabBarIcon: ({ color }) => (
-            <FontAwesome size={28} name="home" color={color} />
+            <FontAwesome5 size={24} name="user-friends" color={color} />
           ),
+          headerShown: false,
+        }}
+      />
+      <Tabs.Screen
+        name="editFriends"
+        options={{
+          title: "Add/Remove",
+          tabBarIcon: ({ color }) => (
+            <FontAwesome5 size={24} name="user-edit" color={color} />
+          ),
+          headerShown: false,
         }}
       />
       <Tabs.Screen
@@ -18,10 +37,13 @@ export default function TabLayout() {
         options={{
           title: "Settings",
           tabBarIcon: ({ color }) => (
-            <FontAwesome size={28} name="cog" color={color} />
+            <Ionicons name="settings-sharp" size={24} color={color} />
           ),
+          headerShown: false,
         }}
       />
     </Tabs>
   );
-}
+};
+
+export default TabLayout;
