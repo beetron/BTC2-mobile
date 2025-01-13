@@ -99,21 +99,17 @@ export const AuthProvider = ({ children }: any) => {
 
   // Logout
   const logout = async () => {
-    try {
-      // Delete token from secure store
-      await SecureStore.deleteItemAsync(JWT_KEY);
+    // Delete token from secure store
+    await SecureStore.deleteItemAsync(JWT_KEY);
 
-      // Reset HTTP headers
-      axios.defaults.headers.common["Authorization"] = "";
+    // Reset HTTP headers
+    axios.defaults.headers.common["Authorization"] = "";
 
-      // Reset authState
-      setAuthState({
-        token: null,
-        authenticated: false,
-      });
-    } catch (e) {
-      return { error: true, message: (e as any).response.data.message };
-    }
+    // Reset authState
+    setAuthState({
+      token: null,
+      authenticated: false,
+    });
   };
 
   const value = {
