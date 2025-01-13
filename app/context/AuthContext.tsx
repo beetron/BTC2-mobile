@@ -36,7 +36,6 @@ export const AuthProvider = ({ children }: any) => {
   // Check token on load
   useEffect(() => {
     const checkToken = async () => {
-      console.log("checkToken was called");
       const token = await SecureStore.getItemAsync(JWT_KEY);
 
       if (token) {

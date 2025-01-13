@@ -1,18 +1,26 @@
-import { Stack } from "expo-router";
-import { AuthProvider } from "./context/AuthContext";
+import { Redirect, Slot, Stack } from "expo-router";
+import { AuthProvider, useAuth } from "./context/AuthContext";
 
 const RootLayout = () => {
   return (
     <AuthProvider>
-      <Stack>
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen
-          name="(tabs)"
-          options={{ headerShown: false }} // Hide header for (tabs) screen
-        />
-      </Stack>
+      <Slot />
+      <RootLayoutAuth />
     </AuthProvider>
   );
+};
+
+const RootLayoutAuth = () => {
+  const { authState, onLogout } = useAuth();
+
+  // REMOVE AFTER TESTING
+  console.log(authState);
+
+  if (authState?.authenticated === true) {
+    return <Redirect href="/(tabs)" />;
+  } else {
+    return <Redirect href="/" />;
+  }
 };
 
 export default RootLayout;
