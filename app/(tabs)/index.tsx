@@ -1,8 +1,12 @@
 import React from "react";
-import Content from "@/app/components/index/Content";
+import { Text, View } from "react-native";
+import styles from "../styles";
 
 const Index = () => {
-  return <Content />;
+  return (
+    <View style={styles.container}>
+      <Text style={styles.whiteText}>Hello, world!</Text>
+    </View>
+  );
 };
-
 export default Index;

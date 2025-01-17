@@ -1,5 +1,6 @@
-import { Redirect, Slot, Stack } from "expo-router";
+import { Redirect, Slot } from "expo-router";
 import { AuthProvider, useAuth } from "./context/AuthContext";
+import "../global.css";
 
 const RootLayout = () => {
   return (
