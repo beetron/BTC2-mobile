@@ -4,7 +4,7 @@ import { Image, StyleSheet } from "react-native";
 const Logo = () => {
   return (
     <Image
-      source={require("../../media/btc2-logo.png")}
+      source={require("../../../assets/images/btc2-logo.png")}
       style={styles.image}
       resizeMode="contain"
     />

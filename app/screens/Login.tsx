@@ -12,6 +12,7 @@ import { StyleSheet } from "react-native";
 import { useAuth } from "../context/AuthContext";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 import Logo from "../components/login/Logo";
+import CustomButton from "@/components/CustomButton";
 
 const Login = () => {
   const [username, setUsername] = useState<string>("");
@@ -28,7 +29,7 @@ const Login = () => {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView className="h-full bg-slate-900">
+      <SafeAreaView className="h-full bg-btc400">
         <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
@@ -68,6 +69,7 @@ const Login = () => {
                   onChangeText={setPassword}
                   style={styles.input}
                 />
+                <CustomButton />
               </View>
             </ScrollView>
           </TouchableWithoutFeedback>
