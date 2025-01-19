@@ -1,8 +1,27 @@
-import { Redirect, Slot } from "expo-router";
+import { useEffect } from "react";
+import { useFonts } from "expo-font";
+import { Redirect, Slot, SplashScreen } from "expo-router";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import "../global.css";
 
+SplashScreen.preventAutoHideAsync();
+
 const RootLayout = () => {
+  // Load custom fonts
+  const [fontsLoaded, fontsError] = useFonts({
+    FunnelDisplay: require("../assets/fonts/FunnelDisplay-VariableFont_wght.ttf"),
+  });
+
+  useEffect(() => {
+    if (fontsError) throw fontsError;
+
+    if (fontsLoaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded, fontsError]);
+
+  if (!fontsLoaded && !fontsError) return null;
+
   return (
     <AuthProvider>
       <Slot />

@@ -29,6 +29,12 @@
     "plugins": [
       "expo-router",
       [
+        "expo-font",
+        {
+          "funnyDisplay": ["./assets/fonts/FunnelDisplay-VariableFont_wght.ttf"]
+        }
+      ],
+      [
         "expo-splash-screen",
         {
           "image": "",

@@ -8,6 +8,7 @@ import {
   TouchableWithoutFeedback,
   ScrollView,
 } from "react-native";
+import { StatusBar } from "expo-status-bar";
 import { StyleSheet } from "react-native";
 import { useAuth } from "../context/AuthContext";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
@@ -69,11 +70,12 @@ const Login = () => {
                   onChangeText={setPassword}
                   style={styles.input}
                 />
-                <CustomButton />
+                <CustomButton title="Login" isLoading={false} />
               </View>
             </ScrollView>
           </TouchableWithoutFeedback>
         </KeyboardAvoidingView>
+        <StatusBar style="light" />
       </SafeAreaView>
     </SafeAreaProvider>
   );

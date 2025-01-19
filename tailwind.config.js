@@ -9,6 +9,9 @@ module.exports = {
       btc300: "#189AB4",
       btc400: "#05445E",
     },
+    fontFamily: {
+      funnel: ["FunnelDisplay"],
+    },
     extend: {},
   },
   plugins: [],
