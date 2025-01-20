@@ -22,11 +22,11 @@ const CustomButton: React.FC<CustomButtonProps> = ({
       disabled={isLoading}
       activeOpacity={0.7}
       className={` ${containerStyles} rounded-xl
-         min-h-[50px] min-w-[200px]
+         min-h-[50px]
           justify-center items-center
           bg-btc300`}
     >
-      <Text className={`text-2xl text-btc100 ${textStyles} font-funnel`}>
+      <Text className={`text-3xl text-btc100 ${textStyles}`}>
         {isLoading ? "Loading..." : title}
       </Text>
     </TouchableOpacity>
