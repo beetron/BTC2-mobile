@@ -31,7 +31,12 @@
       [
         "expo-font",
         {
-          "funnyDisplay": ["./assets/fonts/FunnelDisplay-VariableFont_wght.ttf"]
+          "funnel-bold": ["./assets/fonts/FunnelDisplay-Bold.ttf"],
+          "funnel-extra-bold": ["./assets/fonts/FunnelDisplay-ExtraBold.ttf"],
+          "funnel-light": ["./assets/fonts/FunnelDisplay-Light.ttf"],
+          "funnel-medium": ["./assets/fonts/FunnelDisplay-Medium.ttf"],
+          "funnel-regular": ["./assets/fonts/FunnelDisplay-Regular.ttf"],
+          "funnel-semi-bold": ["./assets/fonts/FunnelDisplay-SemiBold.ttf"]
         }
       ],
       [

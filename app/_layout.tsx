@@ -9,7 +9,12 @@ SplashScreen.preventAutoHideAsync();
 const RootLayout = () => {
   // Load custom fonts
   const [fontsLoaded, fontsError] = useFonts({
-    FunnelDisplay: require("../assets/fonts/FunnelDisplay-VariableFont_wght.ttf"),
+    "funnel-bold": require("../assets/fonts/FunnelDisplay-Bold.ttf"),
+    "funnel-extra-bold": require("../assets/fonts/FunnelDisplay-ExtraBold.ttf"),
+    "funnel-light": require("../assets/fonts/FunnelDisplay-Light.ttf"),
+    "funnel-medium": require("../assets/fonts/FunnelDisplay-Medium.ttf"),
+    "funnel-regular": require("../assets/fonts/FunnelDisplay-Regular.ttf"),
+    "funnel-semi-bold": require("../assets/fonts/FunnelDisplay-SemiBold.ttf"),
   });
 
   useEffect(() => {
