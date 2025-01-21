@@ -1,13 +1,24 @@
-import { View, Text } from "react-native";
-import React from "react";
-import styles from "../styles";
+import React, { useEffect, useState } from "react";
+import { useAuth } from "../context/AuthContext";
+import { useRouter } from "expo-router";
 
-const logout = () => {
-  return (
-    <View style={styles.container}>
-      <Text style={styles.whiteText}>Logout</Text>
-    </View>
-  );
+const Logout = () => {
+  const router = useRouter();
+  const { onLogout } = useAuth();
+
+  useEffect(() => {
+    const handleLogout = async () => {
+      try {
+        if (onLogout) {
+          await onLogout();
+          router.replace("/app" as any);
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    handleLogout();
+  }, []);
 };
 
-export default logout;
+export default Logout;
