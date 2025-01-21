@@ -2,7 +2,6 @@ import { useState } from "react";
 import {
   View,
   Text,
-  TextInput,
   Keyboard,
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
@@ -15,6 +14,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Logo from "@/components/Logo";
 import CustomButton from "@/components/CustomButton";
 import CustomInput from "@/components/CustomInput";
+import { Link } from "expo-router";
 
 const Login = () => {
   const [username, setUsername] = useState<string>("");
@@ -70,6 +70,17 @@ const Login = () => {
                 containerStyles="w-3/5 top-5"
                 handlePress={onSubmit}
               />
+              {/* Signup */}
+              <View className="justify-center pt-8">
+                <Link
+                  href={"/screens/Signup" as any}
+                  className="text-lg font-funnel-regular color-btc200"
+                >
+                  <Text className="text-lg font-funnel-regular color-btc200">
+                    Signup here
+                  </Text>
+                </Link>
+              </View>
             </View>
           </ScrollView>
         </TouchableWithoutFeedback>
