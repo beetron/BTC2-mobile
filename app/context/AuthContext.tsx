@@ -65,14 +65,14 @@ export const AuthProvider = ({ children }: any) => {
         uniqueId,
       });
     } catch (e) {
-      return { error: true, message: (e as any).response.data.message };
+      throw new Error(e.response.data.error);
     }
   };
 
   // Login
   const login = async (username: string, password: string) => {
     try {
-      const result = await axios.post(`${API_URL}/login`, {
+      const result = await axios.post(`${API_URL}/api/auth/login`, {
         username,
         password,
       });
@@ -92,7 +92,7 @@ export const AuthProvider = ({ children }: any) => {
       await SecureStore.setItemAsync(JWT_KEY, result.data.token);
       return result;
     } catch (e) {
-      return { error: true, message: (e as any).response.data.message };
+      throw new Error(e.response.data.error);
     }
   };
 

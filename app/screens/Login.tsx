@@ -19,13 +19,21 @@ import CustomInput from "@/components/CustomInput";
 const Login = () => {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const { onLogin, onRegister } = useAuth();
+  const { onLogin } = useAuth();
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
     if (username === "" || password === "") {
       Alert.alert("Please fill in all fields");
     } else {
-      onLogin(username, password);
+      try {
+        await onLogin(username, password);
+      } catch (e) {
+        if (e instanceof Error) {
+          Alert.alert("Login failed", e.message);
+        } else {
+          Alert.alert("Login failed", "An unknown error occurred");
+        }
+      }
     }
   };
 
@@ -54,6 +62,7 @@ const Login = () => {
                 isPassword={true}
               />
 
+              {/* Login button */}
               <CustomButton
                 title="Login"
                 isLoading={false}
