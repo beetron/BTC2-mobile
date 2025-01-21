@@ -42,7 +42,7 @@ const RootLayoutAuth = () => {
   console.log(authState);
 
   if (authState?.authenticated === true) {
-    return <Redirect href="/(tabs)" />;
+    return <Redirect href={"/(tabs)" as any} />;
   } else {
     return <Redirect href="/" />;
   }
