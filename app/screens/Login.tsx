@@ -26,7 +26,9 @@ const Login = () => {
       Alert.alert("Please fill in all fields");
     } else {
       try {
-        await onLogin(username, password);
+        if (onLogin) {
+          await onLogin(username, password);
+        }
       } catch (e) {
         if (e instanceof Error) {
           Alert.alert("Login failed", e.message);
@@ -71,7 +73,10 @@ const Login = () => {
                 handlePress={onSubmit}
               />
               {/* Signup */}
-              <View className="justify-center pt-8">
+              <View className="justify-center pt-8 flex-row">
+                <Text className="text-lg font-funnel-regular color-btc300 right-2">
+                  Need an account?
+                </Text>
                 <Link
                   href={"/screens/Signup" as any}
                   className="text-lg font-funnel-regular color-btc200"
