@@ -16,18 +16,26 @@ import CustomButton from "@/components/CustomButton";
 import CustomInput from "@/components/CustomInput";
 import { Link } from "expo-router";
 
+interface FormData {
+  username: string;
+  password: string;
+}
+
 const Login = () => {
-  const [username, setUsername] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
+  const [formData, setFormData] = useState<FormData>({
+    username: "",
+    password: "",
+  });
+
   const { onLogin } = useAuth();
 
   const onSubmit = async () => {
-    if (username === "" || password === "") {
+    if (formData.username === "" || formData.password === "") {
       Alert.alert("Please fill in all fields");
     } else {
       try {
         if (onLogin) {
-          await onLogin(username, password);
+          await onLogin(formData.username, formData.password);
         }
       } catch (e) {
         if (e instanceof Error) {
@@ -40,28 +48,30 @@ const Login = () => {
   };
 
   return (
-    <SafeAreaView className="h-full bg-btc400">
+    <SafeAreaView className="h-full bg-btc500">
       <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-            <View className="flex-1 items-center jusitfy-center p-4 mt-36">
+            <View className="flex-1 items-center jusitfy-center p-4 mt-24">
               <Logo />
               {/* Username input */}
               <CustomInput
                 title="Username"
-                value={username}
-                onChangeText={setUsername}
+                value={formData.username}
+                onChangeText={(e) => setFormData({ ...formData, username: e })}
                 containerStyles="w-3/5"
                 isPassword={false}
+                autoCompleteType="username"
               />
 
               {/* Password input */}
               <CustomInput
                 title="Password"
-                value={password}
-                onChangeText={setPassword}
+                value={formData.password}
+                onChangeText={(e) => setFormData({ ...formData, password: e })}
                 containerStyles="w-3/5"
                 isPassword={true}
+                autoComleteType="password"
               />
 
               {/* Login button */}
@@ -82,7 +92,7 @@ const Login = () => {
                   className="text-lg font-funnel-regular color-btc200"
                 >
                   <Text className="text-lg font-funnel-regular color-btc200">
-                    Signup here
+                    Sign up here
                   </Text>
                 </Link>
               </View>
