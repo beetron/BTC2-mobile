@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useFonts } from "expo-font";
-import { Redirect, Slot, SplashScreen } from "expo-router";
+import { Redirect, Slot, SplashScreen, Stack } from "expo-router";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import "../global.css";
 
@@ -29,23 +29,13 @@ const RootLayout = () => {
 
   return (
     <AuthProvider>
-      <Slot />
-      <RootLayoutAuth />
+      <Stack>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="(guest-screens)" options={{ headerShown: false }} />
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+      </Stack>
     </AuthProvider>
   );
-};
-
-const RootLayoutAuth = () => {
-  const { authState, onLogout } = useAuth();
-
-  // REMOVE AFTER TESTING
-  console.log(authState);
-
-  if (authState?.authenticated === true) {
-    return <Redirect href={"/(tabs)" as any} />;
-  } else {
-    return <Redirect href="/" />;
-  }
 };
 
 export default RootLayout;

@@ -27,7 +27,7 @@ const Login = () => {
     password: "",
   });
 
-  const { onLogin } = useAuth();
+  const { onLogin, authState } = useAuth();
 
   const onSubmit = async () => {
     if (formData.username === "" || formData.password === "") {
@@ -88,7 +88,7 @@ const Login = () => {
                   Need an account?
                 </Text>
                 <Link
-                  href={"/screens/Signup" as any}
+                  href={"/(guest-screens)/Signup" as any}
                   className="text-lg font-funnel-regular color-btc200"
                 >
                   <Text className="text-lg font-funnel-regular color-btc200">

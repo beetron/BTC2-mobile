@@ -11,7 +11,7 @@ const Logout = () => {
       try {
         if (onLogout) {
           await onLogout();
-          router.replace("/app" as any);
+          router.replace("(guest-screens)/Login" as any);
         }
       } catch (e) {
         console.log(e);

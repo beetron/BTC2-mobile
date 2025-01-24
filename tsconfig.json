@@ -14,6 +14,6 @@
     "app/index.tsx.bak",
     "app/(auth)/index.tsx.bak",
     "nativewind-env.d.ts",
-    "app/screens/Login.tsx"
+    "app/(guest-screen)/Login.tsx"
   ]
 }
