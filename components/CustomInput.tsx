@@ -11,6 +11,7 @@ interface CustomInputProps {
   textStyles?: string;
   isPassword?: boolean;
   onChangeText: (text: string) => void;
+  [key: string]: any;
 }
 
 const CustomInput: React.FC<CustomInputProps> = ({
