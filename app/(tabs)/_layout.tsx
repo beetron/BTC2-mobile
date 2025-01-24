@@ -1,9 +1,16 @@
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { Tabs } from "expo-router";
+import { Redirect, Tabs } from "expo-router";
+import { useAuth } from "../context/AuthContext";
 
 const TabLayout = () => {
+  const { authState } = useAuth();
+
+  if (authState?.authenticated !== true) {
+    return <Redirect href="/(guest-screens)/Login" />;
+  }
+
   return (
     <Tabs
       screenOptions={{
