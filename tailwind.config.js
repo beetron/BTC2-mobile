@@ -13,6 +13,7 @@ module.exports = {
       btc200: "#75E6DA",
       btc300: "#189AB4",
       btc400: "#05445E",
+      btc500: "#2a2a3c",
     },
     fontFamily: {
       "funnel-bold": ["funnel-bold"],
