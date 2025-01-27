@@ -5,7 +5,7 @@ import { Redirect, Tabs } from "expo-router";
 import { useAuth } from "../context/AuthContext";
 import React from "react";
 
-import Header from "@/components/Header";
+import TabsHeader from "@/components/TabsHeader";
 
 const TabLayout = () => {
   const { authState } = useAuth();
@@ -16,7 +16,7 @@ const TabLayout = () => {
 
   return (
     <>
-      <Header />
+      <TabsHeader />
       <Tabs
         screenOptions={{
           headerShown: false,
