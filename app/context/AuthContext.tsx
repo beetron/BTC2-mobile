@@ -1,9 +1,19 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
 import * as SecureStore from "expo-secure-store";
+import { checkTokenExpiry } from "@/utilities/checkTokenExpiry";
 
 interface AuthProps {
-  authState?: { token: string | null; authenticated: boolean | null };
+  authState?: {
+    token: string | null;
+    authenticated: boolean | null;
+    user?: {
+      _id: string;
+      uniqueId: string;
+      nickname: string;
+      profilePhoto: string;
+    } | null;
+  };
   onSignup?: (
     username: string,
     password: string,
@@ -14,6 +24,8 @@ interface AuthProps {
 }
 
 const JWT_KEY = "jwt";
+
+// Get API URL
 export const API_URL =
   process.env.EXPO_PUBLIC_ENV === "development"
     ? process.env.EXPO_PUBLIC_API_DEV_URL
@@ -28,9 +40,16 @@ export const AuthProvider = ({ children }: any) => {
   const [authState, setAuthState] = useState<{
     token: string | null;
     authenticated: boolean | null;
+    user?: {
+      _id: string;
+      uniqueId: string;
+      nickname: string;
+      profilePhoto: string;
+    } | null;
   }>({
     token: null,
     authenticated: null,
+    user: null,
   });
 
   // Check token on load
@@ -39,6 +58,13 @@ export const AuthProvider = ({ children }: any) => {
       const token = await SecureStore.getItemAsync(JWT_KEY);
 
       if (token) {
+        // Check token expiry
+        const isTokenValid = checkTokenExpiry(token);
+        if (!isTokenValid) {
+          logout();
+          return;
+        }
+
         // Set token in HTTP headers
         axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
@@ -81,6 +107,12 @@ export const AuthProvider = ({ children }: any) => {
       setAuthState({
         token: result.data.token,
         authenticated: true,
+        user: {
+          _id: result.data._id,
+          uniqueId: result.data.uniqueId,
+          nickname: result.data.nickname,
+          profilePhoto: result.data.profilePhoto,
+        },
       });
 
       // Set token to every axios request
@@ -90,6 +122,7 @@ export const AuthProvider = ({ children }: any) => {
 
       // Store token in secure store
       await SecureStore.setItemAsync(JWT_KEY, result.data.token);
+
       return result;
     } catch (e) {
       throw new Error(e.response.data.error);
