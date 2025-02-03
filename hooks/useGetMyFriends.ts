@@ -10,6 +10,7 @@ export const API_URL =
 
 const useGetMyFriends = () => {
   const [myFriends, setMyFriends] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const { authState } = useAuth();
 
   useEffect(() => {
@@ -20,6 +21,7 @@ const useGetMyFriends = () => {
           const myFriends = res.data;
 
           setMyFriends(myFriends);
+          setIsLoading(false);
         }
       } catch (e) {
         console.log("Error: ", e.response.data.error);
@@ -27,10 +29,10 @@ const useGetMyFriends = () => {
     };
     getMyFriends();
 
-    console.log("useGetMyFriends");
+    console.log("useGetMyFriends" + new Date());
   }, []);
 
-  return { myFriends };
+  return { myFriends, isLoading };
 };
 
 export default useGetMyFriends;

@@ -2,15 +2,15 @@ import { View, Text, ScrollView } from "react-native";
 import React from "react";
 import useGetMyFriends from "@/hooks/useGetMyFriends";
 import Friend from "./Friend";
+import { useFocusEffect } from "@react-navigation/native";
 
 interface FriendProps {
   friendList: any;
 }
 
 const FriendContainer = () => {
-  const isLoading = false;
   // Get user's friend list from API
-  const { myFriends } = useGetMyFriends();
+  const { myFriends, isLoading } = useGetMyFriends();
 
   // Sort friends by recent messages
   const sortedFriends = myFriends.sort(
