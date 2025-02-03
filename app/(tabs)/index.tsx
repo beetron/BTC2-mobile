@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import FriendContainer from "@/components/FriendContainer";
 import { View } from "react-native";
 
