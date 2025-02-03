@@ -1,22 +1,39 @@
 import { View, Text, ScrollView } from "react-native";
-import React from "react";
+import { useCallback, useState, useEffect } from "react";
 import useGetMyFriends from "@/hooks/useGetMyFriends";
 import Friend from "./Friend";
 import { useFocusEffect } from "@react-navigation/native";
 
-interface FriendProps {
-  friendList: any;
+interface Friend {
+  _id: string;
+  nickname: string;
+  profilePhoto: string;
+  unreadMessages: boolean;
+  updatedAt: string;
 }
 
 const FriendContainer = () => {
-  // Get user's friend list from API
-  const { myFriends, isLoading } = useGetMyFriends();
+  const { myFriends, isLoading, getMyFriends } = useGetMyFriends();
+  const [sortedFriends, setSortedFriends] = useState<Friend[]>([]);
 
-  // Sort friends by recent messages
-  const sortedFriends = myFriends.sort(
-    (a: any, b: any) =>
-      new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+  useFocusEffect(
+    useCallback(() => {
+      // Fetch friends when the screen comes into focus
+      getMyFriends();
+      console.log("useFocusEffecT called");
+    }, [getMyFriends])
   );
+
+  useEffect(() => {
+    if (myFriends.length > 0) {
+      // Sort friends by recent messages
+      const sorted = myFriends.sort(
+        (a, b) =>
+          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+      );
+      setSortedFriends(sorted);
+    }
+  }, [myFriends]);
 
   if (isLoading) {
     return (
@@ -28,7 +45,7 @@ const FriendContainer = () => {
     return (
       <ScrollView className="flex-1">
         <View className="flex-1 w-full">
-          {sortedFriends.map((friend: any) => (
+          {sortedFriends.map((friend) => (
             <Friend key={friend._id} friend={friend} />
           ))}
         </View>
@@ -38,3 +55,52 @@ const FriendContainer = () => {
 };
 
 export default FriendContainer;
+
+// import { View, Text, ScrollView } from "react-native";
+// import { useCallback, useState, useEffect } from "react";
+// import useGetMyFriends from "@/hooks/useGetMyFriends";
+// import Friend from "./Friend";
+// import { useFocusEffect } from "@react-navigation/native";
+
+// const FriendContainer = () => {
+//   const { myFriends, isLoading, getMyFriends } = useGetMyFriends();
+//   const [sortedFriends, setSortedFriends] = useState([]);
+
+//   useFocusEffect(
+//     useCallback(() => {
+//       // Fetch friends when the screen comes into focus
+//       getMyFriends();
+//     }, [getMyFriends])
+//   );
+
+//   useEffect(() => {
+//     if (myFriends.length > 0) {
+//       // Sort friends by recent messages
+//       const sorted = myFriends.sort(
+//         (a, b) =>
+//           new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+//       );
+//       setSortedFriends(sorted);
+//     }
+//   }, [myFriends]);
+
+//   if (isLoading) {
+//     return (
+//       <View className="flex-1 justify-center items-center">
+//         <Text className="text-3xl text-btc100">Loading...</Text>
+//       </View>
+//     );
+//   } else {
+//     return (
+//       <ScrollView className="flex-1">
+//         <View className="flex-1 w-full">
+//           {sortedFriends.map((friend) => (
+//             <Friend key={friend._id} friend={friend} />
+//           ))}
+//         </View>
+//       </ScrollView>
+//     );
+//   }
+// };
+
+// export default FriendContainer;
