@@ -1,7 +1,8 @@
 import { useEffect } from "react";
 import { useFonts } from "expo-font";
-import { Redirect, Slot, SplashScreen, Stack } from "expo-router";
-import { AuthProvider, useAuth } from "./context/AuthContext";
+import { SplashScreen, Stack } from "expo-router";
+import { AuthProvider } from "./context/AuthContext";
+import { AppStateProvider } from "./context/AppStateContext";
 import "../global.css";
 
 SplashScreen.preventAutoHideAsync();
@@ -29,11 +30,16 @@ const RootLayout = () => {
 
   return (
     <AuthProvider>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="(guest-screens)" options={{ headerShown: false }} />
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-      </Stack>
+      <AppStateProvider>
+        <Stack>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="(guest-screens)"
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+        </Stack>
+      </AppStateProvider>
     </AuthProvider>
   );
 };
