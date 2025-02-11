@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
 import * as SecureStore from "expo-secure-store";
 import { checkTokenExpiry } from "@/utils/checkTokenExpiry";
+import { API_URL } from "@/constants/api";
 
 interface AuthProps {
   authState?: {
@@ -25,11 +26,6 @@ interface AuthProps {
 
 const JWT_KEY = "jwt";
 
-// Get API URL
-export const API_URL =
-  process.env.EXPO_PUBLIC_ENV === "development"
-    ? process.env.EXPO_PUBLIC_API_DEV_URL
-    : process.env.EXPO_PUBLIC_API_URL;
 const AuthContext = createContext<AuthProps>({});
 
 export const useAuth = () => {
