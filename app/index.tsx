@@ -16,7 +16,7 @@ const index = () => {
       if (authState?.authenticated === true) {
         router.replace("/(member-tabs)" as any);
       } else {
-        router.replace("/(guest-screens)/Login" as any);
+        router.replace("/guest-screens/Login" as any);
       }
     }
   }, [authState, hasMounted, router]);

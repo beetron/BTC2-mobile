@@ -34,10 +34,7 @@ const RootLayout = () => {
       <AppStateProvider>
         <Stack>
           <Stack.Screen name="(member-tabs)" options={{ headerShown: false }} />
-          <Stack.Screen
-            name="(guest-screens)"
-            options={{ headerShown: false }}
-          />
+          <Stack.Screen name="guest-screens" options={{ headerShown: false }} />
           <Stack.Screen name="index" options={{ headerShown: false }} />
           <Stack.Screen
             name="screens/conversation"
