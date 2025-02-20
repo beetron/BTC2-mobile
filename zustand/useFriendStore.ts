@@ -4,12 +4,12 @@ interface Friend {
   _id: string;
   nickname: string;
   profilePhoto: string;
-  updatedAt: string;
+  updatedAt?: string;
 }
 
 interface FriendStore {
   selectedFriend: Friend | null;
-  setSelectedFriend: (friend: Friend) => void;
+  setSelectedFriend: (friend: Friend | null) => void;
   messages: string[];
   setMessages: (messages: string[]) => void;
   shouldRender: boolean; // used for useEffect to reload via socket event
