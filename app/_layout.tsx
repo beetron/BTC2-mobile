@@ -4,6 +4,7 @@ import { SplashScreen, Stack } from "expo-router";
 import { AuthProvider } from "./context/AuthContext";
 import { AppStateProvider } from "./context/AppStateContext";
 import "../global.css";
+import conversation from "./member-screens/conversation";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -32,12 +33,16 @@ const RootLayout = () => {
     <AuthProvider>
       <AppStateProvider>
         <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="(member-tabs)" options={{ headerShown: false }} />
           <Stack.Screen
             name="(guest-screens)"
             options={{ headerShown: false }}
           />
           <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="screens/conversation"
+            options={{ headerShown: false }}
+          />
         </Stack>
       </AppStateProvider>
     </AuthProvider>
