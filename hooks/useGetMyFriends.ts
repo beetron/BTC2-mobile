@@ -22,10 +22,11 @@ const useGetMyFriends = () => {
       if (authState?.authenticated === true) {
         const res = await axios.get(`${API_URL}/api/users/friendlist`);
         setMyFriends(res.data);
-        setIsLoading(false);
       }
     } catch (e) {
       console.log("Error: ", e.response?.data?.error || e.message);
+    } finally {
+      setIsLoading(false);
     }
   }, [authState?.authenticated]);
 
