@@ -21,7 +21,11 @@ const TabLayout = () => {
           headerShown: false,
           tabBarActiveTintColor: "skyblue",
           tabBarStyle: {
-            backgroundColor: "#2a2a3c",
+            backgroundColor: "#1f1f2e",
+          },
+          tabBarLabelStyle: {
+            fontFamily: "funnel-light",
+            fontSize: 11,
           },
         }}
       >
@@ -37,7 +41,7 @@ const TabLayout = () => {
         <Tabs.Screen
           name="editFriends"
           options={{
-            title: "Add/Remove",
+            title: "Add / Remove",
             tabBarIcon: ({ color }) => (
               <FontAwesome5 size={24} name="user-edit" color={color} />
             ),
