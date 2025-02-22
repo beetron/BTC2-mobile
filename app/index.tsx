@@ -14,9 +14,9 @@ const index = () => {
   useEffect(() => {
     if (hasMounted) {
       if (authState?.authenticated === true) {
-        router.replace("/(member-tabs)" as any);
+        router.replace("/members" as any);
       } else {
-        router.replace("/guest-screens/Login" as any);
+        router.replace("/guests/Login" as any);
       }
     }
   }, [authState, hasMounted, router]);

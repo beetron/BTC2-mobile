@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
-import { useAuth } from "../app/context/AuthContext";
+import { useAuth } from "../context/AuthContext";
 import { API_URL } from "../constants/api";
 
 interface Friend {

@@ -5,13 +5,13 @@ import { Redirect, Tabs } from "expo-router";
 import { useAuth } from "../context/AuthContext";
 import React from "react";
 
-import TabsHeader from "@/components/TabsHeader";
+import TabsHeader from "@/app/components/TabsHeader";
 
 const TabLayout = () => {
   const { authState } = useAuth();
 
   if (authState?.authenticated !== true) {
-    return <Redirect href="/guest-screens/Login" />;
+    return <Redirect href="/guests/Login" />;
   }
 
   return (
@@ -60,6 +60,12 @@ const TabLayout = () => {
             tabBarIcon: ({ color }) => (
               <MaterialIcons name="logout" size={24} color={color} />
             ),
+          }}
+        />
+        <Tabs.Screen
+          name="conversation"
+          options={{
+            tabBarButton: () => null,
           }}
         />
       </Tabs>

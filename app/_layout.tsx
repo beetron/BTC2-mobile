@@ -4,19 +4,19 @@ import { SplashScreen, Stack } from "expo-router";
 import { AuthProvider } from "./context/AuthContext";
 import { AppStateProvider } from "./context/AppStateContext";
 import "../global.css";
-import conversation from "./member-screens/conversation";
+import conversation from "./members/conversation";
 
 SplashScreen.preventAutoHideAsync();
 
 const RootLayout = () => {
   // Load custom fonts
   const [fontsLoaded, fontsError] = useFonts({
-    "funnel-bold": require("../assets/fonts/FunnelDisplay-Bold.ttf"),
-    "funnel-extra-bold": require("../assets/fonts/FunnelDisplay-ExtraBold.ttf"),
-    "funnel-light": require("../assets/fonts/FunnelDisplay-Light.ttf"),
-    "funnel-medium": require("../assets/fonts/FunnelDisplay-Medium.ttf"),
-    "funnel-regular": require("../assets/fonts/FunnelDisplay-Regular.ttf"),
-    "funnel-semi-bold": require("../assets/fonts/FunnelDisplay-SemiBold.ttf"),
+    "funnel-bold": require("./assets/fonts/FunnelDisplay-Bold.ttf"),
+    "funnel-extra-bold": require("./assets/fonts/FunnelDisplay-ExtraBold.ttf"),
+    "funnel-light": require("./assets/fonts/FunnelDisplay-Light.ttf"),
+    "funnel-medium": require("./assets/fonts/FunnelDisplay-Medium.ttf"),
+    "funnel-regular": require("./assets/fonts/FunnelDisplay-Regular.ttf"),
+    "funnel-semi-bold": require("./assets/fonts/FunnelDisplay-SemiBold.ttf"),
   });
 
   useEffect(() => {
@@ -33,13 +33,13 @@ const RootLayout = () => {
     <AuthProvider>
       <AppStateProvider>
         <Stack>
-          <Stack.Screen name="(member-tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="guest-screens" options={{ headerShown: false }} />
+          <Stack.Screen name="members" options={{ headerShown: false }} />
+          <Stack.Screen name="guests" options={{ headerShown: false }} />
           <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen
+          {/* <Stack.Screen
             name="screens/conversation"
             options={{ headerShown: false }}
-          />
+          /> */}
         </Stack>
       </AppStateProvider>
     </AuthProvider>

@@ -11,31 +11,53 @@ import {
 import { StatusBar } from "expo-status-bar";
 import { useAuth } from "../context/AuthContext";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Logo from "@/components/Logo";
-import CustomButton from "@/components/CustomButton";
-import CustomInput from "@/components/CustomInput";
+import Logo from "@/app/components/Logo";
+import CustomButton from "@/app/components/CustomButton";
+import CustomInput from "@/app/components/CustomInput";
 import { Link } from "expo-router";
 
 interface FormData {
   username: string;
   password: string;
+  passwordConfirm: string;
+  uniqueId: string;
 }
 
-const Login = () => {
+const Signup = () => {
   const [formData, setFormData] = useState<FormData>({
     username: "",
     password: "",
+    passwordConfirm: "",
+    uniqueId: "",
   });
 
-  const { onLogin, authState } = useAuth();
+  const { onSignup } = useAuth();
 
   const onSubmit = async () => {
-    if (formData.username === "" || formData.password === "") {
+    // Check if any fields are empty
+    if (
+      formData.username === "" ||
+      formData.password === "" ||
+      formData.passwordConfirm === "" ||
+      formData.uniqueId === ""
+    ) {
       Alert.alert("Please fill in all fields");
+    }
+    // Check if username is at least 4 characters long
+    else if (formData.username.length < 4) {
+      Alert.alert("Username must be at least 4 characters long");
+    }
+    // Check if passwords & password confirmation match
+    else if (formData.password !== formData.passwordConfirm) {
+      Alert.alert("Passwords do not match");
     } else {
       try {
-        if (onLogin) {
-          await onLogin(formData.username, formData.password);
+        if (onSignup) {
+          await onSignup(
+            formData.username,
+            formData.password,
+            formData.uniqueId
+          );
         }
       } catch (e) {
         if (e instanceof Error) {
@@ -61,7 +83,6 @@ const Login = () => {
                 onChangeText={(e) => setFormData({ ...formData, username: e })}
                 containerStyles="w-3/5"
                 isPassword={false}
-                autoCompleteType="username"
               />
 
               {/* Password input */}
@@ -71,28 +92,45 @@ const Login = () => {
                 onChangeText={(e) => setFormData({ ...formData, password: e })}
                 containerStyles="w-3/5"
                 isPassword={true}
-                autoComleteType="password"
+              />
+              {/* Password Confirmation input */}
+              <CustomInput
+                title="Confirm Password"
+                value={formData.passwordConfirm}
+                onChangeText={(e) =>
+                  setFormData({ ...formData, passwordConfirm: e })
+                }
+                containerStyles="w-3/5"
+                isPassword={true}
+              />
+              {/* Friend's uniqueId */}
+              <CustomInput
+                title="Friend's ID"
+                value={formData.uniqueId}
+                onChangeText={(e) => setFormData({ ...formData, uniqueId: e })}
+                containerStyles="w-3/5"
+                isPassword={false}
               />
 
-              {/* Login button */}
+              {/* Signup button */}
               <CustomButton
-                title="Login"
+                title="Signup"
                 isLoading={false}
                 textStyles="font-funnel-regular"
                 containerStyles="w-3/5 top-5"
                 handlePress={onSubmit}
               />
-              {/* Signup */}
+              {/* Link to Login screen */}
               <View className="justify-center pt-8 flex-row">
                 <Text className="text-lg font-funnel-regular color-btc300 right-2">
-                  Need an account?
+                  Already have an account?
                 </Text>
                 <Link
-                  href={"/(guest-screens)/Signup" as any}
+                  href={"/(guests)/Login" as any}
                   className="text-lg font-funnel-regular color-btc200"
                 >
                   <Text className="text-lg font-funnel-regular color-btc200">
-                    Sign up here
+                    Login here
                   </Text>
                 </Link>
               </View>
@@ -105,4 +143,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Signup;

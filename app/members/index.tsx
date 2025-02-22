@@ -1,4 +1,4 @@
-import FriendContainer from "@/components/FriendContainer";
+import FriendContainer from "@/app/components/FriendContainer";
 import { View } from "react-native";
 
 // Home screeen with friend list

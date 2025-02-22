@@ -1,8 +1,8 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
 import * as SecureStore from "expo-secure-store";
-import { checkTokenExpiry } from "@/utils/checkTokenExpiry";
-import { API_URL } from "@/constants/api";
+import { checkTokenExpiry } from "@/app/utils/checkTokenExpiry";
+import { API_URL } from "@/app/constants/api";
 
 interface AuthProps {
   authState?: {
