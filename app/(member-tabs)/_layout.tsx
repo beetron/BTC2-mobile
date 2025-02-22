@@ -11,7 +11,7 @@ const TabLayout = () => {
   const { authState } = useAuth();
 
   if (authState?.authenticated !== true) {
-    return <Redirect href="/(guest-screens)/Login" />;
+    return <Redirect href="/guest-screens/Login" />;
   }
 
   return (

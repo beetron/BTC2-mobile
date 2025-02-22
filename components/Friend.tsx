@@ -20,9 +20,10 @@ const Friend = ({
   const { setSelectedFriend } = useFriendStore();
   const router = useRouter();
 
+  // setSelectedFriend via Zustand before push
   const handleOnPress = () => {
     setSelectedFriend(friend);
-    router.push("../app/member-screens/conversation");
+    router.push("../member-screens/conversation");
   };
 
   return (
