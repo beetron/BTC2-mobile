@@ -2,7 +2,7 @@ import { View, Text, TouchableOpacity, Alert } from "react-native";
 import React from "react";
 import { StyleSheet, Image } from "react-native";
 import { useRouter } from "expo-router";
-import useFriendStore from "../../zustand/useFriendStore";
+import friendStore from "../../zustand/friendStore";
 
 const placeholderImage = require("../assets/images/placeholder_profile_pic.png");
 
@@ -17,7 +17,7 @@ const Friend = ({
   };
 }) => {
   const { nickname, profilePhoto, unreadMessages } = friend;
-  const { setSelectedFriend } = useFriendStore();
+  const { setSelectedFriend } = friendStore();
   const router = useRouter();
 
   // setSelectedFriend via Zustand before push

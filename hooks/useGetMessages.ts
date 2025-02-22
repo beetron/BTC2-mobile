@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { API_URL } from "../constants/api";
-import useFriendStore from "../zustand/useFriendStore";
+import FriendStore from "../zustand/friendStore";
+import { useAuth } from "../context/AuthContext";
 import { Alert } from "react-native";
 
 interface Friend {
@@ -14,36 +15,42 @@ interface FriendStoreProps {
 }
 
 const useGetMessages = () => {
+  const { authState } = useAuth();
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const { selectedFriend, messages, setMessages, shouldRender } =
-    useFriendStore();
+  // const [ fetchedMessages, setFetchedMessages ] = useState<string[]>([]);
+  const { selectedFriend, messages, setMessages, shouldRender } = FriendStore();
 
   useEffect(() => {
     const getMessages = async () => {
       if (selectedFriend) {
         try {
           setIsLoading(true);
-
-          const response = await axios.get(
-            `${API_URL}/api/messages/${selectedFriend._id}`
+          const res = await axios.get(
+            `${API_URL}/api/messages/get/${selectedFriend._id}`
           );
-
-          if (response.status !== 200) {
-            const data = response.data;
+          if (res.status === 200) {
+            setMessages([...messages, ...res.data]);
           } else {
             Alert.alert("Error", "Failed to get messages");
             // ADD REDIRECT LOGIN FOR PRODUCTION
           }
 
-          setMessages(response.data);
           setIsLoading(false);
         } catch (e) {
+          console.log("Error: ", e.response?.data?.error || e.message);
+          // Alert.alert("Error", e.response?.data?.error || e.message);
+        } finally {
           setIsLoading(false);
         }
-        getMessages();
       }
     };
+
+    getMessages();
   }, [setMessages, shouldRender]);
+
+  // useEffect(() => {
+  //   console.log("Messages updated: ", messages);
+  // }, [messages]);
 
   return { messages, isLoading };
 };

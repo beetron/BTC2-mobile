@@ -33,7 +33,7 @@ const useGetMyFriends = () => {
   useEffect(() => {
     console.log("useGetMyFriends" + new Date());
     getMyFriends();
-  }, [getMyFriends]);
+  }, []);
 
   return { myFriends, isLoading, getMyFriends };
 };

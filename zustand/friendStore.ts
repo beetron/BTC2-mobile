@@ -16,7 +16,7 @@ interface FriendStore {
   setShouldRender: () => void;
 }
 
-const useFriendStore = create<FriendStore>((set) => ({
+const friendStore = create<FriendStore>((set) => ({
   selectedFriend: null,
   setSelectedFriend: (selectedFriend) => set({ selectedFriend }),
   messages: [],
@@ -26,4 +26,4 @@ const useFriendStore = create<FriendStore>((set) => ({
     set((state) => ({ shouldRender: !state.shouldRender })),
 }));
 
-export default useFriendStore;
+export default friendStore;

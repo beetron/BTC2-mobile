@@ -1,7 +1,7 @@
 import { View, Text } from "react-native";
 import React from "react";
-import ConversationContainer from "@/app/components/ConversationContainer";
-import HeaderConversation from "@/app/components/HeaderConversation";
+import ConversationMessages from "@/app/components/ConversationMessages";
+import ConversationHeader from "@/app/components/ConversationHeader";
 
 interface Friend {
   nickname: string;
@@ -13,8 +13,8 @@ interface Friend {
 const conversation = () => {
   return (
     <View className="flex-1 bg-btc500">
-      <HeaderConversation />
-      <ConversationContainer />
+      <ConversationHeader />
+      <ConversationMessages />
     </View>
   );
 };
