@@ -4,8 +4,7 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Redirect, Tabs } from "expo-router";
 import { useAuth } from "../../context/AuthContext";
 import React from "react";
-
-import TabsHeader from "@/app/components/TabsHeader";
+import HeaderPrimary from "@/app/components/HeaderPrimary";
 
 const TabLayout = () => {
   const { authState } = useAuth();
@@ -16,7 +15,7 @@ const TabLayout = () => {
 
   return (
     <>
-      <TabsHeader />
+      <HeaderPrimary />
       <Tabs
         screenOptions={{
           headerShown: false,
@@ -60,12 +59,6 @@ const TabLayout = () => {
             tabBarIcon: ({ color }) => (
               <MaterialIcons name="logout" size={24} color={color} />
             ),
-          }}
-        />
-        <Tabs.Screen
-          name="conversation"
-          options={{
-            href: null,
           }}
         />
       </Tabs>
