@@ -2,7 +2,7 @@ import { View, Text, TouchableOpacity, Alert } from "react-native";
 import React from "react";
 import { StyleSheet, Image } from "react-native";
 import { useRouter } from "expo-router";
-import useFriendStore from "../zustand/useFriendStore";
+import useFriendStore from "../../zustand/useFriendStore";
 
 const placeholderImage = require("../assets/images/placeholder_profile_pic.png");
 

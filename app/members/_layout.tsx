@@ -2,7 +2,7 @@ import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Redirect, Tabs } from "expo-router";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../../context/AuthContext";
 import React from "react";
 
 import TabsHeader from "@/app/components/TabsHeader";
@@ -65,7 +65,7 @@ const TabLayout = () => {
         <Tabs.Screen
           name="conversation"
           options={{
-            tabBarButton: () => null,
+            href: null,
           }}
         />
       </Tabs>

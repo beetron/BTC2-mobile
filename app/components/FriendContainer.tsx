@@ -1,9 +1,9 @@
 import { View, Text, ScrollView } from "react-native";
 import { useCallback, useState, useEffect } from "react";
-import useGetMyFriends from "../hooks/useGetMyFriends";
+import useGetMyFriends from "../../hooks/useGetMyFriends";
 import Friend from "./Friend";
 import { useFocusEffect } from "@react-navigation/native";
-import { useAppStateListener } from "@/app/context/AppStateContext";
+import { useAppStateListener } from "@/context/AppStateContext";
 
 interface Friend {
   _id: string;

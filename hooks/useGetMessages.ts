@@ -47,3 +47,5 @@ const useGetMessages = () => {
 
   return { messages, isLoading };
 };
+
+export default useGetMessages;
