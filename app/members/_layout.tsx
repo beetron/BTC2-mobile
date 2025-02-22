@@ -20,11 +20,12 @@ const TabLayout = () => {
         screenOptions={{
           headerShown: false,
           tabBarActiveTintColor: "skyblue",
+          tabBarInactiveTintColor: "white",
           tabBarStyle: {
             backgroundColor: "#1f1f2e",
           },
           tabBarLabelStyle: {
-            fontFamily: "funnel-light",
+            fontFamily: "funnel-regular",
             fontSize: 11,
           },
         }}
