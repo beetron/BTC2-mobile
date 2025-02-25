@@ -7,11 +7,18 @@ interface Friend {
   updatedAt?: string;
 }
 
+interface Message {
+  senderId: string;
+  nickname: string;
+  message: string;
+  createdAt: string;
+}
+
 interface FriendStore {
   selectedFriend: Friend | null;
   setSelectedFriend: (friend: Friend | null) => void;
-  messages: string[];
-  setMessages: (messages: string[]) => void;
+  messages: Message[];
+  setMessages: (messages: Message[]) => void;
   shouldRender: boolean; // used for useEffect to reload via socket event
   setShouldRender: () => void;
 }
