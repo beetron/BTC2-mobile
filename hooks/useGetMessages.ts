@@ -17,42 +17,37 @@ interface FriendStoreProps {
 const useGetMessages = () => {
   const { authState } = useAuth();
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  // const [ fetchedMessages, setFetchedMessages ] = useState<string[]>([]);
   const { selectedFriend, messages, setMessages, shouldRender } = FriendStore();
 
-  useEffect(() => {
-    const getMessages = async () => {
-      if (selectedFriend) {
-        try {
-          setIsLoading(true);
-          const res = await axios.get(
-            `${API_URL}/api/messages/get/${selectedFriend._id}`
-          );
-          if (res.status === 200) {
-            setMessages([...messages, ...res.data]);
-          } else {
-            Alert.alert("Error", "Failed to get messages");
-            // ADD REDIRECT LOGIN FOR PRODUCTION
-          }
-
-          setIsLoading(false);
-        } catch (e) {
-          console.log("Error: ", e.response?.data?.error || e.message);
-          // Alert.alert("Error", e.response?.data?.error || e.message);
-        } finally {
-          setIsLoading(false);
+  const getMessages = useCallback(async () => {
+    if (selectedFriend) {
+      try {
+        setIsLoading(true);
+        const res = await axios.get(
+          `${API_URL}/api/messages/get/${selectedFriend._id}`
+        );
+        if (res.status === 200) {
+          setMessages([...messages, ...res.data]);
+        } else {
+          Alert.alert("Error", "Failed to get messages");
+          // ADD REDIRECT LOGIN FOR PRODUCTION
         }
-      }
-    };
 
+        setIsLoading(false);
+      } catch (e) {
+        console.log("Error: ", e.response?.data?.error || e.message);
+        // Alert.alert("Error", e.response?.data?.error || e.message);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  }, [authState?.authenticated]);
+
+  useEffect(() => {
     getMessages();
   }, [setMessages, shouldRender]);
 
-  // useEffect(() => {
-  //   console.log("Messages updated: ", messages);
-  // }, [messages]);
-
-  return { messages, isLoading };
+  return { getMessages, messages, isLoading };
 };
 
 export default useGetMessages;
