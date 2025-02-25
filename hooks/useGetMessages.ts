@@ -45,7 +45,7 @@ const useGetMessages = () => {
 
   useEffect(() => {
     getMessages();
-  }, [setMessages, shouldRender]);
+  }, [shouldRender]);
 
   return { getMessages, messages, isLoading };
 };
