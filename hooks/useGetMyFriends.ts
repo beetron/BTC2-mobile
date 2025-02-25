@@ -15,7 +15,7 @@ interface Friend {
 const useGetMyFriends = () => {
   const { authState } = useAuth();
   const [myFriends, setMyFriends] = useState<Friend[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const getMyFriends = useCallback(async () => {
     try {
