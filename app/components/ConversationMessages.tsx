@@ -15,7 +15,7 @@ interface Message {
 const ConversationMessages = () => {
   const { messages: messagesData, isLoading, getMessages } = useGetMessages();
 
-  const { messages } = friendStore();
+  const { messages, selectedFriend } = friendStore();
 
   // Run Effect when screen is back in focususe
   useFocusEffect(
@@ -33,19 +33,28 @@ const ConversationMessages = () => {
   return (
     <ScrollView className="flex-1">
       <View className="flex-1 m-2">
-        {messages.map((message: Message, index: number) => (
-          <View key={index}>
-            <Text className="font-funnel-regular text-btc100">
-              Sender ID: {message.nickname}
-            </Text>
-            <Text className="font-funnel-regular text-btc100">
-              Message: {message.message}
-            </Text>
-            <Text className="font-funnel-regular text-btc100">
-              Sent: {message.createdAt}
+        {messages.length === 0 ? (
+          <View className="justify-center items-center mt-8">
+            <Text className="font-funnel-regular text-btc100 text-2xl">
+              You have no messages with{" "}
+              {selectedFriend?.nickname ?? "your friend"}
             </Text>
           </View>
-        ))}
+        ) : (
+          messages.map((message: Message, index: number) => (
+            <View key={index}>
+              <Text className="font-funnel-regular text-btc100">
+                Sender ID: {message.nickname}
+              </Text>
+              <Text className="font-funnel-regular text-btc100">
+                Message: {message.message}
+              </Text>
+              <Text className="font-funnel-regular text-btc100">
+                Sent: {message.createdAt}
+              </Text>
+            </View>
+          ))
+        )}
       </View>
     </ScrollView>
   );
