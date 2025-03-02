@@ -4,6 +4,7 @@ import useGetMyFriends from "../../hooks/useGetMyFriends";
 import Friend from "./Friend";
 import { useFocusEffect } from "@react-navigation/native";
 import { useAppStateListener } from "@/context/AppStateContext";
+import FriendStore from "../../zustand/friendStore";
 
 interface Friend {
   _id: string;
@@ -14,6 +15,8 @@ interface Friend {
 }
 
 const FriendContainer = () => {
+  const { messages, selectedFriend, setMessages, setSelectedFriend } =
+    FriendStore();
   const { myFriends, isLoading, getMyFriends } = useGetMyFriends();
   const [sortedFriends, setSortedFriends] = useState<Friend[]>([]);
 
@@ -25,8 +28,18 @@ const FriendContainer = () => {
     }, [getMyFriends])
   );
 
+  // Reset selectedFriend and messages
+  useEffect(() => {
+    setMessages([]);
+    setSelectedFriend(null);
+    console.log("FriendContainer msg & friend: ", messages, selectedFriend);
+  }, []);
+
   // Run when App State is active again
-  useAppStateListener(getMyFriends);
+  useAppStateListener(() => {
+    getMyFriends();
+    console.log("useAppStateListener msgs: ", messages);
+  });
 
   // Sort friends by most recent messages
   useEffect(() => {

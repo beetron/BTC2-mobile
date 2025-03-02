@@ -1,14 +1,10 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
-import friendStore from "../../zustand/friendStore";
 
 const ConversationHeader = () => {
   const router = useRouter();
-  const { setSelectedFriend, setMessages } = friendStore();
 
   const handleOnPress = () => {
-    setSelectedFriend(null);
-    setMessages([]);
     router.replace("/members");
   };
 

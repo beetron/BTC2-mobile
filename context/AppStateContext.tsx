@@ -20,6 +20,9 @@ export const AppStateProvider = ({
         console.log("App is active. Calling all listeners...");
         listeners.current.forEach((callback) => callback());
       }
+      if (nextAppState === "background") {
+        console.log("App is in background");
+      }
     };
 
     const subscription = AppState.addEventListener(
