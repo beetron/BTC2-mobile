@@ -38,6 +38,9 @@ export const AppStateProvider = ({
 
   const addListener = (callback: () => void) => {
     listeners.current.add(callback);
+    return () => {
+      listeners.current.delete(callback);
+    };
   };
 
   return (
@@ -51,7 +54,8 @@ export const useAppStateListener = (callback: () => void) => {
   const context = useContext(AppStateContext);
   useEffect(() => {
     if (context) {
-      context.addListener(callback);
+      const removeListener = context.addListener(callback);
+      return removeListener;
     }
   }, [context, callback]);
 };

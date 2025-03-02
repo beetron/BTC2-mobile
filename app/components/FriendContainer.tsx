@@ -32,13 +32,29 @@ const FriendContainer = () => {
   useEffect(() => {
     setMessages([]);
     setSelectedFriend(null);
-    console.log("FriendContainer msg & friend: ", messages, selectedFriend);
   }, []);
 
+  useEffect(() => {
+    console.log("FriendContainer msg & friend: ", messages, selectedFriend);
+  }, [selectedFriend]);
+
   // Run when App State is active again
+  // useAppStateListener(() => {
+  //   getMyFriends();
+  //   console.log("useAppStateListener msgs: ", messages);
+  // });
   useAppStateListener(() => {
-    getMyFriends();
-    console.log("useAppStateListener msgs: ", messages);
+    const handleAppStateChange = () => {
+      getMyFriends();
+      console.log("useAppStateListener msgs: ", messages);
+    };
+
+    handleAppStateChange(); // Call initially
+
+    return () => {
+      // Cleanup function to remove the listener
+      console.log("Cleaning up useAppStateListener");
+    };
   });
 
   // Sort friends by most recent messages
