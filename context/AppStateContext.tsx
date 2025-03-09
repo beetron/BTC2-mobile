@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useRef } from "react";
 import { AppState, AppStateStatus } from "react-native";
+import useSocket from "../hooks/useSocket";
 
 const AppStateContext = createContext<{
   addListener: (callback: () => void) => void;
@@ -12,16 +13,26 @@ export const AppStateProvider = ({
 }) => {
   const listeners = useRef<Set<() => void>>(new Set());
 
+  // Manage socket connection via useSocket hook within AppStateProvider
+  const { connectSocket, disconnectSocket } = useSocket();
+
   useEffect(() => {
     console.log("AppState: " + AppState.currentState);
 
     const handleAppStateChange = (nextAppState: AppStateStatus) => {
       if (nextAppState === "active") {
-        console.log("App is active. Calling all listeners...");
+        console.log("AppState Acitve");
         listeners.current.forEach((callback) => callback());
+
+        // Reconnect socket if it exists
+        connectSocket();
+        console.log("connectSocket called in AppStateContext");
       }
       if (nextAppState === "background") {
-        console.log("App is in background");
+        console.log("AppState Background");
+
+        // Disconnect socket if it exists
+        disconnectSocket();
       }
     };
 

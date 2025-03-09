@@ -99,25 +99,40 @@ export const AuthProvider = ({ children }: any) => {
         password,
       });
 
+      // Extract token and user data from the result
+      const { token, _id, uniqueId, nickname, profilePhoto } = result.data;
+
       // Set authState
+      // setAuthState({
+      //   token: result.data.token,
+      //   authenticated: true,
+      //   user: {
+      //     _id: result.data._id,
+      //     uniqueId: result.data.uniqueId,
+      //     nickname: result.data.nickname,
+      //     profilePhoto: result.data.profilePhoto,
+      //   },
+      // });
       setAuthState({
-        token: result.data.token,
+        token: token,
         authenticated: true,
         user: {
-          _id: result.data._id,
-          uniqueId: result.data.uniqueId,
-          nickname: result.data.nickname,
-          profilePhoto: result.data.profilePhoto,
+          _id: _id,
+          uniqueId: uniqueId,
+          nickname: nickname,
+          profilePhoto: profilePhoto,
         },
       });
 
       // Set token to every axios request
-      axios.defaults.headers.common[
-        "Authorization"
-      ] = `Bearer ${result.data.token}`;
+      // axios.defaults.headers.common[
+      //   "Authorization"
+      // ] = `Bearer ${result.data.token}`;
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
       // Store token in secure store
-      await SecureStore.setItemAsync(JWT_KEY, result.data.token);
+      // await SecureStore.setItemAsync(JWT_KEY, result.data.token);
+      await SecureStore.setItemAsync(JWT_KEY, token);
 
       return result;
     } catch (e) {
