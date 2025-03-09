@@ -3,7 +3,6 @@ import { useFonts } from "expo-font";
 import { SplashScreen, Stack } from "expo-router";
 import { AuthProvider } from "../context/AuthContext";
 import { AppStateProvider } from "../context/AppStateContext";
-import { KeyboardProvider } from "react-native-keyboard-controller";
 import "../global.css";
 
 SplashScreen.preventAutoHideAsync();
