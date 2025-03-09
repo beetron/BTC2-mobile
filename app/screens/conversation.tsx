@@ -1,7 +1,9 @@
-import { View, Text } from "react-native";
+import { View, Platform, StyleSheet } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import React from "react";
-import ConversationMessages from "@/app/components/ConversationMessages";
+import ConversationBody from "@/app/components/ConversationBody";
 import ConversationHeader from "@/app/components/ConversationHeader";
+import ConversationInput from "@/app/components/ConversationInput";
 
 interface Friend {
   nickname: string;
@@ -12,10 +14,13 @@ interface Friend {
 
 const conversation = () => {
   return (
+    //<KeyboardAwareScrollView>
     <View className="flex-1 bg-btc500">
       <ConversationHeader />
-      <ConversationMessages />
+      <ConversationBody />
+      {/* <ConversationInput /> */}
     </View>
+    //</KeyboardAwareScrollView>
   );
 };
 
