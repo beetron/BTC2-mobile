@@ -34,10 +34,6 @@ const FriendContainer = () => {
     setSelectedFriend(null);
   }, []);
 
-  useEffect(() => {
-    console.log("FriendContainer msg & friend: ", messages, selectedFriend);
-  }, [selectedFriend]);
-
   // Run when App State is active again
   // useAppStateListener(() => {
   //   getMyFriends();
@@ -46,7 +42,6 @@ const FriendContainer = () => {
   useAppStateListener(() => {
     const handleAppStateChange = () => {
       getMyFriends();
-      console.log("useAppStateListener msgs: ", messages);
     };
 
     handleAppStateChange(); // Call initially
