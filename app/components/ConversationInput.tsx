@@ -14,6 +14,7 @@ const ConversationInput = () => {
           placeholderTextColor="black"
           className="h-10 w-3/4 px-4 mr-2 bg-btc100 rounded-2xl border-2 border-btc20"
         />
+
         <TouchableOpacity onPress={handleOnPress}>
           <Ionicons name="send-sharp" size={24} color="white" />
         </TouchableOpacity>

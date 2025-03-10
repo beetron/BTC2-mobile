@@ -1,6 +1,6 @@
-import { View, Platform, StyleSheet } from "react-native";
+import { View, Platform, KeyboardAvoidingView } from "react-native";
 import React from "react";
-import ConversationBody from "@/app/components/ConversationBody";
+import ConversationMessages from "@/app/components/ConversationMessages";
 import ConversationHeader from "@/app/components/ConversationHeader";
 import ConversationInput from "@/app/components/ConversationInput";
 
@@ -13,13 +13,16 @@ interface Friend {
 
 const conversation = () => {
   return (
-    //<KeyboardAwareScrollView>
     <View className="flex-1 bg-btc500">
       <ConversationHeader />
-      <ConversationBody />
-      {/* <ConversationInput /> */}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        className="flex-1"
+      >
+        <ConversationMessages />
+        <ConversationInput />
+      </KeyboardAvoidingView>
     </View>
-    //</KeyboardAwareScrollView>
   );
 };
 

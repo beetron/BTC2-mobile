@@ -79,34 +79,6 @@ export const AuthProvider = ({ children }: any) => {
     restoreAuthState();
   }, []);
 
-  // Check token on load
-  // useEffect(() => {
-  //   const checkToken = async () => {
-  //     const token = await SecureStore.getItemAsync(JWT_KEY);
-  //     const user = await SecureStore.getItemAsync(USER_KEY);
-
-  //     if (token) {
-  //       // Check token expiry
-  //       const isTokenValid = checkTokenExpiry(token);
-  //       if (!isTokenValid) {
-  //         logout();
-  //         return;
-  //       }
-
-  //       // Set token in HTTP headers
-  //       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-
-  //       // Update state with token and boolean
-  //       setAuthState({
-  //         token: token,
-  //         authenticated: true,
-  //         user: user ? JSON.parse(user) : null,
-  //       });
-  //     }
-  //   };
-  //   checkToken();
-  // }, []);
-
   // Register
   const signup = async (
     username: string,
