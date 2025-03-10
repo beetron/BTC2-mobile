@@ -14,17 +14,17 @@ interface Message {
 }
 
 const ConversationMessages = () => {
-  const { messages: messagesData, isLoading, getMessages } = useGetMessages();
+  const { isLoading, getMessages } = useGetMessages();
   const { messages, selectedFriend } = friendStore();
 
-  // Run Effect when screen is back in focus
+  // Fetch messages when screen is back in focus
   useFocusEffect(
     useCallback(() => {
       getMessages();
     }, [getMessages])
   );
 
-  // Run when App State is active again
+  // Refresh messages when app becomes active
   useAppStateListener(() => {
     getMessages();
   });
@@ -38,8 +38,6 @@ const ConversationMessages = () => {
       </View>
     );
   }
-
-  const handleOnPress = () => {};
 
   return (
     <View className="flex-1">

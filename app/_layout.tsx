@@ -1,9 +1,11 @@
 import { useEffect } from "react";
 import { useFonts } from "expo-font";
 import { SplashScreen, Stack } from "expo-router";
-import { AuthProvider } from "../context/AuthContext";
-import { AppStateProvider } from "../context/AppStateContext";
+import { AuthProvider } from "@/context/AuthContext";
+import { AppStateProvider } from "@/context/AppStateContext";
+import { SocketProvider } from "@/context/SocketContext";
 import "../global.css";
+import { Socket } from "socket.io-client";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -31,12 +33,14 @@ const RootLayout = () => {
   return (
     <AuthProvider>
       <AppStateProvider>
-        <Stack>
-          <Stack.Screen name="members" options={{ headerShown: false }} />
-          <Stack.Screen name="guests" options={{ headerShown: false }} />
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="screens" options={{ headerShown: false }} />
-        </Stack>
+        <SocketProvider>
+          <Stack>
+            <Stack.Screen name="members" options={{ headerShown: false }} />
+            <Stack.Screen name="guests" options={{ headerShown: false }} />
+            <Stack.Screen name="index" options={{ headerShown: false }} />
+            <Stack.Screen name="screens" options={{ headerShown: false }} />
+          </Stack>
+        </SocketProvider>
       </AppStateProvider>
     </AuthProvider>
   );
