@@ -2,6 +2,7 @@ import { useRef, useEffect } from "react";
 import { io, Socket } from "socket.io-client";
 import { API_URL } from "../constants/api";
 import { useAuth } from "../context/AuthContext";
+import * as SecureStore from "expo-secure-store";
 
 const useSocket = () => {
   const socketRef = useRef<Socket | null>(null);

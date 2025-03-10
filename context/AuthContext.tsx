@@ -25,6 +25,7 @@ interface AuthProps {
 }
 
 const JWT_KEY = "jwt";
+const USER_KEY = "user";
 
 const AuthContext = createContext<AuthProps>({});
 
@@ -48,31 +49,63 @@ export const AuthProvider = ({ children }: any) => {
     user: null,
   });
 
+  // Function to restore auth state from SecureStore
+  const restoreAuthState = async () => {
+    const token = await SecureStore.getItemAsync(JWT_KEY);
+    const user = await SecureStore.getItemAsync(USER_KEY);
+
+    if (token) {
+      // Check token expiry
+      const isTokenValid = checkTokenExpiry(token);
+      if (!isTokenValid) {
+        logout();
+        return;
+      }
+
+      // Set token in HTTP headers
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
+      // Update state with token and user data
+      setAuthState({
+        token: token,
+        authenticated: true,
+        user: user ? JSON.parse(user) : null,
+      });
+    }
+  };
+
   // Check token on load
   useEffect(() => {
-    const checkToken = async () => {
-      const token = await SecureStore.getItemAsync(JWT_KEY);
-
-      if (token) {
-        // Check token expiry
-        const isTokenValid = checkTokenExpiry(token);
-        if (!isTokenValid) {
-          logout();
-          return;
-        }
-
-        // Set token in HTTP headers
-        axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-
-        // Update state with token and boolean
-        setAuthState({
-          token: token,
-          authenticated: true,
-        });
-      }
-    };
-    checkToken();
+    restoreAuthState();
   }, []);
+
+  // Check token on load
+  // useEffect(() => {
+  //   const checkToken = async () => {
+  //     const token = await SecureStore.getItemAsync(JWT_KEY);
+  //     const user = await SecureStore.getItemAsync(USER_KEY);
+
+  //     if (token) {
+  //       // Check token expiry
+  //       const isTokenValid = checkTokenExpiry(token);
+  //       if (!isTokenValid) {
+  //         logout();
+  //         return;
+  //       }
+
+  //       // Set token in HTTP headers
+  //       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
+  //       // Update state with token and boolean
+  //       setAuthState({
+  //         token: token,
+  //         authenticated: true,
+  //         user: user ? JSON.parse(user) : null,
+  //       });
+  //     }
+  //   };
+  //   checkToken();
+  // }, []);
 
   // Register
   const signup = async (
@@ -130,9 +163,10 @@ export const AuthProvider = ({ children }: any) => {
       // ] = `Bearer ${result.data.token}`;
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
-      // Store token in secure store
+      // Secure store token and user data
       // await SecureStore.setItemAsync(JWT_KEY, result.data.token);
       await SecureStore.setItemAsync(JWT_KEY, token);
+      await SecureStore.setItemAsync(USER_KEY, JSON.stringify(result.data));
 
       return result;
     } catch (e) {
@@ -142,8 +176,9 @@ export const AuthProvider = ({ children }: any) => {
 
   // Logout
   const logout = async () => {
-    // Delete token from secure store
+    // Delete token and user data from secure store
     await SecureStore.deleteItemAsync(JWT_KEY);
+    await SecureStore.deleteItemAsync(USER_KEY);
 
     // Reset HTTP headers
     axios.defaults.headers.common["Authorization"] = "";
