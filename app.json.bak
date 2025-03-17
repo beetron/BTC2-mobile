@@ -9,6 +9,13 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
+      "googleServicesFile": "./GoogleService-Info.plist",
+      "entitlements": {
+        "aps-environment": "development"
+      },
+      "infoPlist": {
+        "UIBackgroundModes": ["remote-notification"]
+      },
       "supportsTablet": true,
       "bundleIdentifier": "com.beetron.btc2",
       "config": {
@@ -28,28 +35,18 @@
       "favicon": ""
     },
     "plugins": [
+      "@react-native-firebase/app",
+      "@react-native-firebase/messaging",
       "expo-router",
       [
         "expo-font",
         {
-          "funnel-bold": [
-            "./assets/fonts/FunnelDisplay-Bold.ttf"
-          ],
-          "funnel-extra-bold": [
-            "./assets/fonts/FunnelDisplay-ExtraBold.ttf"
-          ],
-          "funnel-light": [
-            "./assets/fonts/FunnelDisplay-Light.ttf"
-          ],
-          "funnel-medium": [
-            "./assets/fonts/FunnelDisplay-Medium.ttf"
-          ],
-          "funnel-regular": [
-            "./assets/fonts/FunnelDisplay-Regular.ttf"
-          ],
-          "funnel-semi-bold": [
-            "./assets/fonts/FunnelDisplay-SemiBold.ttf"
-          ]
+          "funnel-bold": ["./assets/fonts/FunnelDisplay-Bold.ttf"],
+          "funnel-extra-bold": ["./assets/fonts/FunnelDisplay-ExtraBold.ttf"],
+          "funnel-light": ["./assets/fonts/FunnelDisplay-Light.ttf"],
+          "funnel-medium": ["./assets/fonts/FunnelDisplay-Medium.ttf"],
+          "funnel-regular": ["./assets/fonts/FunnelDisplay-Regular.ttf"],
+          "funnel-semi-bold": ["./assets/fonts/FunnelDisplay-SemiBold.ttf"]
         }
       ],
       [
