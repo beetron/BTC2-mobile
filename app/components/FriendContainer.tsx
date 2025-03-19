@@ -5,6 +5,7 @@ import Friend from "./Friend";
 import { useFocusEffect } from "@react-navigation/native";
 import { useAppStateListener } from "@/context/AppStateContext";
 import FriendStore from "../../zustand/friendStore";
+import useFcmToken from "../../hooks/useFcmToken";
 
 interface Friend {
   _id: string;
@@ -19,6 +20,7 @@ const FriendContainer = () => {
     FriendStore();
   const { myFriends, isLoading, getMyFriends } = useGetMyFriends();
   const [sortedFriends, setSortedFriends] = useState<Friend[]>([]);
+  const { manageFcmToken } = useFcmToken();
 
   // Run Effect when screen is back in focus
   useFocusEffect(
@@ -27,6 +29,11 @@ const FriendContainer = () => {
       console.log("useFocusEffecT called");
     }, [getMyFriends])
   );
+
+  // Handle FCM token registration or renewal
+  useEffect(() => {
+    manageFcmToken();
+  }, [manageFcmToken]);
 
   // Reset selectedFriend and messages
   useEffect(() => {
@@ -37,6 +44,7 @@ const FriendContainer = () => {
   useAppStateListener(() => {
     const handleAppStateChange = () => {
       getMyFriends();
+      manageFcmToken();
     };
 
     handleAppStateChange(); // Call initially
