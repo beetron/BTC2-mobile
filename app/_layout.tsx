@@ -33,14 +33,14 @@ const RootLayout = () => {
   return (
     <AuthProvider>
       <AppStateProvider>
-        <SocketProvider>
-          <Stack>
-            <Stack.Screen name="members" options={{ headerShown: false }} />
-            <Stack.Screen name="guests" options={{ headerShown: false }} />
-            <Stack.Screen name="index" options={{ headerShown: false }} />
-            <Stack.Screen name="screens" options={{ headerShown: false }} />
-          </Stack>
-        </SocketProvider>
+        {/* <SocketProvider> */}
+        <Stack>
+          <Stack.Screen name="members" options={{ headerShown: false }} />
+          <Stack.Screen name="guests" options={{ headerShown: false }} />
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen name="screens" options={{ headerShown: false }} />
+        </Stack>
+        {/* </SocketProvider> */}
       </AppStateProvider>
     </AuthProvider>
   );

@@ -16,8 +16,7 @@ interface Friend {
 }
 
 const FriendContainer = () => {
-  const { messages, selectedFriend, setMessages, setSelectedFriend } =
-    FriendStore();
+  const { shouldRender, setMessages, setSelectedFriend } = FriendStore();
   const { myFriends, isLoading, getMyFriends } = useGetMyFriends();
   const [sortedFriends, setSortedFriends] = useState<Friend[]>([]);
   const { manageFcmToken } = useFcmToken();
@@ -25,29 +24,28 @@ const FriendContainer = () => {
   // Run Effect when screen is back in focus
   useFocusEffect(
     useCallback(() => {
-      getMyFriends();
       console.log("useFocusEffecT called");
+      setMessages([]);
+      setSelectedFriend(null);
+      getMyFriends();
     }, [getMyFriends])
   );
+
+  // Update list when new message is received via socket notification
+  useEffect(() => {
+    getMyFriends();
+  }, [shouldRender]);
 
   // Handle FCM token registration or renewal
   useEffect(() => {
     manageFcmToken();
   }, [manageFcmToken]);
 
-  // Reset selectedFriend and messages
-  useEffect(() => {
-    setMessages([]);
-    setSelectedFriend(null);
-  }, []);
-
   useAppStateListener(() => {
     const handleAppStateChange = () => {
       getMyFriends();
       manageFcmToken();
     };
-
-    handleAppStateChange(); // Call initially
 
     return () => {
       // Cleanup function to remove the listener
@@ -57,14 +55,15 @@ const FriendContainer = () => {
 
   // Sort friends by most recent messages
   useEffect(() => {
-    if (myFriends.length > 0) {
-      // Sort friends by recent messages
-      const sorted = myFriends.sort(
-        (a, b) =>
-          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-      );
-      setSortedFriends(sorted);
+    function sortFriends() {
+      if (myFriends.length > 0) {
+        const sorted = [...myFriends].sort(/*...*/);
+        setSortedFriends(sorted);
+      } else {
+        setSortedFriends([]);
+      }
     }
+    sortFriends();
   }, [myFriends]);
 
   if (isLoading) {

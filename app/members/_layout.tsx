@@ -5,6 +5,7 @@ import { Redirect, Tabs } from "expo-router";
 import { useAuth } from "../../context/AuthContext";
 import React from "react";
 import HeaderPrimary from "@/app/components/HeaderPrimary";
+import { SocketProvider } from "@/context/SocketContext";
 
 const TabLayout = () => {
   const { authState } = useAuth();
@@ -14,60 +15,62 @@ const TabLayout = () => {
   }
 
   return (
-    <>
-      <HeaderPrimary />
-      <Tabs
-        screenOptions={{
-          headerShown: false,
-          tabBarActiveTintColor: "skyblue",
-          tabBarInactiveTintColor: "white",
-          tabBarStyle: {
-            backgroundColor: "#1f1f2e",
-          },
-          tabBarLabelStyle: {
-            fontFamily: "funnel-regular",
-            fontSize: 11,
-          },
-        }}
-      >
-        <Tabs.Screen
-          name="index"
-          options={{
-            title: "Home",
-            tabBarIcon: ({ color }) => (
-              <FontAwesome5 size={24} name="user-friends" color={color} />
-            ),
+    <SocketProvider>
+      <>
+        <HeaderPrimary />
+        <Tabs
+          screenOptions={{
+            headerShown: false,
+            tabBarActiveTintColor: "skyblue",
+            tabBarInactiveTintColor: "white",
+            tabBarStyle: {
+              backgroundColor: "#1f1f2e",
+            },
+            tabBarLabelStyle: {
+              fontFamily: "funnel-regular",
+              fontSize: 11,
+            },
           }}
-        />
-        <Tabs.Screen
-          name="editFriends"
-          options={{
-            title: "Add / Remove",
-            tabBarIcon: ({ color }) => (
-              <FontAwesome5 size={24} name="user-edit" color={color} />
-            ),
-          }}
-        />
-        <Tabs.Screen
-          name="settings"
-          options={{
-            title: "Settings",
-            tabBarIcon: ({ color }) => (
-              <Ionicons name="settings-sharp" size={24} color={color} />
-            ),
-          }}
-        />
-        <Tabs.Screen
-          name="logout"
-          options={{
-            title: "Logout",
-            tabBarIcon: ({ color }) => (
-              <MaterialIcons name="logout" size={24} color={color} />
-            ),
-          }}
-        />
-      </Tabs>
-    </>
+        >
+          <Tabs.Screen
+            name="index"
+            options={{
+              title: "Home",
+              tabBarIcon: ({ color }) => (
+                <FontAwesome5 size={24} name="user-friends" color={color} />
+              ),
+            }}
+          />
+          <Tabs.Screen
+            name="editFriends"
+            options={{
+              title: "Add / Remove",
+              tabBarIcon: ({ color }) => (
+                <FontAwesome5 size={24} name="user-edit" color={color} />
+              ),
+            }}
+          />
+          <Tabs.Screen
+            name="settings"
+            options={{
+              title: "Settings",
+              tabBarIcon: ({ color }) => (
+                <Ionicons name="settings-sharp" size={24} color={color} />
+              ),
+            }}
+          />
+          <Tabs.Screen
+            name="logout"
+            options={{
+              title: "Logout",
+              tabBarIcon: ({ color }) => (
+                <MaterialIcons name="logout" size={24} color={color} />
+              ),
+            }}
+          />
+        </Tabs>
+      </>
+    </SocketProvider>
   );
 };
 
