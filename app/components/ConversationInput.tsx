@@ -1,16 +1,20 @@
 import React, { useState } from "react";
 import { View, TouchableOpacity, TextInput, Platform } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import AntDesign from "@expo/vector-icons/AntDesign";
+import useSendeMessages from "../../hooks/useSendMessage";
 
 const ConversationInput = () => {
   const [message, setMessage] = useState<string>("");
   const [inputHeight, setInputHeight] = useState(40);
+  const { sendMessage, isLoading } = useSendeMessages();
 
   // Handle send message
   const handleOnPress = () => {
     if (message.trim()) {
+      sendMessage(message);
       console.log("Sending message:", message);
-      // TODO: Implement message sending logic here
+
       // Clear input field and reset height
       setMessage("");
       setInputHeight(40);
@@ -55,7 +59,11 @@ const ConversationInput = () => {
           disabled={!message.trim()}
           style={{ opacity: message.trim() ? 1 : 0.2 }}
         >
-          <Ionicons name="send-sharp" size={24} color="white" />
+          {isLoading ? (
+            <AntDesign name="loading1" size={24} color="black" />
+          ) : (
+            <Ionicons name="send-sharp" size={24} color="white" />
+          )}
         </TouchableOpacity>
       </View>
     </View>

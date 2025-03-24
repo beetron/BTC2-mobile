@@ -1,5 +1,5 @@
 import { View, Text, FlatList } from "react-native";
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useAppStateListener } from "../../context/AppStateContext";
 import { useFocusEffect } from "@react-navigation/native";
 import friendStore from "../../zustand/friendStore";
@@ -15,14 +15,20 @@ interface Message {
 
 const ConversationMessages = () => {
   const { isLoading, getMessages } = useGetMessages();
-  const { messages, selectedFriend } = friendStore();
+  const { messages, selectedFriend, shouldRender } = friendStore();
 
   // Fetch messages when screen is back in focus
   useFocusEffect(
     useCallback(() => {
       getMessages();
-    }, [getMessages])
+      console.log("useFocusEffect ran");
+    }, [getMessages, shouldRender])
   );
+
+  // useEffect(() => {
+  //   getMessages();
+  //   console.log("useEffect ran");
+  // }, [shouldRender]);
 
   // Refresh messages when app becomes active
   useAppStateListener(() => {

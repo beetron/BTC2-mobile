@@ -1,6 +1,7 @@
 import React from "react";
 import { Redirect, Stack } from "expo-router";
 import { useAuth } from "../../context/AuthContext";
+import { SocketProvider } from "@/context/SocketContext";
 
 const _layout = () => {
   const { authState } = useAuth();
@@ -9,9 +10,11 @@ const _layout = () => {
   }
 
   return (
-    <Stack>
-      <Stack.Screen name="conversation" options={{ headerShown: false }} />
-    </Stack>
+    <SocketProvider>
+      <Stack>
+        <Stack.Screen name="conversation" options={{ headerShown: false }} />
+      </Stack>
+    </SocketProvider>
   );
 };
 
