@@ -13,6 +13,17 @@ export const checkTokenExpiry = (token: string): boolean => {
 
   const currentDate = new Date().getTime();
 
+  // Debugging logs
+  if (expiresAt) {
+    console.log(
+      "Time Remaining:",
+      Math.round((expiresAt - currentDate) / 1000 / 60),
+      "minutes"
+    );
+  } else {
+    console.log("JWT has no expiration date");
+  }
+
   // Check if token is expired vs current date
   if (expiresAt) {
     return currentDate < expiresAt;

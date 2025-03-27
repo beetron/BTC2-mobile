@@ -1,5 +1,12 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import axios from "axios";
+import { useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import { checkTokenExpiry } from "@/utils/checkTokenExpiry";
 import { API_URL } from "@/constants/api";
@@ -49,8 +56,31 @@ export const AuthProvider = ({ children }: any) => {
     user: null,
   });
 
+  const router = useRouter();
+
+  //////////////////////////////////////////
+  // Logout callback function
+  const logout = useCallback(async () => {
+    // Delete token and user data from secure store
+    await SecureStore.deleteItemAsync(JWT_KEY);
+    await SecureStore.deleteItemAsync(USER_KEY);
+
+    // Reset HTTP headers
+    axios.defaults.headers.common["Authorization"] = "";
+
+    // Reset authState
+    setAuthState({
+      token: null,
+      authenticated: false,
+      user: null,
+    });
+    router.replace("/guests/Login");
+  }, []);
+
+  //////////////////////////////////////////
   // Function to restore auth state from SecureStore
   const restoreAuthState = async () => {
+    console.log("Restoring JWT/USER from SecureStore");
     const token = await SecureStore.getItemAsync(JWT_KEY);
     const user = await SecureStore.getItemAsync(USER_KEY);
 
@@ -62,7 +92,7 @@ export const AuthProvider = ({ children }: any) => {
         return;
       }
 
-      // Set token in HTTP headers
+      // Add JWT token to HTTP headers
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
       // Update state with token and user data
@@ -78,6 +108,30 @@ export const AuthProvider = ({ children }: any) => {
   useEffect(() => {
     restoreAuthState();
   }, []);
+
+  //////////////////////////////////////////
+  // Setup axios interceptor to validate token before each request
+  useEffect(() => {
+    const interceptor = axios.interceptors.request.use(
+      async (config) => {
+        // Only check if we have a token in state
+        if (authState?.token) {
+          const isTokenValid = checkTokenExpiry(authState.token);
+          if (!isTokenValid) {
+            console.log("Token expired during request - logging out");
+            await logout();
+          }
+        }
+        return config;
+      },
+      (error) => Promise.reject(error)
+    );
+
+    // Clean up on unmount
+    return () => {
+      axios.interceptors.request.eject(interceptor);
+    };
+  }, [authState?.token, logout]);
 
   // Register
   const signup = async (
@@ -107,17 +161,6 @@ export const AuthProvider = ({ children }: any) => {
       // Extract token and user data from the result
       const { token, _id, uniqueId, nickname, profilePhoto } = result.data;
 
-      // Set authState
-      // setAuthState({
-      //   token: result.data.token,
-      //   authenticated: true,
-      //   user: {
-      //     _id: result.data._id,
-      //     uniqueId: result.data.uniqueId,
-      //     nickname: result.data.nickname,
-      //     profilePhoto: result.data.profilePhoto,
-      //   },
-      // });
       setAuthState({
         token: token,
         authenticated: true,
@@ -129,14 +172,9 @@ export const AuthProvider = ({ children }: any) => {
         },
       });
 
-      // Set token to every axios request
-      // axios.defaults.headers.common[
-      //   "Authorization"
-      // ] = `Bearer ${result.data.token}`;
+      // Add JWT token to HTTP headers
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
-      // Secure store token and user data
-      // await SecureStore.setItemAsync(JWT_KEY, result.data.token);
       await SecureStore.setItemAsync(JWT_KEY, token);
       await SecureStore.setItemAsync(USER_KEY, JSON.stringify(result.data));
 
@@ -144,22 +182,6 @@ export const AuthProvider = ({ children }: any) => {
     } catch (e) {
       throw new Error(e.response.data.error);
     }
-  };
-
-  // Logout
-  const logout = async () => {
-    // Delete token and user data from secure store
-    await SecureStore.deleteItemAsync(JWT_KEY);
-    await SecureStore.deleteItemAsync(USER_KEY);
-
-    // Reset HTTP headers
-    axios.defaults.headers.common["Authorization"] = "";
-
-    // Reset authState
-    setAuthState({
-      token: null,
-      authenticated: false,
-    });
   };
 
   const value = {

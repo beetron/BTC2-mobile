@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 import { API_URL } from "../constants/api";
+import { useRouter } from "expo-router";
 
 interface Friend {
   _id: string;
@@ -16,6 +17,7 @@ const useGetMyFriends = () => {
   const { authState } = useAuth();
   const [myFriends, setMyFriends] = useState<Friend[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const router = useRouter();
 
   const getMyFriends = useCallback(async () => {
     try {
@@ -25,6 +27,7 @@ const useGetMyFriends = () => {
       }
     } catch (e) {
       console.log("Error: ", e.response?.data?.error || e.message);
+      return router.replace("/guests/Login");
     } finally {
       setIsLoading(false);
     }
