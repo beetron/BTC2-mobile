@@ -2,6 +2,7 @@ import axios from "axios";
 import * as SecureStore from "expo-secure-store";
 import { API_URL } from "@/constants/api";
 import { checkTokenExpiry } from "@/utils/checkTokenExpiry";
+import { router } from "expo-router";
 
 const JWT_KEY = "jwt";
 const USER_KEY = "user";
@@ -21,6 +22,7 @@ axiosClient.interceptors.request.use(async (config) => {
                 await SecureStore.deleteItemAsync(JWT_KEY);
                 await SecureStore.deleteItemAsync(USER_KEY);
                 console.log("Token expired during request - removing from SecureStore");
+                router.replace("/guests/Login");
                 return config;
             }
             config.headers.Authorization = `Bearer ${token}`;
@@ -42,8 +44,8 @@ axiosClient.interceptors.response.use(
             // Delete token and user data from secure store
             await SecureStore.deleteItemAsync(JWT_KEY);
             await SecureStore.deleteItemAsync(USER_KEY);
-
             console.log("Authentication error - tokens cleared");
+            router.replace("/guests/Login");
         }
         return Promise.reject(error);
     }
