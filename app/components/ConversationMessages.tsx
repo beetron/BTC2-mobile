@@ -7,6 +7,7 @@ import friendStore from "../../zustand/friendStore";
 import useGetMessages from "../../hooks/useGetMessages";
 import formatDate from "../../utils/formatDate";
 import { useAuth } from "../../context/AuthContext";
+import Autolink from "react-native-autolink"
 
 // interface Message {
 //   nickname: string;
@@ -35,11 +36,6 @@ const ConversationMessages = () => {
       console.log("useFocusEffect ran");
     }, [getMessages, shouldRender])
   );
-
-  // useEffect(() => {
-  //   getMessages();
-  //   console.log("useEffect ran");
-  // }, [shouldRender]);
 
   // Refresh messages when app becomes active
   useAppStateListener(() => {
@@ -80,9 +76,14 @@ const ConversationMessages = () => {
                     source={placeholderImage}
                     style={{ width: 40, height: 40 }}
                   />
-                  <Text className="text-btc100 text-lg pl-2">
+                  <Autolink 
+                  text={message.message} 
+                  className="text-btc100 text-lg pl-2"
+                  linkStyle={{color: "#75E6DA"}}
+                  />
+                  {/* <Text className="text-btc100 text-lg pl-2">
                     {message.message}
-                  </Text>
+                  </Text> */}
                 </View>
                 <Text className="font-funnel-regular text-btc100 text-sm ml-2">
                   {formatDate(message.createdAt)}
@@ -91,7 +92,11 @@ const ConversationMessages = () => {
             ) : (
               <View className="item-end mb-5 ml-auto max-w-[80%]">
                 <View className="flex bg-btc300 rounded-s-2xl pl-3 p-4">
-                  <Text className="text-btc100 text-lg">{message.message}</Text>
+                <Autolink 
+                  text={message.message} 
+                  className="text-btc100 text-lg"
+                  linkStyle={{color: "#05445E"}}
+                  />
                 </View>
                 <Text className="font-funnel-regular text-btc100 text-sm mr-2">
                   {formatDate(message.createdAt)}
