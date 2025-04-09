@@ -9,14 +9,6 @@ import formatDate from "../../utils/formatDate";
 import { useAuth } from "../../context/AuthContext";
 import Autolink from "react-native-autolink"
 
-// interface Message {
-//   nickname: string;
-//   senderId: string;
-//   profilePhoto: string;
-//   message: string;
-//   createdAt: string;
-// }
-
 const placeholderImage = require("../assets/images/placeholder_profile_pic.png");
 
 const ConversationMessages = () => {
@@ -81,9 +73,6 @@ const ConversationMessages = () => {
                   className="text-btc100 text-lg pl-2"
                   linkStyle={{color: "#75E6DA"}}
                   />
-                  {/* <Text className="text-btc100 text-lg pl-2">
-                    {message.message}
-                  </Text> */}
                 </View>
                 <Text className="font-funnel-regular text-btc100 text-sm ml-2">
                   {formatDate(message.createdAt)}
