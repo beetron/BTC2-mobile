@@ -74,7 +74,7 @@ const ConversationMessages = () => {
         renderItem={({ item: message }) => (
           <View>
             {message.senderId === selectedFriend?._id ? (
-              <View className="items-start mb-5 mr-5">
+              <View className="items-start mb-5 mr-auto max-w-[80%]">
                 <View className="flex-row bg-btc400 rounded-e-2xl pl-2 p-4">
                   <Image
                     source={placeholderImage}
@@ -89,7 +89,7 @@ const ConversationMessages = () => {
                 </Text>
               </View>
             ) : (
-              <View className="items-end mb-5 ml-5">
+              <View className="item-end mb-5 ml-auto max-w-[80%]">
                 <View className="flex bg-btc300 rounded-s-2xl pl-3 p-4">
                   <Text className="text-btc100 text-lg">{message.message}</Text>
                 </View>
