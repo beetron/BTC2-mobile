@@ -1,6 +1,5 @@
-import { useState, useEffect, useCallback } from "react";
-import axios from "axios";
-import { API_URL } from "../constants/api";
+import { useState } from "react";
+import axiosClient from "../utils/axiosClient";
 import FriendStore from "../zustand/friendStore";
 import { useAuth } from "../context/AuthContext";
 import { Alert } from "react-native";
@@ -15,8 +14,8 @@ const useSendMessage = () => {
       setIsLoading(true);
 
       if (authState?.authenticated && selectedFriend && message) {
-        const res = await axios.post(
-          `${API_URL}/api/messages/send/${selectedFriend._id}`,
+        const res = await axiosClient.post(
+          `/api/messages/send/${selectedFriend._id}`,
           { message: message }
         );
         if (res.status === 200) {

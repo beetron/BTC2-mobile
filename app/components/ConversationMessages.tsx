@@ -1,19 +1,30 @@
-import { View, Text, FlatList } from "react-native";
+import { View, Text, FlatList, Image } from "react-native";
 import React, { useCallback, useEffect } from "react";
+import { Redirect } from "expo-router";
 import { useAppStateListener } from "../../context/AppStateContext";
 import { useFocusEffect } from "@react-navigation/native";
 import friendStore from "../../zustand/friendStore";
 import useGetMessages from "../../hooks/useGetMessages";
 import formatDate from "../../utils/formatDate";
+import { useAuth } from "../../context/AuthContext";
 
-interface Message {
-  nickname: string;
-  senderId: string;
-  message: string;
-  createdAt: string;
-}
+// interface Message {
+//   nickname: string;
+//   senderId: string;
+//   profilePhoto: string;
+//   message: string;
+//   createdAt: string;
+// }
+
+const placeholderImage = require("../assets/images/placeholder_profile_pic.png");
 
 const ConversationMessages = () => {
+  const { authState } = useAuth();
+
+  if (authState?.authenticated !== true) {
+    return <Redirect href="/guests/Login" />;
+  }
+
   const { isLoading, getMessages } = useGetMessages();
   const { messages, selectedFriend, shouldRender } = friendStore();
 
@@ -64,8 +75,14 @@ const ConversationMessages = () => {
           <View>
             {message.senderId === selectedFriend?._id ? (
               <View className="items-start mb-5 mr-5">
-                <View className="flex bg-btc400 rounded-e-2xl pl-3 p-4">
-                  <Text className="text-btc100 text-lg">{message.message}</Text>
+                <View className="flex-row bg-btc400 rounded-e-2xl pl-2 p-4">
+                  <Image
+                    source={placeholderImage}
+                    style={{ width: 40, height: 40 }}
+                  />
+                  <Text className="text-btc100 text-lg pl-2">
+                    {message.message}
+                  </Text>
                 </View>
                 <Text className="font-funnel-regular text-btc100 text-sm ml-2">
                   {formatDate(message.createdAt)}

@@ -2,8 +2,7 @@ import { useState, useCallback } from "react";
 import messaging from "@react-native-firebase/messaging";
 import * as SecureStore from "expo-secure-store";
 import * as Device from "expo-device";
-import axios from "axios";
-import { API_URL } from "@/constants/api";
+import axiosClient from "@/utils/axiosClient";
 import { useAuth } from "@/context/AuthContext";
 import { Alert } from "react-native";
 
@@ -39,7 +38,7 @@ export default function useFcmToken() {
         setIsRegistering(true);
         const deviceInfo = await getDeviceInfo();
 
-        const response = await axios.put(`${API_URL}/api/users/fcm/register`, {
+        const response = await axiosClient.put("/api/users/fcm/register", {
           token,
           device: deviceInfo,
         });

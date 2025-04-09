@@ -5,11 +5,10 @@ import {
   useEffect,
   useState,
 } from "react";
-import axios from "axios";
 import { useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import { checkTokenExpiry } from "@/utils/checkTokenExpiry";
-import { API_URL } from "@/constants/api";
+import axiosClient from "@/utils/axiosClient";
 
 interface AuthProps {
   authState?: {
@@ -66,7 +65,8 @@ export const AuthProvider = ({ children }: any) => {
     await SecureStore.deleteItemAsync(USER_KEY);
 
     // Reset HTTP headers
-    axios.defaults.headers.common["Authorization"] = "";
+    // axios.defaults.headers.common["Authorization"] = "";
+    axiosClient.defaults.headers.common["Authorization"] = "";
 
     // Reset authState
     setAuthState({
@@ -92,9 +92,6 @@ export const AuthProvider = ({ children }: any) => {
         return;
       }
 
-      // Add JWT token to HTTP headers
-      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-
       // Update state with token and user data
       setAuthState({
         token: token,
@@ -109,30 +106,6 @@ export const AuthProvider = ({ children }: any) => {
     restoreAuthState();
   }, []);
 
-  //////////////////////////////////////////
-  // Setup axios interceptor to validate token before each request
-  useEffect(() => {
-    const interceptor = axios.interceptors.request.use(
-      async (config) => {
-        // Only check if we have a token in state
-        if (authState?.token) {
-          const isTokenValid = checkTokenExpiry(authState.token);
-          if (!isTokenValid) {
-            console.log("Token expired during request - logging out");
-            await logout();
-          }
-        }
-        return config;
-      },
-      (error) => Promise.reject(error)
-    );
-
-    // Clean up on unmount
-    return () => {
-      axios.interceptors.request.eject(interceptor);
-    };
-  }, [authState?.token, logout]);
-
   // Register
   const signup = async (
     username: string,
@@ -140,7 +113,7 @@ export const AuthProvider = ({ children }: any) => {
     uniqueId: string
   ) => {
     try {
-      return await axios.post(`${API_URL}/api/auth/signup`, {
+      return await axiosClient.post("/api/auth/signup", {
         username,
         password,
         uniqueId,
@@ -153,7 +126,7 @@ export const AuthProvider = ({ children }: any) => {
   // Login
   const login = async (username: string, password: string) => {
     try {
-      const result = await axios.post(`${API_URL}/api/auth/login`, {
+      const result = await axiosClient.post("/api/auth/login", {
         username,
         password,
       });
@@ -173,7 +146,7 @@ export const AuthProvider = ({ children }: any) => {
       });
 
       // Add JWT token to HTTP headers
-      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      axiosClient.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
       await SecureStore.setItemAsync(JWT_KEY, token);
       await SecureStore.setItemAsync(USER_KEY, JSON.stringify(result.data));

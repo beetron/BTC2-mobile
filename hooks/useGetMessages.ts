@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import axios from "axios";
-import { API_URL } from "../constants/api";
+import axiosClient from "../utils/axiosClient";
 import FriendStore from "../zustand/friendStore";
 import { useAuth } from "../context/AuthContext";
 import { Alert } from "react-native";
@@ -23,8 +22,8 @@ const useGetMessages = () => {
     if (selectedFriend) {
       try {
         setIsLoading(true);
-        const res = await axios.get(
-          `${API_URL}/api/messages/get/${selectedFriend._id}`
+        const res = await axiosClient.get(
+          `/api/messages/get/${selectedFriend._id}`
         );
         if (res.status === 200) {
           setMessages([...messages, ...res.data]);
