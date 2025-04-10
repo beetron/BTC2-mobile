@@ -88,7 +88,7 @@ const Login = () => {
                   Need an account?
                 </Text>
                 <Link
-                  href={"/(guests)/Signup" as any}
+                  href={"/guests/Signup" as any}
                   className="text-lg font-funnel-regular color-btc200"
                 >
                   <Text className="text-lg font-funnel-regular color-btc200">
