@@ -38,7 +38,7 @@ export default function useFcmToken() {
         setIsRegistering(true);
         const deviceInfo = await getDeviceInfo();
 
-        const response = await axiosClient.put("/api/users/fcm/register", {
+        const response = await axiosClient.put("/users/fcm/register", {
           token,
           device: deviceInfo,
         });

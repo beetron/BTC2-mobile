@@ -21,7 +21,7 @@ const useGetMyFriends = () => {
   const getMyFriends = useCallback(async () => {
     try {
       if (authState?.authenticated === true) {
-        const res = await axiosClient.get("/api/users/friendlist");
+        const res = await axiosClient.get("/users/friendlist");
         setMyFriends(res.data);
       }
     } catch (e) {

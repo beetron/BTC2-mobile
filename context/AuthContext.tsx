@@ -113,7 +113,7 @@ export const AuthProvider = ({ children }: any) => {
     uniqueId: string
   ) => {
     try {
-      return await axiosClient.post("/api/auth/signup", {
+      return await axiosClient.post("/auth/signup", {
         username,
         password,
         uniqueId,
@@ -126,7 +126,7 @@ export const AuthProvider = ({ children }: any) => {
   // Login
   const login = async (username: string, password: string) => {
     try {
-      const result = await axiosClient.post("/api/auth/login", {
+      const result = await axiosClient.post("/auth/login", {
         username,
         password,
       });

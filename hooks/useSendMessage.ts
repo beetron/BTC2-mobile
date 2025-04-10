@@ -15,7 +15,7 @@ const useSendMessage = () => {
 
       if (authState?.authenticated && selectedFriend && message) {
         const res = await axiosClient.post(
-          `/api/messages/send/${selectedFriend._id}`,
+          `/messages/send/${selectedFriend._id}`,
           { message: message }
         );
         if (res.status === 200) {

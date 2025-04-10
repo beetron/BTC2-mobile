@@ -23,7 +23,7 @@ const useGetMessages = () => {
       try {
         setIsLoading(true);
         const res = await axiosClient.get(
-          `/api/messages/get/${selectedFriend._id}`
+          `/messages/get/${selectedFriend._id}`
         );
         if (res.status === 200) {
           setMessages([...messages, ...res.data]);
