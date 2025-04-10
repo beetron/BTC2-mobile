@@ -83,8 +83,8 @@ const ConversationMessages = () => {
                 <View className="flex bg-btc300 rounded-s-2xl pl-3 p-4">
                 <Autolink 
                   text={message.message} 
-                  className="text-btc100 text-lg"
-                  linkStyle={{color: "#05445E"}}
+                  className="text-btc400 text-lg"
+                  linkStyle={{color: "#D4F1F4"}}
                   />
                 </View>
                 <Text className="font-funnel-regular text-btc100 text-sm mr-2">
