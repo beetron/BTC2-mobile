@@ -49,6 +49,7 @@ module.exports = {
           },
         },
       ],
+      "expo-image-picker",
       "expo-router",
       [
         "expo-font",
