@@ -1,11 +1,9 @@
-import { View, Text } from "react-native";
-import styles from "../styles";
+
+import SettingsContainer from "../components/SettingsContainer";
 
 const Settings = () => {
   return (
-    <View style={styles.container}>
-      <Text style={styles.whiteText}>Settings</Text>
-    </View>
+    <SettingsContainer />
   );
 };
 
