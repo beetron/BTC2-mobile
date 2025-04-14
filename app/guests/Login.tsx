@@ -27,7 +27,7 @@ const Login = () => {
     password: "",
   });
 
-  const { onLogin, authState } = useAuth();
+  const { onLogin } = useAuth();
 
   const onSubmit = async () => {
     if (formData.username === "" || formData.password === "") {
