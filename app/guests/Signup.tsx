@@ -8,10 +8,10 @@ import {
   ScrollView,
   Alert,
 } from "react-native";
+import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useAuth } from "../../context/AuthContext";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Logo from "@/app/components/Logo";
 import CustomButton from "@/app/components/CustomButton";
 import CustomInput from "@/app/components/CustomInput";
 import { Link } from "expo-router";
@@ -32,6 +32,7 @@ const Signup = () => {
   });
 
   const { onSignup } = useAuth();
+  const router = useRouter();
 
   const onSubmit = async () => {
     // Check if any fields are empty
@@ -43,9 +44,9 @@ const Signup = () => {
     ) {
       Alert.alert("Please fill in all fields");
     }
-    // Check if username is at least 4 characters long
-    else if (formData.username.length < 4) {
-      Alert.alert("Username must be at least 4 characters long");
+    // Check if username is at least 6 characters long
+    else if (formData.username.length < 6) {
+      Alert.alert("Username must be at least 6 characters long");
     }
     // Check if passwords & password confirmation match
     else if (formData.password !== formData.passwordConfirm) {
@@ -53,12 +54,33 @@ const Signup = () => {
     } else {
       try {
         if (onSignup) {
-          await onSignup(
+          const result = await onSignup(
             formData.username,
             formData.password,
             formData.uniqueId
           );
+
+          // If signup & login was successful, redirect
+          if (result && (result.status === 200 || result.status === 201)) {
+            
+            Alert.alert(
+              "Signup Successful",
+              "Please login with your new account",
+              [
+                {
+                  text: "Continue",
+                  onPress: () => {
+                    console.log("Please login with your new account");
+                    setTimeout(() => {
+                      router.replace("/guests/Login");
+                    }, 500); // 500ms delay
+                  }
+                }
+              ]
+            );
+          }
         }
+                  
       } catch (e) {
         if (e instanceof Error) {
           Alert.alert("Login failed", e.message);
@@ -75,7 +97,7 @@ const Signup = () => {
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
             <View className="flex-1 items-center jusitfy-center p-4 mt-24">
-              <Logo />
+              {/* <Logo /> */}
               {/* Username input */}
               <CustomInput
                 title="Username"
