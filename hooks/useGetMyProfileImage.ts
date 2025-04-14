@@ -17,8 +17,8 @@ const getMimeType = (url: string): string => {
   }
 };
 
-const useGetMyProfilePhoto = () => {
-  const getMyProfilePhoto = async (url: string): Promise<string | null> => {
+const useGetMyProfileImage = () => {
+  const getMyProfileImage = async (url: string) => {
     try {
       const response = await axiosClient.get(url, {
         responseType: "arraybuffer"
@@ -37,7 +37,7 @@ const useGetMyProfilePhoto = () => {
     }
   };
 
-  return { getMyProfilePhoto };
+  return { getMyProfileImage };
 };
 
-export default useGetMyProfilePhoto;
+export default useGetMyProfileImage;

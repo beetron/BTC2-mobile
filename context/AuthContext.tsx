@@ -18,7 +18,7 @@ interface AuthProps {
       _id: string;
       uniqueId: string;
       nickname: string;
-      profilePhoto: string;
+      profileImage: string;
     } | null;
   };
   onSignup?: (
@@ -47,7 +47,7 @@ export const AuthProvider = ({ children }: any) => {
       _id: string;
       uniqueId: string;
       nickname: string;
-      profilePhoto: string;
+      profileImage: string;
     } | null;
   }>({
     token: null,
@@ -106,18 +106,20 @@ export const AuthProvider = ({ children }: any) => {
     restoreAuthState();
   }, []);
 
-  // Register
+  // Signup
   const signup = async (
     username: string,
     password: string,
     uniqueId: string
   ) => {
     try {
-      return await axiosClient.post("/auth/signup", {
+      const result = await axiosClient.post("/auth/signup", {
         username,
         password,
         uniqueId,
       });
+      return result;
+
     } catch (e) {
       throw new Error(e.response.data.error);
     }
@@ -132,7 +134,7 @@ export const AuthProvider = ({ children }: any) => {
       });
 
       // Extract token and user data from the result
-      const { token, _id, uniqueId, nickname, profilePhoto } = result.data;
+      const { token, _id, uniqueId, nickname, profileImage } = result.data;
 
       setAuthState({
         token: token,
@@ -141,7 +143,7 @@ export const AuthProvider = ({ children }: any) => {
           _id: _id,
           uniqueId: uniqueId,
           nickname: nickname,
-          profilePhoto: profilePhoto,
+          profileImage: profileImage,
         },
       });
 
