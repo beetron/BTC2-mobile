@@ -3,9 +3,7 @@ import { useFonts } from "expo-font";
 import { SplashScreen, Stack } from "expo-router";
 import { AuthProvider } from "@/context/AuthContext";
 import { AppStateProvider } from "@/context/AppStateContext";
-import { SocketProvider } from "@/context/SocketContext";
 import "../global.css";
-import { Socket } from "socket.io-client";
 
 SplashScreen.preventAutoHideAsync();
 
