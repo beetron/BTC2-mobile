@@ -3,7 +3,7 @@ import { Image } from 'expo-image'
 import { useState, useEffect } from 'react'
 import { useAuth } from "@/context/AuthContext";
 import { useFocusEffect } from "@react-navigation/native";
-import useGetMyProfileImage from '@/hooks/useGetMyProfileImage';
+import useGetProfileImage from '@/hooks/useGetProfileImage';
 import * as ImagePicker from "expo-image-picker";
 
 
@@ -11,7 +11,7 @@ const SettingsProfileImage = () => {
     const [imagePicker, setImagePicker] = useState<string | null>(null);
     const [image, setImage] = useState<string | null>(null);
     const { authState } = useAuth();
-    const { getMyProfileImage } = useGetMyProfileImage();
+    const { getProfileImage } = useGetProfileImage();
 
     const imageUri = authState?.user?.profileImage;
 
@@ -20,7 +20,7 @@ const SettingsProfileImage = () => {
       const loadImage = async () => {
         if (imageUri) {
           try {
-            const image = await getMyProfileImage(imageUri);
+            const image = await getProfileImage(imageUri);
             setImage(image);
           } catch (error) {
             console.error('Error loading profile photo:', error);
