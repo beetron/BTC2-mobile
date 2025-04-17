@@ -3,7 +3,8 @@ import { create } from "zustand";
 interface Friend {
   _id: string;
   nickname: string;
-  profilePhoto: string;
+  profileImage: string;
+  profileImageData: string;
   updatedAt?: string;
 }
 

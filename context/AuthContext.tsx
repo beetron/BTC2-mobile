@@ -136,6 +136,8 @@ export const AuthProvider = ({ children }: any) => {
       // Extract token and user data from the result
       const { token, _id, uniqueId, nickname, profileImage } = result.data;
 
+      console.log("Login result: ", result.data);
+
       setAuthState({
         token: token,
         authenticated: true,

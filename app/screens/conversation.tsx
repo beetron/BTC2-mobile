@@ -4,13 +4,6 @@ import ConversationMessages from "@/app/components/ConversationMessages";
 import ConversationHeader from "@/app/components/ConversationHeader";
 import ConversationInput from "@/app/components/ConversationInput";
 
-interface Friend {
-  nickname: string;
-  profilePhoto: string;
-  unreadMessages: boolean;
-  updatedAt: string;
-}
-
 const conversation = () => {
   return (
     <View className="flex-1 bg-btc500">

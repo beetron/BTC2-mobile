@@ -1,5 +1,6 @@
-import { View, Text, FlatList, Image } from "react-native";
-import React, { useCallback, useEffect } from "react";
+import { View, Text, FlatList } from "react-native";
+import { Image } from "expo-image";
+import React, { useCallback } from "react";
 import { Redirect } from "expo-router";
 import { useAppStateListener } from "../../context/AppStateContext";
 import { useFocusEffect } from "@react-navigation/native";
@@ -8,8 +9,6 @@ import useGetMessages from "../../hooks/useGetMessages";
 import formatDate from "../../utils/formatDate";
 import { useAuth } from "../../context/AuthContext";
 import Autolink from "react-native-autolink"
-
-const placeholderImage = require("../assets/images/placeholder_profile_pic.png");
 
 const ConversationMessages = () => {
   const { authState } = useAuth();
@@ -65,8 +64,8 @@ const ConversationMessages = () => {
               <View className="items-start mb-5 mr-auto max-w-[80%]">
                 <View className="flex-row bg-btc400 rounded-e-2xl pl-2 p-4">
                   <Image
-                    source={placeholderImage}
-                    style={{ width: 40, height: 40 }}
+                    source={selectedFriend?.profileImageData}
+                    style={{ width: 50, height: 50, borderRadius: 50 }}
                   />
                   <Autolink 
                   text={message.message} 

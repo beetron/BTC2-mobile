@@ -10,7 +10,8 @@ import useFcmToken from "../../hooks/useFcmToken";
 interface Friend {
   _id: string;
   nickname: string;
-  profilePhoto: string;
+  profileImage: string;
+  profileImageData: string;
   unreadMessages: boolean;
   updatedAt: string;
 }
@@ -28,6 +29,7 @@ const FriendContainer = () => {
       setMessages([]);
       setSelectedFriend(null);
       getMyFriends();
+      console.log("Friends: ", myFriends);
     }, [getMyFriends])
   );
 

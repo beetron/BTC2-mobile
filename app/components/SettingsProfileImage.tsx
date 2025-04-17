@@ -19,6 +19,7 @@ const SettingsProfileImage = () => {
     useEffect(() => {
       const loadImage = async () => {
         if (imageUri) {
+          console.log("Loading image from URI:", imageUri);
           try {
             const image = await getProfileImage(imageUri);
             setImage(image);
