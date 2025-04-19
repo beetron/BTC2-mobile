@@ -9,6 +9,7 @@ import useGetMessages from "../../hooks/useGetMessages";
 import formatDate from "../../utils/formatDate";
 import { useAuth } from "../../context/AuthContext";
 import Autolink from "react-native-autolink"
+import { placeholderProfileImage } from "@/constants/images";
 
 const ConversationMessages = () => {
   const { authState } = useAuth();
@@ -63,10 +64,19 @@ const ConversationMessages = () => {
             {message.senderId === selectedFriend?._id ? (
               <View className="items-start mb-5 mr-auto max-w-[80%]">
                 <View className="flex-row bg-btc400 rounded-e-2xl pl-2 p-4">
+                  { selectedFriend.profileImageData ? (
                   <Image
-                    source={selectedFriend?.profileImageData}
-                    style={{ width: 50, height: 50, borderRadius: 50 }}
+                  source={{ uri: selectedFriend.profileImageData }}
+                  style={{ width: 50, height: 50, borderRadius: 50 }}
+                  className="bg-btc100"
                   />
+                  ) : (
+                  <Image
+                  source={placeholderProfileImage}
+                  style={{ width: 50, height: 50, borderRadius: 50 }}
+                  className="bg-btc100"
+                  />
+                  )}
                   <Autolink 
                   text={message.message} 
                   className="text-btc100 text-lg pl-2"

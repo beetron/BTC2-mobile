@@ -5,6 +5,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useFocusEffect } from "@react-navigation/native";
 import useGetProfileImage from '@/hooks/useGetProfileImage';
 import * as ImagePicker from "expo-image-picker";
+import { placeholderProfileImage } from "@/constants/images";
 
 
 const SettingsProfileImage = () => {
@@ -58,10 +59,16 @@ const SettingsProfileImage = () => {
         {image ? (
         <Image
           source={{ uri: image }}
-          style={{ width: 100, height: 100, borderRadius: 50 }}
+          style={{ width: 80, height: 80, borderRadius: 50 }}
           className="bg-btc100"
         />
-      ) : null}
+        ) : (
+        <Image
+        source={placeholderProfileImage}
+        style={{ width: 80, height: 80, borderRadius: 50 }}
+        className="bg-btc100"
+        />
+        )}
       <Button title="Pick an image from camera roll" onPress={pickImage} />
     </View>
   )

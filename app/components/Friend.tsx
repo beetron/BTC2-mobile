@@ -1,11 +1,9 @@
 import { View, Text, TouchableOpacity, Alert } from "react-native";
 import React from "react";
-import { StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import friendStore from "../../zustand/friendStore";
 import { Image } from "expo-image";
-
-// const placeholderImage = require("../assets/images/placeholder_profile_pic.png");
+import { placeholderProfileImage } from "@/constants/images";
 
 const Friend = ({
   friend,
@@ -18,7 +16,7 @@ const Friend = ({
     unreadMessages: boolean;
   };
 }) => {
-  const { nickname, profileImage, profileImageData, unreadMessages } = friend;
+  const { nickname, unreadMessages } = friend;
   const { setSelectedFriend } = friendStore();
   const router = useRouter();
 
@@ -32,11 +30,19 @@ const Friend = ({
     <TouchableOpacity onPress={handleOnPress}>
       <View className="flex-row items-center p-2 m-1 border-0 border-btc200">
         <View className="flex-row justify-start ml-3">
-        <Image
+          { friend.profileImageData ? (
+          <Image
           source={{ uri: friend.profileImageData }}
           style={{ width: 50, height: 50, borderRadius: 50 }}
           className="bg-btc100"
-        />
+          />
+          ) : (
+          <Image
+          source={placeholderProfileImage}
+          style={{ width: 50, height: 50, borderRadius: 50 }}
+          className="bg-btc100"
+          />
+          )}
         </View>
         <View className="flex-row justify-start ml-4">
           <Text className="text-btc100 text-xl font-funnel-semi-bold">
