@@ -21,6 +21,7 @@ const getMimeType = (url: string): string => {
 const useGetProfileImage = () => {
   const getProfileImage = async (url: string) => {
     try {
+      console.log("Fetching profile image from URL:", url);
       const response = await axiosClient.get(`${API_PROFILE_IMAGE_URL}${url}`, {
         responseType: "arraybuffer"
       });

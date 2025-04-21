@@ -1,61 +1,63 @@
-import { View, Text, Button } from 'react-native'
+import { View } from 'react-native'
 import { Image } from 'expo-image'
 import { useState, useEffect } from 'react'
 import { useAuth } from "@/context/AuthContext";
-import { useFocusEffect } from "@react-navigation/native";
 import useGetProfileImage from '@/hooks/useGetProfileImage';
 import * as ImagePicker from "expo-image-picker";
 import { placeholderProfileImage } from "@/constants/images";
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import useUpdateProfileImage from '@/hooks/useUpdateProfileImage';
 
 
 const SettingsProfileImage = () => {
-    const [imagePicker, setImagePicker] = useState<string | null>(null);
     const [image, setImage] = useState<string | null>(null);
     const { authState } = useAuth();
     const { getProfileImage } = useGetProfileImage();
+    const { updateProfileImage } = useUpdateProfileImage();
 
-    const imageUri = authState?.user?.profileImage;
-
-    // Fetch and load image from URI
+    // Fetch current profile image from backend
     useEffect(() => {
-      const loadImage = async () => {
-        if (imageUri) {
-          console.log("Loading image from URI:", imageUri);
+      const loadInitialImage = async () => {
+          const currentImageUri = authState?.user?.profileImage;
+          if (!currentImageUri) return;
+          
           try {
-            const image = await getProfileImage(imageUri);
-            setImage(image);
+              const image = await getProfileImage(currentImageUri);
+              setImage(image);
           } catch (error) {
-            console.error('Error loading profile photo:', error);
-            setImage(null);
+              console.error("Error loading profile photo:", error);
           }
-        }
+      };
+      loadInitialImage();
+    }, []);
+
+    // Image picker function and update profile image with backend
+    const pickImage = async () => {
+      try {
+          let result = await ImagePicker.launchImageLibraryAsync({
+              mediaTypes: ["images"],
+              allowsEditing: true,
+              aspect: [4, 3],
+              quality: 1,
+          });
+
+          if (!result.canceled) {
+              const newImageUri = result.assets[0].uri;
+              
+              // Upload new image to backend and update state
+              const success = await updateProfileImage(newImageUri);
+              
+              if (success) {
+                setImage(newImageUri);
+              }
+          }
+      } catch (error) {
+          console.error("Error in pickImage:", error);
       }
-      loadImage();
-    }, [imageUri]);
-
-    useFocusEffect(() => {
-        console.log("SettingsProfileImage: ", imageUri);
-    },)
-
-  // Image picker function
-  const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ["images"],
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-
-    console.log(result);
-
-    if (!result.canceled) {
-      setImage(result.assets[0].uri);
-    }
-  }
+    };
 
   return (
-    <View className="mt-4">
-        <Text className="text-btc100 text-2xl font-funnel-regular">Profile Photo</Text>
+    <View className="mt-4 relative">
         {image ? (
         <Image
           source={{ uri: image }}
@@ -69,7 +71,10 @@ const SettingsProfileImage = () => {
         className="bg-btc100"
         />
         )}
-      <Button title="Pick an image from camera roll" onPress={pickImage} />
+
+      <MaterialIcons name="add-photo-alternate" 
+      size={28} color="white" onPress={pickImage} 
+      className="absolute bottom-0 right-0 -mr-3"/>
     </View>
   )
 }

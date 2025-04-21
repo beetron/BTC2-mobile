@@ -21,6 +21,16 @@ interface AuthProps {
       profileImage: string;
     } | null;
   };
+  setAuthState?: React.Dispatch<React.SetStateAction<{
+    token: string | null;
+    authenticated: boolean | null;
+    user?: {
+      _id: string;
+      uniqueId: string;
+      nickname: string;
+      profileImage: string;
+    } | null;
+  }>>,
   onSignup?: (
     username: string,
     password: string,
@@ -82,24 +92,35 @@ export const AuthProvider = ({ children }: any) => {
   const restoreAuthState = async () => {
     console.log("Restoring JWT/USER from SecureStore");
     const token = await SecureStore.getItemAsync(JWT_KEY);
-    const user = await SecureStore.getItemAsync(USER_KEY);
+    const userData = await SecureStore.getItemAsync(USER_KEY);
 
     if (token) {
-      // Check token expiry
-      const isTokenValid = checkTokenExpiry(token);
-      if (!isTokenValid) {
-        logout();
-        return;
-      }
+        // Check token expiry
+        const isTokenValid = checkTokenExpiry(token);
+        if (!isTokenValid) {
+            logout();
+            return;
+        }
 
-      // Update state with token and user data
-      setAuthState({
-        token: token,
-        authenticated: true,
-        user: user ? JSON.parse(user) : null,
-      });
+        const parsedUser = userData ? JSON.parse(userData) : null;
+        
+        // Update state with token and properly structured user data
+        setAuthState({
+            token: token,
+            authenticated: true,
+            user: parsedUser ? {
+                _id: parsedUser._id,
+                uniqueId: parsedUser.uniqueId,
+                nickname: parsedUser.nickname,
+                profileImage: parsedUser.profileImage
+            } : null
+        });
+
+        // Also restore the Authorization header
+        axiosClient.defaults.headers.common["Authorization"] = `Bearer ${token}`;
     }
-  };
+};
+
 
   // Check token on load
   useEffect(() => {
@@ -166,6 +187,7 @@ export const AuthProvider = ({ children }: any) => {
     onLogin: login,
     onLogout: logout,
     authState,
+    setAuthState,
   };
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
