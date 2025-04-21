@@ -4,16 +4,6 @@ import * as SecureStore from "expo-secure-store";
 import { useAuth } from "@/context/AuthContext";
 
 const EditFriends = () => {
-  // const deleteFcmTokens = async () => {
-  //   await SecureStore.deleteItemAsync("fcm_token");
-  //   await SecureStore.deleteItemAsync("fcm_token_timestamp");
-  //   console.log("FCM tokens deleted from SecureStore");
-  // };
-
-  // useEffect(() => {
-  //   deleteFcmTokens();
-  // }, []);
-
   const { authState } = useAuth();
 
   return (

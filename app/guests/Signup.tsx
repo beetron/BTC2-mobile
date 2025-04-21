@@ -62,7 +62,6 @@ const Signup = () => {
 
           // If signup & login was successful, redirect
           if (result && (result.status === 200 || result.status === 201)) {
-            
             Alert.alert(
               "Signup Successful",
               "Please login with your new account",
@@ -74,13 +73,12 @@ const Signup = () => {
                     setTimeout(() => {
                       router.replace("/guests/Login");
                     }, 500); // 500ms delay
-                  }
-                }
+                  },
+                },
               ]
             );
           }
         }
-                  
       } catch (e) {
         if (e instanceof Error) {
           Alert.alert("Login failed", e.message);

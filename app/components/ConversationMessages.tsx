@@ -8,7 +8,7 @@ import friendStore from "../../zustand/friendStore";
 import useGetMessages from "../../hooks/useGetMessages";
 import formatDate from "../../utils/formatDate";
 import { useAuth } from "../../context/AuthContext";
-import Autolink from "react-native-autolink"
+import Autolink from "react-native-autolink";
 import { placeholderProfileImage } from "@/constants/images";
 
 const ConversationMessages = () => {
@@ -64,23 +64,23 @@ const ConversationMessages = () => {
             {message.senderId === selectedFriend?._id ? (
               <View className="items-start mb-5 mr-auto max-w-[80%]">
                 <View className="flex-row bg-btc400 rounded-e-2xl pl-2 p-4">
-                  { selectedFriend.profileImageData ? (
-                  <Image
-                  source={{ uri: selectedFriend.profileImageData }}
-                  style={{ width: 50, height: 50, borderRadius: 50 }}
-                  className="bg-btc100"
-                  />
+                  {selectedFriend.profileImageData ? (
+                    <Image
+                      source={{ uri: selectedFriend.profileImageData }}
+                      style={{ width: 50, height: 50, borderRadius: 50 }}
+                      className="bg-btc100"
+                    />
                   ) : (
-                  <Image
-                  source={placeholderProfileImage}
-                  style={{ width: 50, height: 50, borderRadius: 50 }}
-                  className="bg-btc100"
-                  />
+                    <Image
+                      source={placeholderProfileImage}
+                      style={{ width: 50, height: 50, borderRadius: 50 }}
+                      className="bg-btc100"
+                    />
                   )}
-                  <Autolink 
-                  text={message.message} 
-                  className="text-btc100 text-lg pl-2"
-                  linkStyle={{color: "#75E6DA"}}
+                  <Autolink
+                    text={message.message}
+                    className="text-btc100 text-lg pl-2"
+                    linkStyle={{ color: "#75E6DA" }}
                   />
                 </View>
                 <Text className="font-funnel-regular text-btc100 text-sm ml-2">
@@ -90,10 +90,10 @@ const ConversationMessages = () => {
             ) : (
               <View className="item-end mb-5 ml-auto max-w-[80%]">
                 <View className="flex bg-btc300 rounded-s-2xl pl-3 p-4">
-                <Autolink 
-                  text={message.message} 
-                  className="text-btc400 text-lg"
-                  linkStyle={{color: "#D4F1F4"}}
+                  <Autolink
+                    text={message.message}
+                    className="text-btc400 text-lg"
+                    linkStyle={{ color: "#D4F1F4" }}
                   />
                 </View>
                 <Text className="font-funnel-regular text-btc100 text-sm mr-2">

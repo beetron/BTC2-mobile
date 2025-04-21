@@ -102,9 +102,8 @@ export default function useFcmToken() {
     try {
       // Check FCM token in SecureStore
       const storedFcmToken = await SecureStore.getItemAsync(FCM_TOKEN);
-      const storedFcmTokenTimestamp = await SecureStore.getItemAsync(
-        FCM_TOKEN_TIMESTAMP
-      );
+      const storedFcmTokenTimestamp =
+        await SecureStore.getItemAsync(FCM_TOKEN_TIMESTAMP);
 
       if (storedFcmToken) {
         console.log("Found SecureStored FCM token");

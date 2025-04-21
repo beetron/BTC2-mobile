@@ -1,9 +1,7 @@
 import { useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
-import { useRouter } from "expo-router";
 
 const Logout = () => {
-  const router = useRouter();
   const { onLogout } = useAuth();
 
   useEffect(() => {
