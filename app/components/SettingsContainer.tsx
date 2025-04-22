@@ -1,17 +1,30 @@
-import { View, Text } from "react-native";
+import {
+  View,
+  Text,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableWithoutFeedback,
+  Keyboard,
+} from "react-native";
 import React from "react";
 import SettingsProfileImage from "./SettingsProfileImage";
+import SettingsNickname from "./SettingsNickname";
 
 const SettingsContainer = () => {
   return (
-    <View className="flex bg-btc500 h-full w-full p-4">
-      <Text className="items-center text-btc100 text-2xl font-funnel-regular">
-        User Settings
-      </Text>
-      <View className="flex-row">
-        <SettingsProfileImage />
-      </View>
-    </View>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      className="flex-1"
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View className="flex bg-btc500 h-full w-full p-4">
+          <View className="flex-row">
+            <SettingsProfileImage />
+            <SettingsNickname />
+          </View>
+        </View>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 };
 
