@@ -56,7 +56,7 @@ const SettingsProfileImage = () => {
   };
 
   return (
-    <View className="mt-4 relative">
+    <View className="mt-4 relative justify-center">
       {image ? (
         <Image
           source={{ uri: image }}
@@ -76,7 +76,7 @@ const SettingsProfileImage = () => {
         size={28}
         color="white"
         onPress={pickImage}
-        className="absolute bottom-0 right-0 -mr-3"
+        className="absolute top-0 left-0 -ml-2"
       />
     </View>
   );

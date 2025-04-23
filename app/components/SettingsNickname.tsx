@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { Alert, Text, TextInput, View } from "react-native";
+import { Alert, Text, TextInput, View, Platform } from "react-native";
 import useUpdateNickname from "@/hooks/useUpdateNickname";
 import { useAuth } from "@/context/AuthContext";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
@@ -40,14 +40,18 @@ const SettingsNickname = () => {
         maxLength={20}
         multiline={true}
         onChangeText={(text) => setNickname(text)}
-        style={{ height: 40 }}
-        className="text-btc100 font-funnel-regular text-2xl border-b border-btc100"
+        style={{
+          height: 40,
+          paddingBottom: 0,
+          paddingTop: Platform.OS === "ios" ? 14 : 0,
+        }}
+        className="text-btc100 font-funnel-regular text-2xl border-b border-btc300"
       />
       <MaterialIcons
         name="save-as"
         size={26}
         color="white"
-        className="absolute right-0 top-8"
+        className="absolute right-0 top-6"
         style={{ opacity: currentNickname === nickname ? 0.5 : 1 }}
         disabled={currentNickname === nickname || isLoading}
         onPress={handleOnPress}

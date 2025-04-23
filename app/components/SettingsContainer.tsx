@@ -9,6 +9,7 @@ import {
 import React from "react";
 import SettingsProfileImage from "./SettingsProfileImage";
 import SettingsNickname from "./SettingsNickname";
+import SettingsUniqueId from "./SettingsUniqueId";
 
 const SettingsContainer = () => {
   return (
@@ -18,9 +19,12 @@ const SettingsContainer = () => {
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View className="flex bg-btc500 h-full w-full p-4">
-          <View className="flex-row">
+          <View className="flex-row space-x-4">
             <SettingsProfileImage />
-            <SettingsNickname />
+            <View className="flex-col justify-center w-[90%]">
+              <SettingsNickname />
+              <SettingsUniqueId />
+            </View>
           </View>
         </View>
       </TouchableWithoutFeedback>
