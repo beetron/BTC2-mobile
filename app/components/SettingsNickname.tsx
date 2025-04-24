@@ -4,14 +4,14 @@ import useUpdateNickname from "@/hooks/useUpdateNickname";
 import { useAuth } from "@/context/AuthContext";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useFocusEffect } from "expo-router";
-import ProfileValidator from "@/utils/profileValidator";
+import profileValidator from "@/utils/profileValidator";
 
 const SettingsNickname = () => {
   const { authState } = useAuth();
   const currentNickname = authState?.user?.nickname;
   const [nickname, setNickname] = useState(currentNickname || "");
   const { updateNickname, isLoading } = useUpdateNickname();
-  const { checkLength } = ProfileValidator();
+  const { checkLength } = profileValidator();
 
   // Reset current nickname when switching tabs
   useFocusEffect(

@@ -1,6 +1,6 @@
 import { Alert } from "react-native";
 
-export const ProfileValidator = () => {
+export const profileValidator = () => {
   // Function to check if length is at leats 6 chars
   const checkLength = (data: string): boolean => {
     if (!data) {
@@ -42,4 +42,4 @@ export const ProfileValidator = () => {
   return { checkLength, checkAlphanumeric };
 };
 
-export default ProfileValidator;
+export default profileValidator;

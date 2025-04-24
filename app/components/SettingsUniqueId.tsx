@@ -4,14 +4,14 @@ import useUpdateUniqueId from "@/hooks/useUpdateUniqueId";
 import { useAuth } from "@/context/AuthContext";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useFocusEffect } from "expo-router";
-import ProfileValidator from "@/utils/profileValidator";
+import profileValidator from "@/utils/profileValidator";
 
 const SettingsUniqueId = () => {
   const { authState } = useAuth();
   const currentUniqueId = authState?.user?.uniqueId;
   const [uniqueId, setUniqueId] = useState(currentUniqueId || "");
   const { updateUniqueId, isLoading } = useUpdateUniqueId();
-  const { checkLength, checkAlphanumeric } = ProfileValidator();
+  const { checkLength, checkAlphanumeric } = profileValidator();
 
   // Reset current nickname when switching tabs
   useFocusEffect(

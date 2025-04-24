@@ -15,7 +15,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import CustomButton from "@/app/components/CustomButton";
 import CustomInput from "@/app/components/CustomInput";
 import { Link } from "expo-router";
-import ProfileValidator from "@/utils/profileValidator";
+import profileValidator from "@/utils/profileValidator";
 
 interface FormData {
   username: string;
@@ -25,7 +25,7 @@ interface FormData {
 }
 
 const Signup = () => {
-  const { checkLength, checkAlphanumeric } = ProfileValidator();
+  const { checkLength, checkAlphanumeric } = profileValidator();
   const [formData, setFormData] = useState<FormData>({
     username: "",
     password: "",
