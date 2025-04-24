@@ -14,7 +14,7 @@ const useUpdateUniqueId = () => {
     try {
       setIsLoading(true);
       const response = await axiosClient.put(
-        `/users/updatenickname/${newUniqueId}`
+        `/users/updateuniqueid/${newUniqueId}`
       );
 
       if (response.status === 200) {

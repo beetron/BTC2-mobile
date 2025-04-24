@@ -4,12 +4,14 @@ import useUpdateUniqueId from "@/hooks/useUpdateUniqueId";
 import { useAuth } from "@/context/AuthContext";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useFocusEffect } from "expo-router";
+import ProfileValidator from "@/utils/profileValidator";
 
 const SettingsUniqueId = () => {
   const { authState } = useAuth();
   const currentUniqueId = authState?.user?.uniqueId;
   const [uniqueId, setUniqueId] = useState(currentUniqueId || "");
   const { updateUniqueId, isLoading } = useUpdateUniqueId();
+  const { checkLength, checkAlphanumeric } = ProfileValidator();
 
   // Reset current nickname when switching tabs
   useFocusEffect(
@@ -22,6 +24,12 @@ const SettingsUniqueId = () => {
 
   // Handle onPress
   const handleOnPress = async () => {
+    // Validate data before sending to API
+    const isLengthValid = checkLength(uniqueId);
+    const isAlphanumeric = checkAlphanumeric(uniqueId);
+    if (!isLengthValid || !isAlphanumeric) return;
+
+    // Send to backend API
     const success = await updateUniqueId(uniqueId);
     if (success) {
       Alert.alert("Unique ID updated");
@@ -56,6 +64,9 @@ const SettingsUniqueId = () => {
         disabled={currentUniqueId === uniqueId || isLoading}
         onPress={handleOnPress}
       />
+      <Text className="absolute top-0 right-0 text-btc100 text-l opacity-[50%]">
+        {uniqueId.length}/20
+      </Text>
     </View>
   );
 };

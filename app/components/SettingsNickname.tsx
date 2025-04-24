@@ -4,12 +4,14 @@ import useUpdateNickname from "@/hooks/useUpdateNickname";
 import { useAuth } from "@/context/AuthContext";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useFocusEffect } from "expo-router";
+import ProfileValidator from "@/utils/profileValidator";
 
 const SettingsNickname = () => {
   const { authState } = useAuth();
   const currentNickname = authState?.user?.nickname;
   const [nickname, setNickname] = useState(currentNickname || "");
   const { updateNickname, isLoading } = useUpdateNickname();
+  const { checkLength } = ProfileValidator();
 
   // Reset current nickname when switching tabs
   useFocusEffect(
@@ -22,6 +24,11 @@ const SettingsNickname = () => {
 
   // Handle onPress
   const handleOnPress = async () => {
+    // Validate data before sending to API
+    const isLengthValid = checkLength(nickname);
+    if (!isLengthValid) return;
+
+    // Send to backend API
     const success = await updateNickname(nickname);
     if (success) {
       Alert.alert("Nickname updated");
@@ -56,6 +63,9 @@ const SettingsNickname = () => {
         disabled={currentNickname === nickname || isLoading}
         onPress={handleOnPress}
       />
+      <Text className="absolute top-0 right-0 text-btc100 text-l opacity-[50%]">
+        {nickname.length}/20
+      </Text>
     </View>
   );
 };
