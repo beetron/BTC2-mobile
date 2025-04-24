@@ -15,6 +15,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import CustomButton from "@/app/components/CustomButton";
 import CustomInput from "@/app/components/CustomInput";
 import { Link } from "expo-router";
+import ProfileValidator from "@/utils/profileValidator";
 
 interface FormData {
   username: string;
@@ -24,6 +25,7 @@ interface FormData {
 }
 
 const Signup = () => {
+  const { checkLength, checkAlphanumeric } = ProfileValidator();
   const [formData, setFormData] = useState<FormData>({
     username: "",
     password: "",
@@ -45,10 +47,15 @@ const Signup = () => {
       Alert.alert("Please fill in all fields");
     }
     // Check if username is at least 6 characters long
-    else if (formData.username.length < 6) {
-      Alert.alert("Username must be at least 6 characters long");
+    if (
+      !checkLength(formData.username) ||
+      !checkLength(formData.password) ||
+      !checkAlphanumeric(formData.password)
+    ) {
+      return;
     }
-    // Check if passwords & password confirmation match
+
+    // Check if passwords match
     else if (formData.password !== formData.passwordConfirm) {
       Alert.alert("Passwords do not match");
     } else {
