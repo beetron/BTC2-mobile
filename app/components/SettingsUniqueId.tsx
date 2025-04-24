@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { Alert, Text, TextInput, View, Platform } from "react-native";
-import useUpdateNickname from "@/hooks/useUpdateNickname";
+import useUpdateUniqueId from "@/hooks/useUpdateUniqueId";
 import { useAuth } from "@/context/AuthContext";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useFocusEffect } from "expo-router";
@@ -9,6 +9,26 @@ const SettingsUniqueId = () => {
   const { authState } = useAuth();
   const currentUniqueId = authState?.user?.uniqueId;
   const [uniqueId, setUniqueId] = useState(currentUniqueId || "");
+  const { updateUniqueId, isLoading } = useUpdateUniqueId();
+
+  // Reset current nickname when switching tabs
+  useFocusEffect(
+    useCallback(() => {
+      if (currentUniqueId) {
+        setUniqueId(currentUniqueId);
+      }
+    }, [currentUniqueId])
+  );
+
+  // Handle onPress
+  const handleOnPress = async () => {
+    const success = await updateUniqueId(uniqueId);
+    if (success) {
+      Alert.alert("Unique ID updated");
+    } else {
+      Alert.alert("Error updating Unique ID");
+    }
+  };
 
   return (
     <View className="flex-grow justify-center mt-4 ml-4 max-w-[80%]">
@@ -33,9 +53,8 @@ const SettingsUniqueId = () => {
         color="white"
         className="absolute right-0 top-6"
         style={{ opacity: currentUniqueId === uniqueId ? 0.5 : 1 }}
-        disabled={currentUniqueId === uniqueId}
-        // disabled={currentUniqueId === uniqueId || isLoading}
-        // onPress={handleOnPress}
+        disabled={currentUniqueId === uniqueId || isLoading}
+        onPress={handleOnPress}
       />
     </View>
   );
