@@ -88,9 +88,9 @@ const Signup = () => {
         }
       } catch (e) {
         if (e instanceof Error) {
-          Alert.alert("Login failed", e.message);
+          Alert.alert("Signup failed", e.message);
         } else {
-          Alert.alert("Login failed", "An unknown error occurred");
+          Alert.alert("Signup failed", "An unknown error occurred");
         }
       }
     }
