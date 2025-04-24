@@ -25,9 +25,7 @@ const SettingsUniqueId = () => {
   // Handle onPress
   const handleOnPress = async () => {
     // Validate data before sending to API
-    const isLengthValid = checkLength(uniqueId);
-    const isAlphanumeric = checkAlphanumeric(uniqueId);
-    if (!isLengthValid || !isAlphanumeric) return;
+    if (!checkLength(uniqueId) || !checkAlphanumeric(uniqueId)) return;
 
     // Send to backend API
     const success = await updateUniqueId(uniqueId);

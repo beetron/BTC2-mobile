@@ -25,8 +25,7 @@ const SettingsNickname = () => {
   // Handle onPress
   const handleOnPress = async () => {
     // Validate data before sending to API
-    const isLengthValid = checkLength(nickname);
-    if (!isLengthValid) return;
+    if (!checkLength(nickname)) return;
 
     // Send to backend API
     const success = await updateNickname(nickname);
