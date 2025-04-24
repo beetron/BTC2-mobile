@@ -13,8 +13,12 @@ const useUpdateUniqueId = () => {
 
     try {
       setIsLoading(true);
+
+      // Convert unique ID to lowercase
+      const lowercaseUniqueId = newUniqueId.toLowerCase();
+
       const response = await axiosClient.put(
-        `/users/updateuniqueid/${newUniqueId}`
+        `/users/updateuniqueid/${lowercaseUniqueId}`
       );
 
       if (response.status === 200) {

@@ -44,8 +44,9 @@ const SettingsUniqueId = () => {
       <TextInput
         value={uniqueId}
         maxLength={20}
+        autoCapitalize="none"
         multiline={true}
-        onChangeText={(text) => setUniqueId(text)}
+        onChangeText={(text) => setUniqueId(text.toLowerCase())}
         style={{
           height: 40,
           paddingBottom: 0,
