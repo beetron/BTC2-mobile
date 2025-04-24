@@ -12,7 +12,7 @@ const FCM_TOKEN_TIMESTAMP = "fcm_token_timestamp";
 export default function useFcmToken() {
   const [fcmToken, setFcmToken] = useState<string | null>(null);
   const [isRegistering, setIsRegistering] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error] = useState<string | null>(null);
   const { authState } = useAuth();
 
   // Get mobile device info
@@ -92,7 +92,7 @@ export default function useFcmToken() {
   }, []);
 
   /////////////////////////////////////////////
-  // Main function managing token registration
+  // Token registration
   /////////////////////////////////////////////
   const manageFcmToken = useCallback(async () => {
     if (!authState?.authenticated) {
@@ -142,7 +142,7 @@ export default function useFcmToken() {
   }, [authState?.authenticated, generateNewFcmToken, registerFcmToken]);
 
   /////////////////////////////////////////////
-  // Function to check if token needs renewal based on timestamp
+  // Check if token needs renewal based on timestamp
   /////////////////////////////////////////////
   const shouldRenewFcmToken = (timestamp: string | null): boolean => {
     if (!timestamp) {
