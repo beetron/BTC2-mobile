@@ -1,5 +1,4 @@
 import axiosClient from "../utils/axiosClient";
-import { API_URL } from "../constants/api";
 import { useState } from "react";
 import { Alert } from "react-native";
 
@@ -12,7 +11,7 @@ const useAddFriend = () => {
       if (!friendUniqueId) return false;
 
       const response = await axiosClient.put(
-        `${API_URL}/users/addfriend/${friendUniqueId}`
+        `/users/addfriend/${friendUniqueId}`
       );
       Alert.alert("Friend request sent");
       return true;
