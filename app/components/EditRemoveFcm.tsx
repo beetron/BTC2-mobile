@@ -29,7 +29,7 @@ const EditRemoveFcm = () => {
   };
 
   return (
-    <View className="flex-col">
+    <View className="flex-col pt-8">
       <View className="flex-row justify-center p-2">
         <Text className="text-btc100">Edit Friends: </Text>
         <Text className="text-btc100">

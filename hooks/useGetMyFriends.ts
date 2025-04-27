@@ -3,7 +3,6 @@ import axiosClient from "../utils/axiosClient";
 import { useAuth } from "../context/AuthContext";
 import { useRouter } from "expo-router";
 import useGetProfileImage from "./useGetProfileImage";
-import { API_PROFILE_IMAGE_URL } from "../constants/api";
 
 interface Friend {
   _id: string;
