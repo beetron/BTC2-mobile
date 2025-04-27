@@ -13,8 +13,11 @@ const useAddFriend = () => {
       const response = await axiosClient.put(
         `/users/addfriend/${friendUniqueId}`
       );
-      Alert.alert("Friend request sent");
-      return true;
+      if (response.status === 200) {
+        Alert.alert("Friend request sent");
+        return true;
+      }
+      return false;
     } catch (error: any) {
       console.log("Error in useAddFriend: ", error);
       if (error.response && error.response.data && error.response.data.error) {
