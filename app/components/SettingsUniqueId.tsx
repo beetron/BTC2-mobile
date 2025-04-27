@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { Alert, Text, TextInput, View, Platform } from "react-native";
+import { Alert, Text, TextInput, View, Platform, Keyboard } from "react-native";
 import useUpdateUniqueId from "@/hooks/useUpdateUniqueId";
 import { useAuth } from "@/context/AuthContext";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
@@ -34,6 +34,7 @@ const SettingsUniqueId = () => {
     } else {
       Alert.alert("Error updating Unique ID");
     }
+    Keyboard.dismiss();
   };
 
   return (

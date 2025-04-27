@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { Alert, Text, TextInput, View, Platform } from "react-native";
+import { Alert, Text, TextInput, View, Platform, Keyboard } from "react-native";
 import useUpdateNickname from "@/hooks/useUpdateNickname";
 import { useAuth } from "@/context/AuthContext";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
@@ -34,6 +34,7 @@ const SettingsNickname = () => {
     } else {
       Alert.alert("Error updating nickname");
     }
+    Keyboard.dismiss();
   };
 
   return (
