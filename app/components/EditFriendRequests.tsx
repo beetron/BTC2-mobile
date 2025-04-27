@@ -51,7 +51,7 @@ const EditFriendRequests = () => {
           friendRequests.map((friend: Friend) => (
             <View
               key={friend._id}
-              className="flex-row items-center justify-between w-full top-2"
+              className="flex-row items-center justify-between w-full m-2"
             >
               <View className="flex-row items-center gap-4">
                 {friend.profileImageData ? (
