@@ -1,4 +1,4 @@
-import { View, Text, TextInput, Platform, Alert } from "react-native";
+import { View, Text, TextInput, Platform, Alert, Keyboard } from "react-native";
 import { useState, useCallback } from "react";
 import useAddFriend from "@/hooks/useAddFriend";
 import AntDesign from "@expo/vector-icons/AntDesign";
@@ -25,6 +25,7 @@ const EditAddFriend = () => {
     if (success) {
       setFriendUniqueId("");
     }
+    Keyboard.dismiss();
   };
 
   return (
