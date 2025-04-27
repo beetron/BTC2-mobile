@@ -1,7 +1,20 @@
 import { Alert } from "react-native";
 
 export const profileValidator = () => {
-  // Function to check if length is at leats 6 chars
+  // Check if passwords are matching
+  const checkPassword = (
+    password: string,
+    confirmPassword: string
+  ): boolean => {
+    if (password !== confirmPassword) {
+      console.log("Passwords do not match");
+      Alert.alert("Error", "Passwords do not match");
+      return false;
+    }
+    return true;
+  };
+
+  // Check if length is at least 6 chars
   const checkLength = (data: string): boolean => {
     if (!data) {
       console.log("No data passed to profileUpdateValidator");
@@ -10,19 +23,14 @@ export const profileValidator = () => {
     }
 
     if (data.length < 6) {
-      console.log(
-        `Length must be between 6 and 20 characters. Current length: ${data.length}`
-      );
-      Alert.alert(
-        "Error",
-        `Length must be between 6 and 20 characters. Current length: ${data.length}`
-      );
+      console.log("Length must be between 6 and 20 characters");
+      Alert.alert("Error", "Length must be between 6 and 20 characters");
       return false;
     }
     return true;
   };
 
-  // Function to check if data is only letters and numbers
+  // Check if data is only using alphanumeric
   const checkAlphanumeric = (data: string): boolean => {
     if (!data) {
       console.log("No data passed to profileUpdateValidator");
@@ -39,7 +47,7 @@ export const profileValidator = () => {
     return true;
   };
 
-  return { checkLength, checkAlphanumeric };
+  return { checkLength, checkAlphanumeric, checkPassword };
 };
 
 export default profileValidator;
