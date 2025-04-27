@@ -76,7 +76,7 @@ const FriendContainer = () => {
     );
   } else {
     return (
-      <ScrollView className="flex-1">
+      <ScrollView className="flex-1 p-4">
         <View className="flex-1 w-full">
           {sortedFriends.map((friend) => (
             <Friend key={friend._id} friend={friend} />
