@@ -9,6 +9,7 @@ import {
 import React from "react";
 import EditRemoveFcm from "./EditRemoveFcm";
 import EditAddFriend from "./EditAddFriend";
+import EditFriendRequests from "./EditFriendRequests";
 
 const EditContainer = () => {
   return (
@@ -18,8 +19,9 @@ const EditContainer = () => {
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View className="bg-btc500 h-full w-full p-8">
-          <View>
+          <View className="flex-col gap-8">
             <EditAddFriend />
+            <EditFriendRequests />
             {/* <View className="w-full border-b border-btc100 p-2" /> */}
             <EditRemoveFcm />
           </View>
