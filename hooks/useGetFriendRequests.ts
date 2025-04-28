@@ -5,6 +5,7 @@ import useGetProfileImage from "./useGetProfileImage";
 
 interface Friend {
   _id: string;
+  uniqueId: string;
   nickname: string;
   profileImage: string;
   profileImageData?: string;
@@ -46,7 +47,7 @@ const useGetFriendRequests = () => {
         })
       );
       setFriendRequests(friendsWithImages);
-    } catch (error) {
+    } catch (error: any) {
       console.log("Error: ", error.response?.data?.error || error.message);
     } finally {
       setIsLoading(false);
