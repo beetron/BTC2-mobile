@@ -30,8 +30,8 @@ const useGetMyFriends = () => {
         // Call getProfileImage hook for each friend's profile image
         const friendsWithImages = await Promise.all(
           res.data.map(async (friend: Friend, index: number) => {
-            console.log(`Processing friend ${index}:`, friend);
-            console.log("friend.profileImage: ", friend.profileImage);
+            // console.log(`Processing friend ${index}:`, friend);
+            // console.log("friend.profileImage: ", friend.profileImage);
 
             let imageData = null;
             if (friend.profileImage) {

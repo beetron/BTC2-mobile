@@ -11,8 +11,13 @@ const _layout = () => {
 
   return (
     <SocketProvider>
-      <Stack>
-        <Stack.Screen name="conversation" options={{ headerShown: false }} />
+      <Stack
+        screenOptions={{
+          headerShown: false,
+        }}
+      >
+        <Stack.Screen name="conversation" />
+        <Stack.Screen name="removeFriend" />
       </Stack>
     </SocketProvider>
   );

@@ -1,6 +1,5 @@
 import {
   View,
-  Text,
   KeyboardAvoidingView,
   Platform,
   TouchableWithoutFeedback,
@@ -11,6 +10,7 @@ import React from "react";
 import EditRemoveFcm from "./EditRemoveFcm";
 import EditAddFriend from "./EditAddFriend";
 import EditFriendRequests from "./EditFriendRequests";
+import EditRemoveFriend from "./EditRemoveFriend";
 
 const EditContainer = () => {
   return (
@@ -23,8 +23,8 @@ const EditContainer = () => {
           <View className="bg-btc500 h-full w-full p-8">
             <View className="flex-col gap-8">
               <EditAddFriend />
+              <EditRemoveFriend />
               <EditFriendRequests />
-              {/* <View className="w-full border-b border-btc100 p-2" /> */}
               <EditRemoveFcm />
             </View>
           </View>
