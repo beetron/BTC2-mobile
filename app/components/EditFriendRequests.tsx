@@ -6,6 +6,7 @@ import { useFocusEffect } from "expo-router";
 import { Image } from "expo-image";
 import { placeholderProfileImage } from "@/constants/images";
 import useAcceptFriend from "@/hooks/useAcceptFriend";
+import useRejectFriend from "@/hooks/useRejectFriend";
 
 interface Friend {
   _id: string;
@@ -20,6 +21,7 @@ const EditFriendRequests = () => {
   const { getFriendRequests, isLoading, friendRequests } =
     useGetFriendRequests();
   const { acceptFriend, isLoading: acceptIsLoading } = useAcceptFriend();
+  const { rejectFriend, isLoading: rejectIsLoading } = useRejectFriend();
 
   useEffect(() => {
     getFriendRequests();
@@ -41,7 +43,12 @@ const EditFriendRequests = () => {
   };
 
   // Handle onPress reject
-  const handleOnPressReject = async (friendId: string) => {};
+  const handleOnPressReject = async (friendId: string) => {
+    const success = await rejectFriend(friendId);
+    if (success) {
+      setShouldRender((prev) => !prev);
+    }
+  };
 
   return (
     <View className="bg-btc500">
