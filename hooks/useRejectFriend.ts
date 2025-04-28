@@ -19,7 +19,7 @@ const useRejectFriend = () => {
     } catch (error: any) {
       if (error.response && error.response.data && error.response.data.error) {
         Alert.alert("Error", error.response.data.error);
-        console.error("Error in useAcceptFriend: ", error);
+        console.error("Error in useRejectFriend: ", error);
       } else {
         Alert.alert("Error", "An unexpected error occurred.");
         console.error("Unexpected error in useRejectFriend: ", error);
