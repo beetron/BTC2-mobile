@@ -1,13 +1,15 @@
-import { View, Text, TextInput, Platform, Alert } from "react-native";
+import { View, Text } from "react-native";
 import { useState, useCallback, useEffect } from "react";
 import useGetFriendRequests from "@/hooks/useGetFriendRequests";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { useFocusEffect } from "expo-router";
 import { Image } from "expo-image";
 import { placeholderProfileImage } from "@/constants/images";
+import useAcceptFriend from "@/hooks/useAcceptFriend";
 
 interface Friend {
   _id: string;
+  uniqueId: string;
   nickname: string;
   profileImage: string;
   profileImageData?: string;
@@ -17,6 +19,7 @@ const EditFriendRequests = () => {
   const [shouldRender, setShouldRender] = useState(false);
   const { getFriendRequests, isLoading, friendRequests } =
     useGetFriendRequests();
+  const { acceptFriend, isLoading: acceptIsLoading } = useAcceptFriend();
 
   useEffect(() => {
     getFriendRequests();
@@ -30,10 +33,15 @@ const EditFriendRequests = () => {
   );
 
   // Handle onPress accept
-  const handleOnPressAccept = async () => {};
+  const handleOnPressAccept = async (friendId: string) => {
+    const success = await acceptFriend(friendId);
+    if (success) {
+      setShouldRender((prev) => !prev);
+    }
+  };
 
   // Handle onPress reject
-  const handleOnPressReject = async () => {};
+  const handleOnPressReject = async (friendId: string) => {};
 
   return (
     <View className="bg-btc500">
@@ -77,13 +85,13 @@ const EditFriendRequests = () => {
                   size={28}
                   color="#AAFF00"
                   className="mr-4"
-                  onPress={handleOnPressAccept}
+                  onPress={() => handleOnPressAccept(friend.uniqueId)}
                 />
                 <AntDesign
                   name="closecircleo"
                   size={28}
                   color="red"
-                  onPress={handleOnPressReject}
+                  onPress={() => handleOnPressReject(friend.uniqueId)}
                 />
               </View>
             </View>
