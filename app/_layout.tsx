@@ -31,11 +31,15 @@ const RootLayout = () => {
   return (
     <AuthProvider>
       <AppStateProvider>
-        <Stack>
-          <Stack.Screen name="members" options={{ headerShown: false }} />
-          <Stack.Screen name="guests" options={{ headerShown: false }} />
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="screens" options={{ headerShown: false }} />
+        <Stack
+          screenOptions={{
+            headerShown: false,
+          }}
+        >
+          <Stack.Screen name="members" />
+          <Stack.Screen name="guests" />
+          <Stack.Screen name="index" />
+          <Stack.Screen name="screens" />
         </Stack>
       </AppStateProvider>
     </AuthProvider>
