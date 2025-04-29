@@ -7,6 +7,7 @@ import { Image } from "expo-image";
 import { placeholderProfileImage } from "@/constants/images";
 import useAcceptFriend from "@/hooks/useAcceptFriend";
 import useRejectFriend from "@/hooks/useRejectFriend";
+import { useAppStateListener } from "@/context/AppStateContext";
 
 interface Friend {
   _id: string;
@@ -23,11 +24,16 @@ const EditFriendRequests = () => {
   const { acceptFriend, isLoading: acceptIsLoading } = useAcceptFriend();
   const { rejectFriend, isLoading: rejectIsLoading } = useRejectFriend();
 
+  useAppStateListener(() => {
+    getFriendRequests();
+    console.log("App state changed, refreshing friend requests");
+  });
+
   useEffect(() => {
     getFriendRequests();
   }, [shouldRender]);
 
-  // Reset text input when switching tabs
+  // Refresh list when screen is focused
   useFocusEffect(
     useCallback(() => {
       getFriendRequests();

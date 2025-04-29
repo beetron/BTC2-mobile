@@ -21,7 +21,7 @@ const useGetFriendRequests = () => {
     try {
       setIsLoading(true);
       const res = await axiosClient.get("/users/friendrequests");
-      console.log("Friend requiests res.data: ", res.data);
+      // console.log("Friend requests res.data: ", res.data);
 
       // Call getProfileImage hook for each friend's profile image
       const friendsWithImages = await Promise.all(
