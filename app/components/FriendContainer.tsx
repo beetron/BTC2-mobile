@@ -1,4 +1,4 @@
-import { View, Text, ScrollView } from "react-native";
+import { View, Text, ScrollView, ActivityIndicator } from "react-native";
 import { useCallback, useState, useEffect } from "react";
 import useGetMyFriends from "../../hooks/useGetMyFriends";
 import Friend from "./Friend";
@@ -44,15 +44,9 @@ const FriendContainer = () => {
   }, [manageFcmToken]);
 
   useAppStateListener(() => {
-    const handleAppStateChange = () => {
-      getMyFriends();
-      manageFcmToken();
-    };
-
-    return () => {
-      // Cleanup function to remove the listener
-      console.log("Cleaning up useAppStateListener");
-    };
+    getMyFriends();
+    manageFcmToken();
+    console.log("App state changed, refreshing friends list and FCM token");
   });
 
   // Sort friends by most recent messages
@@ -71,7 +65,7 @@ const FriendContainer = () => {
   if (isLoading) {
     return (
       <View className="flex-1 justify-center items-center">
-        <Text className="text-3xl text-btc100">Loading...</Text>
+        <ActivityIndicator size="large" color="white" />
       </View>
     );
   } else {

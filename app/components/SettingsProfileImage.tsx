@@ -1,4 +1,4 @@
-import { View } from "react-native";
+import { ActivityIndicator, View } from "react-native";
 import { Image } from "expo-image";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
@@ -7,7 +7,6 @@ import * as ImagePicker from "expo-image-picker";
 import { placeholderProfileImage } from "@/constants/images";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import useUpdateProfileImage from "@/hooks/useUpdateProfileImage";
-import AntDesign from "@expo/vector-icons/AntDesign";
 
 const SettingsProfileImage = () => {
   const [image, setImage] = useState<string | null>(null);
@@ -59,7 +58,7 @@ const SettingsProfileImage = () => {
   return (
     <View className="mt-4 relative justify-center">
       {isLoading ? (
-        <AntDesign name="loading1" size={24} color="white" />
+        <ActivityIndicator size="small" color="white" />
       ) : (
         <>
           {image ? (

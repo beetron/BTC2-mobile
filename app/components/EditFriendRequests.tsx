@@ -1,4 +1,4 @@
-import { View, Text } from "react-native";
+import { View, Text, ActivityIndicator } from "react-native";
 import { useState, useCallback, useEffect } from "react";
 import useGetFriendRequests from "@/hooks/useGetFriendRequests";
 import AntDesign from "@expo/vector-icons/AntDesign";
@@ -63,52 +63,62 @@ const EditFriendRequests = () => {
           Pending Friend Requests
         </Text>
       </View>
-      <View className="mt-2 flex-col items-start">
-        {!friendRequests || friendRequests.length === 0 ? (
-          <Text className="text-btc100 font-funnel-regular text-2xl">
-            You have no pending friend requests
-          </Text>
+      <View className="mt-2 flex-col">
+        {isLoading ? (
+          <View className="mt-8 flex-1 items-center justify-center">
+            <ActivityIndicator size="large" color="white" />
+          </View>
         ) : (
-          friendRequests.map((friend: Friend) => (
-            <View
-              key={friend._id}
-              className="flex-row items-center justify-between w-full m-2"
-            >
-              <View className="flex-row items-center gap-4">
-                {friend.profileImageData ? (
-                  <Image
-                    source={{ uri: friend.profileImageData }}
-                    style={{ width: 50, height: 50, borderRadius: 50 }}
-                    className="bg-btc100"
-                  />
-                ) : (
-                  <Image
-                    source={placeholderProfileImage}
-                    style={{ width: 50, height: 50, borderRadius: 50 }}
-                    className="bg-btc100"
-                  />
-                )}
-                <Text className="text-btc200 font-funnel-regular text-2xl">
-                  {friend.nickname}
+          <>
+            {!friendRequests || friendRequests.length === 0 ? (
+              <View className="mt-2 flex-1 items-center justify-center">
+                <Text className="text-btc100 font-funnel-regular text-2xl">
+                  You have no pending friend requests
                 </Text>
               </View>
-              <View className="flex-row justify-end">
-                <AntDesign
-                  name="checkcircleo"
-                  size={28}
-                  color="#AAFF00"
-                  className="mr-4"
-                  onPress={() => handleOnPressAccept(friend.uniqueId)}
-                />
-                <AntDesign
-                  name="closecircleo"
-                  size={28}
-                  color="red"
-                  onPress={() => handleOnPressReject(friend.uniqueId)}
-                />
-              </View>
-            </View>
-          ))
+            ) : (
+              friendRequests.map((friend: Friend) => (
+                <View
+                  key={friend._id}
+                  className="flex-row items-center justify-between w-full m-2"
+                >
+                  <View className="flex-row items-center gap-4">
+                    {friend.profileImageData ? (
+                      <Image
+                        source={{ uri: friend.profileImageData }}
+                        style={{ width: 50, height: 50, borderRadius: 50 }}
+                        className="bg-btc100"
+                      />
+                    ) : (
+                      <Image
+                        source={placeholderProfileImage}
+                        style={{ width: 50, height: 50, borderRadius: 50 }}
+                        className="bg-btc100"
+                      />
+                    )}
+                    <Text className="text-btc200 font-funnel-regular text-2xl">
+                      {friend.nickname}
+                    </Text>
+                  </View>
+                  <View className="flex-row justify-end">
+                    <AntDesign
+                      name="checkcircleo"
+                      size={28}
+                      color="#AAFF00"
+                      className="mr-4"
+                      onPress={() => handleOnPressAccept(friend.uniqueId)}
+                    />
+                    <AntDesign
+                      name="closecircleo"
+                      size={28}
+                      color="red"
+                      onPress={() => handleOnPressReject(friend.uniqueId)}
+                    />
+                  </View>
+                </View>
+              ))
+            )}
+          </>
         )}
       </View>
     </View>
