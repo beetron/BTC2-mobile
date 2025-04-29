@@ -1,6 +1,7 @@
 import axiosClient from "@/utils/axiosClient";
 import { fromByteArray } from "base64-js";
 import { API_PROFILE_IMAGE_URL } from "@/constants/api";
+import { useState } from "react";
 
 const getMimeType = (url: string): string => {
   const extension = url.toLowerCase().split(".").pop();
@@ -19,9 +20,14 @@ const getMimeType = (url: string): string => {
 };
 
 const useGetProfileImage = () => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
   const getProfileImage = async (url: string) => {
     try {
-      console.log("Fetching profile image from URL:", url);
+      setIsLoading(true);
+
+      if (!url) return null;
+
       const response = await axiosClient.get(`${API_PROFILE_IMAGE_URL}${url}`, {
         responseType: "arraybuffer",
       });
@@ -29,6 +35,7 @@ const useGetProfileImage = () => {
       if (response.status === 200) {
         const base64String = fromByteArray(new Uint8Array(response.data));
         const mimeType = getMimeType(url);
+        setIsLoading(false);
         return `data:${mimeType};base64,${base64String}`;
       } else {
         console.log("Non-200 response:", response.status);
@@ -37,9 +44,11 @@ const useGetProfileImage = () => {
     } catch (error) {
       console.error("Error fetching profile image: ", error);
       return null;
+    } finally {
+      setIsLoading(false);
     }
   };
-  return { getProfileImage };
+  return { getProfileImage, isLoading };
 };
 
 export default useGetProfileImage;

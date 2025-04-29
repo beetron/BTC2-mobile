@@ -7,11 +7,12 @@ import * as ImagePicker from "expo-image-picker";
 import { placeholderProfileImage } from "@/constants/images";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import useUpdateProfileImage from "@/hooks/useUpdateProfileImage";
+import AntDesign from "@expo/vector-icons/AntDesign";
 
 const SettingsProfileImage = () => {
   const [image, setImage] = useState<string | null>(null);
   const { authState } = useAuth();
-  const { getProfileImage } = useGetProfileImage();
+  const { getProfileImage, isLoading } = useGetProfileImage();
   const { updateProfileImage } = useUpdateProfileImage();
 
   // Fetch current profile image from backend
@@ -57,20 +58,25 @@ const SettingsProfileImage = () => {
 
   return (
     <View className="mt-4 relative justify-center">
-      {image ? (
-        <Image
-          source={{ uri: image }}
-          style={{ width: 80, height: 80, borderRadius: 50 }}
-          className="bg-btc100"
-        />
+      {isLoading ? (
+        <AntDesign name="loading1" size={24} color="white" />
       ) : (
-        <Image
-          source={placeholderProfileImage}
-          style={{ width: 80, height: 80, borderRadius: 50 }}
-          className="bg-btc100"
-        />
+        <>
+          {image ? (
+            <Image
+              source={{ uri: image }}
+              style={{ width: 80, height: 80, borderRadius: 50 }}
+              className="bg-btc100"
+            />
+          ) : (
+            <Image
+              source={placeholderProfileImage}
+              style={{ width: 80, height: 80, borderRadius: 50 }}
+              className="bg-btc100"
+            />
+          )}
+        </>
       )}
-
       <MaterialIcons
         name="add-photo-alternate"
         size={28}
