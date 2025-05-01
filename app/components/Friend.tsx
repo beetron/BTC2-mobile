@@ -4,6 +4,7 @@ import { useRouter } from "expo-router";
 import friendStore from "../../zustand/friendStore";
 import { Image } from "expo-image";
 import { placeholderProfileImage } from "@/constants/images";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 const Friend = ({
   friend,
@@ -28,34 +29,32 @@ const Friend = ({
 
   return (
     <TouchableOpacity onPress={handleOnPress}>
-      <View className="flex-row items-center p-2 m-1 border-0 border-btc200">
-        <View className="flex-row justify-start ml-3">
-          {friend.profileImageData ? (
-            <Image
-              source={{ uri: friend.profileImageData }}
-              style={{ width: 50, height: 50, borderRadius: 50 }}
-              className="bg-btc100"
-            />
-          ) : (
-            <Image
-              source={placeholderProfileImage}
-              style={{ width: 50, height: 50, borderRadius: 50 }}
-              className="bg-btc100"
-            />
-          )}
-        </View>
-        <View className="flex-row justify-start ml-4">
-          <Text className="text-btc100 text-xl font-funnel-semi-bold">
+      <View className="flex-1 bg-btc500 m-2">
+        <View className="flex-row items-center justify-start w-full">
+          <View className="mr-6">
+            {friend.profileImageData ? (
+              <Image
+                source={{ uri: friend.profileImageData }}
+                style={{ width: 50, height: 50, borderRadius: 50 }}
+                className="bg-btc100"
+              />
+            ) : (
+              <Image
+                source={placeholderProfileImage}
+                style={{ width: 50, height: 50, borderRadius: 50 }}
+                className="bg-btc100"
+              />
+            )}
+          </View>
+          <Text className="text-btc100 text-xl font-funnel-semi-bold mr-6">
             {nickname}
           </Text>
-        </View>
-        <View className="flex-1 justify-end flex-row">
-          {unreadMessages ? (
-            <Text className="text-btc200 font-funnel-medium">
-              Unread Message(s)
-            </Text>
-          ) : (
-            <Text className="text-btc200 font-funnel-medium"></Text>
+          {unreadMessages && (
+            <MaterialCommunityIcons
+              name="message-alert-outline"
+              size={24}
+              color="#75E6DA"
+            />
           )}
         </View>
       </View>
