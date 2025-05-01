@@ -11,6 +11,11 @@ module.exports = {
     ios: {
       useFrameworks: "static",
       googleServicesFile: process.env.GOOGLESERVICE_INFO_PLIST,
+      icon: {
+        dark: "./app/assets/icons/ios-dark.png",
+        light: "./app/assets/icons/ios-light.png",
+        tinted: "./app/assets/icons/ios-tinted.png",
+      },
       entitlements: {
         "aps-environment": "development",
       },
@@ -54,21 +59,27 @@ module.exports = {
       [
         "expo-font",
         {
-          "funnel-bold": ["./assets/fonts/FunnelDisplay-Bold.ttf"],
-          "funnel-extra-bold": ["./assets/fonts/FunnelDisplay-ExtraBold.ttf"],
-          "funnel-light": ["./assets/fonts/FunnelDisplay-Light.ttf"],
-          "funnel-medium": ["./assets/fonts/FunnelDisplay-Medium.ttf"],
-          "funnel-regular": ["./assets/fonts/FunnelDisplay-Regular.ttf"],
-          "funnel-semi-bold": ["./assets/fonts/FunnelDisplay-SemiBold.ttf"],
+          "funnel-bold": ["./app/assets/fonts/FunnelDisplay-Bold.ttf"],
+          "funnel-extra-bold": [
+            "./app/assets/fonts/FunnelDisplay-ExtraBold.ttf",
+          ],
+          "funnel-light": ["./app/assets/fonts/FunnelDisplay-Light.ttf"],
+          "funnel-medium": ["./app/assets/fonts/FunnelDisplay-Medium.ttf"],
+          "funnel-regular": ["./app/assets/fonts/FunnelDisplay-Regular.ttf"],
+          "funnel-semi-bold": ["./app/assets/fonts/FunnelDisplay-SemiBold.ttf"],
         },
       ],
       [
         "expo-splash-screen",
         {
-          image: "",
+          image: "./app/assets/icons/splash-icon-light.png",
           imageWidth: 200,
           resizeMode: "contain",
           backgroundColor: "#ffffff",
+          dark: {
+            image: "./app/assets/icons/splash-icon-dark.png",
+            backgroundColor: "#000000",
+          },
         },
       ],
       "expo-secure-store",
