@@ -48,7 +48,7 @@ const ConversationMessages = () => {
     <View className="flex-1">
       <FlatList
         className="flex-1"
-        data={messages.slice().reverse()}
+        data={messages}
         inverted={true}
         keyExtractor={(item, index) => index.toString()}
         ListEmptyComponent={
