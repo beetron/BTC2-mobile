@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, ActivityIndicator } from "react-native";
+import { View, ScrollView, ActivityIndicator } from "react-native";
 import { useCallback, useState, useEffect } from "react";
 import useGetMyFriends from "../../hooks/useGetMyFriends";
 import Friend from "./Friend";
@@ -12,7 +12,7 @@ interface Friend {
   nickname: string;
   profileImage: string;
   profileImageData: string;
-  unreadMessages: boolean;
+  unreadMessages: number;
   updatedAt: string;
 }
 
@@ -49,19 +49,6 @@ const FriendContainer = () => {
     console.log("App state changed, refreshing friends list and FCM token");
   });
 
-  // Sort friends by most recent messages
-  useEffect(() => {
-    function sortFriends() {
-      if (myFriends.length > 0) {
-        const sorted = [...myFriends].sort(/*...*/);
-        setSortedFriends(sorted);
-      } else {
-        setSortedFriends([]);
-      }
-    }
-    sortFriends();
-  }, [myFriends]);
-
   if (isLoading) {
     return (
       <View className="flex-1 justify-center items-center">
@@ -72,7 +59,7 @@ const FriendContainer = () => {
     return (
       <ScrollView className="flex-1 p-4">
         <View className="flex-1 w-full">
-          {sortedFriends.map((friend) => (
+          {myFriends.map((friend) => (
             <Friend key={friend._id} friend={friend} />
           ))}
         </View>

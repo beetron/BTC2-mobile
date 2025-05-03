@@ -9,7 +9,7 @@ interface Friend {
   nickname: string;
   profileImage: string;
   profileImageData?: string;
-  unreadMessages: boolean;
+  unreadCount: string;
   updatedAt: string;
 }
 

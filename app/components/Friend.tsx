@@ -14,10 +14,10 @@ const Friend = ({
     nickname: string;
     profileImage: string;
     profileImageData: string;
-    unreadMessages: boolean;
+    unreadCount: number;
   };
 }) => {
-  const { nickname, unreadMessages } = friend;
+  const { nickname, unreadCount } = friend;
   const { setSelectedFriend } = friendStore();
   const router = useRouter();
 
@@ -49,13 +49,18 @@ const Friend = ({
           <Text className="text-btc100 text-xl font-funnel-semi-bold mr-6">
             {nickname}
           </Text>
-          {unreadMessages && (
-            <MaterialCommunityIcons
-              name="message-alert-outline"
-              size={24}
-              color="#75E6DA"
-            />
-          )}
+          {unreadCount !== 0 ? (
+            <View className="flex-row">
+              <MaterialCommunityIcons
+                name="message-alert-outline"
+                size={24}
+                color="#75E6DA"
+              />
+              <Text className="text-btc100 text-xl font-funnel-semi-bold ml-2">
+                + {unreadCount}
+              </Text>
+            </View>
+          ) : null}
         </View>
       </View>
     </TouchableOpacity>
