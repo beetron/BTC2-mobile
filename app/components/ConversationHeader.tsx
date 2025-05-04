@@ -5,7 +5,7 @@ const ConversationHeader = () => {
   const router = useRouter();
 
   const handleOnPress = () => {
-    router.replace("/members");
+    router.back();
   };
 
   return (
