@@ -2,11 +2,20 @@ import Entypo from "@expo/vector-icons/Entypo";
 import { View } from "react-native";
 import { useRouter } from "expo-router";
 
-const HeaderBackButton = () => {
+interface HeaderBackButtonProps {
+  routerOption: string;
+}
+
+const HeaderBackButton = ({ routerOption }: HeaderBackButtonProps) => {
   const router = useRouter();
 
   const handleOnPress = () => {
-    router.back();
+    if (routerOption === "back") {
+      router.back();
+    }
+    if (routerOption === "replaceHome") {
+      router.replace("/members");
+    }
   };
   return (
     <View className="flex-1 items-start justify-end mb-2 ml-4">

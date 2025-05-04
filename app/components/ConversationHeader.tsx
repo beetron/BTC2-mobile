@@ -6,7 +6,7 @@ const ConversationHeader = () => {
   return (
     <View className="flex-1 max-h-28 justify-center border-b-hairline border-btc100 bg-[#1f1f2e]">
       <View className="flex-row absolute bottom-0">
-        <HeaderBackButton />
+        <HeaderBackButton routerOption="replaceHome" />
         <ConversationDeleteButton />
       </View>
     </View>

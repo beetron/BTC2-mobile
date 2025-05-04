@@ -23,7 +23,7 @@ const Friend = ({ friend }: { friend: FriendProps }) => {
   // setSelectedFriend via Zustand before push
   const handleOnPress = () => {
     setSelectedFriend(friend);
-    router.push("../screens/conversation");
+    router.replace("../screens/conversation");
   };
 
   return (

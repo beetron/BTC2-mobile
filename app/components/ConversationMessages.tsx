@@ -1,6 +1,6 @@
 import { View, Text, FlatList } from "react-native";
 import { Image } from "expo-image";
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import { Redirect } from "expo-router";
 import { useAppStateListener } from "../../context/AppStateContext";
 import { useFocusEffect } from "@react-navigation/native";
@@ -20,13 +20,24 @@ const ConversationMessages = () => {
 
   const { isLoading, getMessages } = useGetMessages();
   const { messages, selectedFriend, shouldRender } = friendStore();
+  const isFirstMount = useRef(true);
+
+  // Fetch messages when shouldRender changes via socket sigal
+  useEffect(() => {
+    if (isFirstMount.current) {
+      isFirstMount.current = false;
+      return;
+    }
+    // Skips running on initial mount
+    getMessages();
+  }, [shouldRender]);
 
   // Fetch messages when screen is back in focus
   useFocusEffect(
     useCallback(() => {
       getMessages();
       console.log("useFocusEffect ran");
-    }, [getMessages, shouldRender])
+    }, [getMessages])
   );
 
   // Refresh messages when app becomes active
