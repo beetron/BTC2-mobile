@@ -31,8 +31,7 @@ export const SocketProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const socketRef = useRef<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
-
-  const setShouldRender = friendStore((state) => state.setShouldRender);
+  const { setShouldRender } = friendStore();
 
   // Update ref when state changes
   useEffect(() => {
