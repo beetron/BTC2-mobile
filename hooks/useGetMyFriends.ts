@@ -9,7 +9,7 @@ interface Friend {
   nickname: string;
   profileImage: string;
   profileImageData?: string;
-  unreadCount: string;
+  unreadCount: number;
   updatedAt: string;
 }
 
@@ -50,8 +50,8 @@ const useGetMyFriends = () => {
         })
       );
       setMyFriends(friendsWithImages);
-    } catch (e) {
-      console.log("Error: ", e.response?.data?.error || e.message);
+    } catch (error: any) {
+      console.log("Error: ", error.response?.data?.error || error.message);
     } finally {
       setIsLoading(false);
     }

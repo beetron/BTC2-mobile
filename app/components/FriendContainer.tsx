@@ -7,19 +7,9 @@ import { useAppStateListener } from "@/context/AppStateContext";
 import FriendStore from "../../zustand/friendStore";
 import useFcmToken from "../../hooks/useFcmToken";
 
-interface Friend {
-  _id: string;
-  nickname: string;
-  profileImage: string;
-  profileImageData: string;
-  unreadMessages: number;
-  updatedAt: string;
-}
-
 const FriendContainer = () => {
   const { shouldRender, setMessages, setSelectedFriend } = FriendStore();
   const { myFriends, isLoading, getMyFriends } = useGetMyFriends();
-  const [sortedFriends, setSortedFriends] = useState<Friend[]>([]);
   const { manageFcmToken } = useFcmToken();
 
   // Run Effect when screen is back in focus
@@ -29,7 +19,7 @@ const FriendContainer = () => {
       setMessages([]);
       setSelectedFriend(null);
       getMyFriends();
-      console.log("Friends: ", myFriends);
+      // console.log("Friends: ", myFriends);
     }, [getMyFriends])
   );
 

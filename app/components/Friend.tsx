@@ -6,17 +6,16 @@ import { Image } from "expo-image";
 import { placeholderProfileImage } from "@/constants/images";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
-const Friend = ({
-  friend,
-}: {
-  friend: {
-    _id: string;
-    nickname: string;
-    profileImage: string;
-    profileImageData: string;
-    unreadCount: number;
-  };
-}) => {
+interface FriendProps {
+  _id: string;
+  nickname: string;
+  profileImage: string;
+  profileImageData?: string;
+  unreadCount: number;
+  updatedAt: string;
+}
+
+const Friend = ({ friend }: { friend: FriendProps }) => {
   const { nickname, unreadCount } = friend;
   const { setSelectedFriend } = friendStore();
   const router = useRouter();

@@ -4,7 +4,8 @@ interface Friend {
   _id: string;
   nickname: string;
   profileImage: string;
-  profileImageData: string;
+  profileImageData?: string;
+  unreadCount: number;
   updatedAt?: string;
 }
 
