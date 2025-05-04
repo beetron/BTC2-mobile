@@ -22,6 +22,8 @@ interface FriendStore {
   setMessages: (messages: Message[]) => void;
   shouldRender: boolean; // used for useEffect to reload via socket event
   setShouldRender: () => void;
+  messageId: string | null;
+  setMessageId: (id: string | null) => void;
 }
 
 const friendStore = create<FriendStore>((set) => ({
@@ -32,6 +34,8 @@ const friendStore = create<FriendStore>((set) => ({
   shouldRender: false,
   setShouldRender: () =>
     set((state) => ({ shouldRender: !state.shouldRender })),
+  messageId: null,
+  setMessageId: (id) => set({ messageId: id }),
 }));
 
 export default friendStore;
