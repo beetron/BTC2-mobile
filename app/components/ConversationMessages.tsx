@@ -1,48 +1,39 @@
 import { View, Text, FlatList } from "react-native";
 import { Image } from "expo-image";
-import React, { useCallback, useEffect, useRef } from "react";
-import { Redirect } from "expo-router";
+import React, { useEffect } from "react";
 import { useAppStateListener } from "../../context/AppStateContext";
-import { useFocusEffect } from "@react-navigation/native";
 import friendStore from "../../zustand/friendStore";
 import useGetMessages from "../../hooks/useGetMessages";
 import formatDate from "../../utils/formatDate";
-import { useAuth } from "../../context/AuthContext";
 import Autolink from "react-native-autolink";
 import { placeholderProfileImage } from "@/constants/images";
+import useGetMyFriends from "../../hooks/useGetMyFriends";
+import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
 const ConversationMessages = () => {
-  const { authState } = useAuth();
-
-  if (authState?.authenticated !== true) {
-    return <Redirect href="/guests/Login" />;
-  }
-
   const { isLoading, getMessages } = useGetMessages();
   const { messages, selectedFriend, shouldRender } = friendStore();
-  const isFirstMount = useRef(true);
+  // Using getMyFriends to use update BadgeCount (temporary solution)
+  const { getMyFriends } = useGetMyFriends();
 
   // Fetch messages when shouldRender changes via socket sigal
   useEffect(() => {
-    if (isFirstMount.current) {
-      isFirstMount.current = false;
-      return;
-    }
-    // Skips running on initial mount
     getMessages();
+    getMyFriends();
   }, [shouldRender]);
 
   // Fetch messages when screen is back in focus
-  useFocusEffect(
-    useCallback(() => {
-      getMessages();
-      console.log("useFocusEffect ran");
-    }, [getMessages])
-  );
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     getMessages();
+  //     console.log("useFocusEffect ran");
+  //   }, [getMessages])
+  // );
 
   // Refresh messages when app becomes active
   useAppStateListener(() => {
     getMessages();
+    getMyFriends();
   });
 
   if (isLoading) {
