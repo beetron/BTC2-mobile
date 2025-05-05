@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import axiosClient from "../utils/axiosClient";
 import { useRouter } from "expo-router";
 import useGetProfileImage from "./useGetProfileImage";
+import calculateAndSetBadgeCount from "../utils/calculateAndSetBadgeCount";
 
 interface Friend {
   _id: string;
@@ -24,6 +25,11 @@ const useGetMyFriends = () => {
       setIsLoading(true);
       const res = await axiosClient.get("/users/friendlist");
       console.log("API response data:", res.data);
+
+      // Set badge count using utility function
+      if (res.data) {
+        await calculateAndSetBadgeCount(res.data);
+      }
 
       // Call getProfileImage hook for each friend's profile image
       const friendsWithImages = await Promise.all(
