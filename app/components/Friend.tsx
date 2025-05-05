@@ -29,27 +29,29 @@ const Friend = ({ friend }: { friend: FriendProps }) => {
   return (
     <TouchableOpacity onPress={handleOnPress}>
       <View className="flex-1 bg-btc500 m-2">
-        <View className="flex-row items-center justify-start w-full">
-          <View className="mr-6">
-            {friend.profileImageData ? (
-              <Image
-                source={{ uri: friend.profileImageData }}
-                style={{ width: 50, height: 50, borderRadius: 50 }}
-                className="bg-btc100"
-              />
-            ) : (
-              <Image
-                source={placeholderProfileImage}
-                style={{ width: 50, height: 50, borderRadius: 50 }}
-                className="bg-btc100"
-              />
-            )}
+        <View className="flex-row items-center justify-between w-full">
+          <View className="flex-row items-center w-3/4">
+            <View className="mr-6">
+              {friend.profileImageData ? (
+                <Image
+                  source={{ uri: friend.profileImageData }}
+                  style={{ width: 50, height: 50, borderRadius: 50 }}
+                  className="bg-btc100"
+                />
+              ) : (
+                <Image
+                  source={placeholderProfileImage}
+                  style={{ width: 50, height: 50, borderRadius: 50 }}
+                  className="bg-btc100"
+                />
+              )}
+            </View>
+            <Text className="text-btc100 text-xl font-funnel-semi-bold mr-6">
+              {nickname}
+            </Text>
           </View>
-          <Text className="text-btc100 text-xl font-funnel-semi-bold mr-6">
-            {nickname}
-          </Text>
           {unreadCount !== 0 ? (
-            <View className="flex-row">
+            <View className="flex-row items-start justify-center w-1/4">
               <MaterialCommunityIcons
                 name="message-alert-outline"
                 size={24}
