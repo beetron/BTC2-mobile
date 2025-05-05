@@ -7,33 +7,24 @@ import useGetMessages from "../../hooks/useGetMessages";
 import formatDate from "../../utils/formatDate";
 import Autolink from "react-native-autolink";
 import { placeholderProfileImage } from "@/constants/images";
-import useGetMyFriends from "../../hooks/useGetMyFriends";
-import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
+import useSetBadgeCount from "../../hooks/useSetBadgeCount";
 
 const ConversationMessages = () => {
   const { isLoading, getMessages } = useGetMessages();
   const { messages, selectedFriend, shouldRender } = friendStore();
   // Using getMyFriends to use update BadgeCount (temporary solution)
-  const { getMyFriends } = useGetMyFriends();
+  const { setBadgeCount } = useSetBadgeCount();
 
   // Fetch messages when shouldRender changes via socket sigal
   useEffect(() => {
     getMessages();
-    getMyFriends();
+    setBadgeCount();
   }, [shouldRender]);
-
-  // Fetch messages when screen is back in focus
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     getMessages();
-  //     console.log("useFocusEffect ran");
-  //   }, [getMessages])
-  // );
 
   // Refresh messages when app becomes active
   useAppStateListener(() => {
     getMessages();
-    getMyFriends();
+    setBadgeCount();
   });
 
   if (isLoading) {

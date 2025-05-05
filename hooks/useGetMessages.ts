@@ -3,7 +3,6 @@ import axiosClient from "../utils/axiosClient";
 import FriendStore from "../zustand/friendStore";
 import { useAuth } from "../context/AuthContext";
 import { Alert } from "react-native";
-import calculateAndSetBadgeCount from "../utils/calculateAndSetBadgeCount";
 
 const useGetMessages = () => {
   const { authState } = useAuth();
@@ -19,9 +18,6 @@ const useGetMessages = () => {
           `/messages/get/${selectedFriend._id}`
         );
         if (res.status === 200) {
-          // Set badge count using utility function
-          await calculateAndSetBadgeCount(res.data);
-
           setMessages([...messages, ...res.data]);
 
           // Set the most recent message ID for useDeleteMessages hook
