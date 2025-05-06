@@ -1,7 +1,7 @@
 module.exports = {
   expo: {
     name: "bTC2",
-    slug: "bTC2",
+    slug: "btc2",
     version: "0.0.1",
     orientation: "portrait",
     icon: "",
@@ -12,6 +12,7 @@ module.exports = {
       useFrameworks: "static",
       googleServicesFile: process.env.GOOGLESERVICE_INFO_PLIST,
       icon: {
+        // Default IOS icon
         dark: "./app/assets/icons/ios-dark.png",
         light: "./app/assets/icons/ios-light.png",
         tinted: "./app/assets/icons/ios-tinted.png",
@@ -41,6 +42,27 @@ module.exports = {
       favicon: "",
     },
     plugins: [
+      [
+        "expo-alternate-app-icons",
+        [
+          {
+            name: "icon1",
+            ios: "./app/assets/icons/ios-icon1.png",
+          },
+          {
+            name: "icon2",
+            ios: "./app/assets/icons/ios-icon2.png",
+          },
+          {
+            name: "icon3",
+            ios: "./app/assets/icons/ios-icon3.png",
+          },
+          {
+            name: "icon4",
+            ios: "./app/assets/icons/ios-icon4.png",
+          },
+        ],
+      ],
       "@react-native-firebase/app",
       "@react-native-firebase/messaging",
       [
