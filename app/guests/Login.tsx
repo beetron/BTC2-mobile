@@ -52,7 +52,7 @@ const Login = () => {
       <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-            <View className="flex-1 items-center jusitfy-center p-4 mt-24">
+            <View className="flex-1 items-center jusitfy-center p-4 mt-16">
               <Logo />
               {/* Username input */}
               <CustomInput
