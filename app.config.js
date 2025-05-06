@@ -1,7 +1,7 @@
 module.exports = {
   expo: {
-    name: "btc2",
-    slug: "btc2",
+    name: "bTC2",
+    slug: "bTC2",
     version: "0.0.1",
     orientation: "portrait",
     icon: "",
