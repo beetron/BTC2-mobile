@@ -3,7 +3,7 @@ import React from "react";
 import { useRouter } from "expo-router";
 import friendStore from "../zustand/friendStore";
 import { Image } from "expo-image";
-import { placeholderProfileImage } from "@/src/constants/images";
+import { images } from "../constants/images";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 interface FriendProps {
@@ -16,6 +16,7 @@ interface FriendProps {
 }
 
 const Friend = ({ friend }: { friend: FriendProps }) => {
+  const placeholderProfileImage = images.placeholderProfileImage;
   const { nickname, unreadCount } = friend;
   const { setSelectedFriend } = friendStore();
   const router = useRouter();

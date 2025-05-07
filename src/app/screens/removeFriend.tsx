@@ -2,7 +2,7 @@ import { View, Text, ActivityIndicator } from "react-native";
 import { useState, useEffect } from "react";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { Image } from "expo-image";
-import { placeholderProfileImage } from "@/src/constants/images";
+import { images } from "../../constants/images";
 import useGetMyFriends from "@/src/hooks/useGetMyFriends";
 import useRemoveFriend from "@/src/hooks/useRemoveFriend";
 import RemoveFriendHeader from "../../components/RemoveFriendHeader";
@@ -16,7 +16,7 @@ interface Friend {
 }
 
 const removeFriend = () => {
-  //   const [friends, setFriends] = useState<Friend[]>([]);
+  const placeholderProfileImage = images.placeholderProfileImage;
   const [shouldRender, setShouldRender] = useState(false);
   const { myFriends, getMyFriends, isLoading } = useGetMyFriends();
   const { removeFriend, isLoading: removeIsLoading } = useRemoveFriend();

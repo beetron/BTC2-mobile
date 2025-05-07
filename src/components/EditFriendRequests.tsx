@@ -4,7 +4,7 @@ import useGetFriendRequests from "@/src/hooks/useGetFriendRequests";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { useFocusEffect } from "expo-router";
 import { Image } from "expo-image";
-import { placeholderProfileImage } from "@/src/constants/images";
+import { images } from "../constants/images";
 import useAcceptFriend from "@/src/hooks/useAcceptFriend";
 import useRejectFriend from "@/src/hooks/useRejectFriend";
 import { useAppStateListener } from "@/src/context/AppStateContext";
@@ -18,6 +18,7 @@ interface Friend {
 }
 
 const EditFriendRequests = () => {
+  const placeholderProfileImage = images.placeholderProfileImage;
   const [shouldRender, setShouldRender] = useState(false);
   const { getFriendRequests, isLoading, friendRequests } =
     useGetFriendRequests();
