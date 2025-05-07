@@ -18,6 +18,7 @@ const _layout = () => {
       >
         <Stack.Screen name="conversation" />
         <Stack.Screen name="removeFriend" />
+        <Stack.Screen name="settingsChangeIcon" />
       </Stack>
     </SocketProvider>
   );
