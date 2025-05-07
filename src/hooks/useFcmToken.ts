@@ -142,7 +142,7 @@ export default function useFcmToken() {
   }, [authState?.authenticated, generateNewFcmToken, registerFcmToken]);
 
   /////////////////////////////////////////////
-  // Check if token needs renewal based on timestamp
+  // Renew FCM token if x days have passed since last registration
   /////////////////////////////////////////////
   const shouldRenewFcmToken = (timestamp: string | null): boolean => {
     if (!timestamp) {
@@ -153,8 +153,8 @@ export default function useFcmToken() {
     const daysPassed = (now - lastRegistered) / (1000 * 60 * 60 * 24);
 
     console.log("Days passed since last FCM token registration: ", daysPassed);
-    // Renew if more than 13 days
-    return daysPassed > 13;
+    // Renew if more than 7 days have passed
+    return daysPassed > 7;
   };
 
   return { fcmToken, isRegistering, error, manageFcmToken };
