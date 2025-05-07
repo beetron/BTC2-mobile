@@ -13,9 +13,9 @@ module.exports = {
       googleServicesFile: process.env.GOOGLESERVICE_INFO_PLIST,
       icon: {
         // Default IOS icon
-        dark: "./app/assets/icons/ios-dark.png",
-        light: "./app/assets/icons/ios-light.png",
-        tinted: "./app/assets/icons/ios-tinted.png",
+        dark: "./src/assets/icons/ios-dark.png",
+        light: "./src/assets/icons/ios-light.png",
+        tinted: "./src/assets/icons/ios-tinted.png",
       },
       entitlements: {
         "aps-environment": "development",
@@ -47,19 +47,19 @@ module.exports = {
         [
           {
             name: "icon1",
-            ios: "./app/assets/icons/ios-icon1.png",
+            ios: "./src/assets/icons/ios-icon1.png",
           },
           {
             name: "icon2",
-            ios: "./app/assets/icons/ios-icon2.png",
+            ios: "./src/assets/icons/ios-icon2.png",
           },
           {
             name: "icon3",
-            ios: "./app/assets/icons/ios-icon3.png",
+            ios: "./src/assets/icons/ios-icon3.png",
           },
           {
             name: "icon4",
-            ios: "./app/assets/icons/ios-icon4.png",
+            ios: "./src/assets/icons/ios-icon4.png",
           },
         ],
       ],
@@ -81,25 +81,25 @@ module.exports = {
       [
         "expo-font",
         {
-          "funnel-bold": ["./app/assets/fonts/FunnelDisplay-Bold.ttf"],
+          "funnel-bold": ["./src/assets/fonts/FunnelDisplay-Bold.ttf"],
           "funnel-extra-bold": [
-            "./app/assets/fonts/FunnelDisplay-ExtraBold.ttf",
+            "./src/assets/fonts/FunnelDisplay-ExtraBold.ttf",
           ],
-          "funnel-light": ["./app/assets/fonts/FunnelDisplay-Light.ttf"],
-          "funnel-medium": ["./app/assets/fonts/FunnelDisplay-Medium.ttf"],
-          "funnel-regular": ["./app/assets/fonts/FunnelDisplay-Regular.ttf"],
-          "funnel-semi-bold": ["./app/assets/fonts/FunnelDisplay-SemiBold.ttf"],
+          "funnel-light": ["./src/assets/fonts/FunnelDisplay-Light.ttf"],
+          "funnel-medium": ["./src/assets/fonts/FunnelDisplay-Medium.ttf"],
+          "funnel-regular": ["./src/assets/fonts/FunnelDisplay-Regular.ttf"],
+          "funnel-semi-bold": ["./src/assets/fonts/FunnelDisplay-SemiBold.ttf"],
         },
       ],
       [
         "expo-splash-screen",
         {
-          image: "./app/assets/icons/splash-icon-light.png",
+          image: "./src/assets/icons/splash-icon-light.png",
           imageWidth: 200,
           resizeMode: "contain",
           backgroundColor: "#ffffff",
           dark: {
-            image: "./app/assets/icons/splash-icon-dark.png",
+            image: "./src/assets/icons/splash-icon-dark.png",
             backgroundColor: "#000000",
           },
         },

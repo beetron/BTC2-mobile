@@ -11,9 +11,9 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts",
-    "app/index.tsx.bak",
-    "app/(auth)/index.tsx.bak",
+    "src/app/index.tsx.bak",
+    "src/app/(auth)/index.tsx.bak",
     "nativewind-env.d.ts",
-    "app/(guest-screen)/Login.tsx"
+    "src/app/(guest-screen)/Login.tsx"
   ]
 }
