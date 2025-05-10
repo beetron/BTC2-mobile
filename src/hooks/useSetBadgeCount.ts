@@ -24,7 +24,7 @@ const useSetBadgeCount = () => {
         0
       );
 
-      if (totalUnreadCount && Platform.OS === "ios") {
+      if (typeof totalUnreadCount === "number" && Platform.OS === "ios") {
         await Notifications.setBadgeCountAsync(totalUnreadCount);
         console.log("Badge set to: ", totalUnreadCount);
       }
