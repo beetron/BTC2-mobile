@@ -6,7 +6,7 @@ import friendStore from "../zustand/friendStore";
 import useGetMessages from "../hooks/useGetMessages";
 import formatDate from "../utils/formatDate";
 import Autolink from "react-native-autolink";
-import { placeholderProfileImage } from "@/src/constants/images";
+import { images } from "../constants/images";
 import useSetBadgeCount from "../hooks/useSetBadgeCount";
 
 const ConversationMessages = () => {
@@ -14,6 +14,7 @@ const ConversationMessages = () => {
   const { messages, selectedFriend, shouldRender } = friendStore();
   // Using getMyFriends to use update BadgeCount (temporary solution)
   const { setBadgeCount } = useSetBadgeCount();
+  const placeholderProfileImage = images.placeholderProfileImage;
 
   // Fetch messages when shouldRender changes via socket sigal
   useEffect(() => {
