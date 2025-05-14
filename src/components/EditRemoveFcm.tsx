@@ -1,10 +1,7 @@
 import { View, Text, TouchableOpacity, Alert } from "react-native";
 import * as SecureStore from "expo-secure-store";
-import { useAuth } from "@/src/context/AuthContext";
 
 const EditRemoveFcm = () => {
-  const { authState } = useAuth();
-
   const deleteFcmTokens = async () => {
     Alert.alert(
       "Delete FCM Token?",
@@ -31,10 +28,7 @@ const EditRemoveFcm = () => {
   return (
     <View className="flex-col pt-8">
       <View className="flex-row justify-center p-2">
-        <Text className="text-btc100">Edit Friends: </Text>
-        <Text className="text-btc100">
-          Auth state: {authState?.authenticated ? "Logged in" : "Not logged in"}
-        </Text>
+        <Text className="text-btc100">Reset push notification</Text>
       </View>
       <View className="items-center">
         <TouchableOpacity

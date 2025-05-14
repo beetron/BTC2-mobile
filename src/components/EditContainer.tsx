@@ -7,7 +7,6 @@ import {
   ScrollView,
 } from "react-native";
 import React from "react";
-import EditRemoveFcm from "./EditRemoveFcm";
 import EditAddFriend from "./EditAddFriend";
 import EditFriendRequests from "./EditFriendRequests";
 import EditRemoveFriend from "./EditRemoveFriend";
@@ -25,7 +24,6 @@ const EditContainer = () => {
               <EditAddFriend />
               <EditRemoveFriend />
               <EditFriendRequests />
-              <EditRemoveFcm />
             </View>
           </View>
         </ScrollView>
