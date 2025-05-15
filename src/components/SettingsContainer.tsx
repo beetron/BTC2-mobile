@@ -11,7 +11,6 @@ import SettingsNickname from "./SettingsNickname";
 import SettingsUniqueId from "./SettingsUniqueId";
 import SettingsPassword from "./SettingsPassword";
 import SettingsIcon from "./SettingsIcon";
-import EditRemoveFcm from "./EditRemoveFcm";
 
 const SettingsContainer = () => {
   return (
@@ -31,9 +30,6 @@ const SettingsContainer = () => {
           <View className="flex-1">
             <SettingsPassword />
             <SettingsIcon />
-          </View>
-          <View>
-            <EditRemoveFcm />
           </View>
         </View>
       </TouchableWithoutFeedback>

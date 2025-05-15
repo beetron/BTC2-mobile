@@ -1,6 +1,9 @@
 import { View, Text, TouchableOpacity, Alert } from "react-native";
 import * as SecureStore from "expo-secure-store";
 
+// This componen is for debugging to force notification permissions
+// and to delete the FCM token from SecureStore
+
 const EditRemoveFcm = () => {
   const deleteFcmTokens = async () => {
     Alert.alert(
@@ -16,8 +19,7 @@ const EditRemoveFcm = () => {
           onPress: async () => {
             console.log("Deleting FCM tokens...");
             await SecureStore.deleteItemAsync("fcm_token");
-            await SecureStore.deleteItemAsync("fcm_token_timestamp");
-            console.log("FCM tokens deleted from SecureStore");
+            console.log("FCM token deleted from SecureStore");
           },
         },
       ],
