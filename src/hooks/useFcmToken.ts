@@ -7,12 +7,10 @@ import { useAuth } from "@/src/context/AuthContext";
 import { Alert } from "react-native";
 
 const FCM_TOKEN = "fcm_token";
-const FCM_TOKEN_TIMESTAMP = "fcm_token_timestamp";
 
 export default function useFcmToken() {
   const [fcmToken, setFcmToken] = useState<string | null>(null);
   const [isRegistering, setIsRegistering] = useState(false);
-  const [error] = useState<string | null>(null);
   const { authState } = useAuth();
 
   // Get mobile device info
@@ -44,11 +42,6 @@ export default function useFcmToken() {
         });
 
         if (response.status === 200) {
-          // Store and update token timestamp
-          await SecureStore.setItemAsync(
-            FCM_TOKEN_TIMESTAMP,
-            Date.now().toString()
-          );
           console.log("FCM token registered successfully");
           return true;
         } else {
@@ -100,36 +93,38 @@ export default function useFcmToken() {
     }
 
     try {
+      // First check notification permission status
+      // Permission status needs re-checking when app is re-installed
+      const permStatus = await messaging().hasPermission();
+      console.log("Current notification permission status:", permStatus);
+
+      // If permission not granted, generate new token which will trigger permission request
+      if (
+        permStatus === messaging.AuthorizationStatus.NOT_DETERMINED ||
+        permStatus === messaging.AuthorizationStatus.DENIED
+      ) {
+        console.log(
+          "Notification permission not granted, requesting permission..."
+        );
+        const newToken = await generateNewFcmToken();
+        if (newToken) {
+          await registerFcmToken(newToken);
+        }
+        return;
+      }
+
       // Check FCM token in SecureStore
       const storedFcmToken = await SecureStore.getItemAsync(FCM_TOKEN);
-      const storedFcmTokenTimestamp =
-        await SecureStore.getItemAsync(FCM_TOKEN_TIMESTAMP);
 
       if (storedFcmToken) {
         console.log("Found SecureStored FCM token");
         setFcmToken(storedFcmToken);
 
-        // Check if token is not expired based on backend policy (e.g. 14 days)
-        const shouldRenew = shouldRenewFcmToken(storedFcmTokenTimestamp);
-
-        if (shouldRenew) {
-          // Register existing token to backend
-          const success = await registerFcmToken(storedFcmToken);
-
-          // if registration failed, get new token
-          if (!success) {
-            console.log(
-              "Failed to register existing FCM token, getting new token"
-            );
-            const newToken = await generateNewFcmToken();
-            if (newToken) {
-              await registerFcmToken(newToken);
-            }
-          }
-        }
+        // Update existing token to backend
+        await registerFcmToken(storedFcmToken);
       } else {
-        // If new device with no existing token, get new token and register
-        console.log("No FCM token found, getting new token");
+        // If new device with no existing token, generate new token and register
+        console.log("No FCM token found, generating new token");
         const newToken = await generateNewFcmToken();
         if (newToken) {
           await registerFcmToken(newToken);
@@ -141,21 +136,5 @@ export default function useFcmToken() {
     }
   }, [authState?.authenticated, generateNewFcmToken, registerFcmToken]);
 
-  /////////////////////////////////////////////
-  // Renew FCM token if x days have passed since last registration
-  /////////////////////////////////////////////
-  const shouldRenewFcmToken = (timestamp: string | null): boolean => {
-    if (!timestamp) {
-      return true;
-    }
-    const lastRegistered = parseInt(timestamp, 10);
-    const now = Date.now();
-    const daysPassed = (now - lastRegistered) / (1000 * 60 * 60 * 24);
-
-    console.log("Days passed since last FCM token registration: ", daysPassed);
-    // Renew if more than 7 days have passed
-    return daysPassed > 7;
-  };
-
-  return { fcmToken, isRegistering, error, manageFcmToken };
+  return { fcmToken, isRegistering, manageFcmToken };
 }
