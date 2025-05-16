@@ -3,6 +3,7 @@
 #
 pod/
 ios/
+fastlane/
 
 # dependencies
 node_modules/
