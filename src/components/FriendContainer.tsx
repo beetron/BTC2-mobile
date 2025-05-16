@@ -17,7 +17,6 @@ const FriendContainer = () => {
   // Run Effect when screen is back in focus
   useFocusEffect(
     useCallback(() => {
-      console.log("useFocusEffecT called");
       setMessages([]);
       setSelectedFriend(null);
       getMyFriends();
