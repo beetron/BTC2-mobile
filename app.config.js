@@ -11,6 +11,7 @@ module.exports = {
     ios: {
       useFrameworks: "static",
       googleServicesFile: process.env.GOOGLESERVICE_INFO_PLIST,
+      // googleServicesFile: "./prebuild/GoogleService-Info.plist",
       icon: {
         // Default IOS icon
         dark: "./src/assets/icons/ios-dark.png",
