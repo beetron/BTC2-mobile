@@ -5,6 +5,7 @@ pod/
 ios/
 fastlane/
 android/
+prebuild/
 
 # dependencies
 node_modules/
