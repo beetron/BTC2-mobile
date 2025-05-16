@@ -12,6 +12,7 @@ const initialize = (userId) => {
     _userId = userId;
 
     _socket = io(API_URL, {
+      path: "/socket.io",
       transports: ["websocket"],
       autoConnect: true,
       reconnection: true,
