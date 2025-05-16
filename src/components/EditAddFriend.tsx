@@ -24,8 +24,8 @@ const EditAddFriend = () => {
     const success = await addFriend(friendUniqueId);
     if (success) {
       setFriendUniqueId("");
+      Keyboard.dismiss();
     }
-    Keyboard.dismiss();
   };
 
   return (
