@@ -4,6 +4,7 @@
 pod/
 ios/
 fastlane/
+android/
 
 # dependencies
 node_modules/
