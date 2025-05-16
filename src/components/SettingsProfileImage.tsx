@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/src/context/AuthContext";
 import useGetProfileImage from "@/src/hooks/useGetProfileImage";
 import * as ImagePicker from "expo-image-picker";
-import { placeholderProfileImage } from "@/src/constants/images";
+import { images } from "@/src/constants/images";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import useUpdateProfileImage from "@/src/hooks/useUpdateProfileImage";
 
@@ -13,6 +13,8 @@ const SettingsProfileImage = () => {
   const { authState } = useAuth();
   const { getProfileImage, isLoading } = useGetProfileImage();
   const { updateProfileImage } = useUpdateProfileImage();
+
+  const placeholderImage = images.placeholderProfileImage;
 
   // Fetch current profile image from backend
   useEffect(() => {
@@ -69,7 +71,7 @@ const SettingsProfileImage = () => {
             />
           ) : (
             <Image
-              source={placeholderProfileImage}
+              source={placeholderImage}
               style={{ width: 80, height: 80, borderRadius: 50 }}
               className="bg-btc100"
             />
