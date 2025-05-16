@@ -2,6 +2,7 @@
 
 #
 pod/
+ios/
 
 # dependencies
 node_modules/
