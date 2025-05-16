@@ -6,19 +6,25 @@ let _userId = null;
 const _listeners = new Map();
 
 const initialize = (userId) => {
+  const url = new URL(API_URL);
+  const apiBasePath = url.pathname;
+
   // Create socket connection if it doesn't exist
   if (!_socket) {
     console.log("Creating new socket connection");
     _userId = userId;
 
-    _socket = io(API_URL, {
-      path: "/socket.io",
+    _socket = io(url.origin, {
+      path: `${apiBasePath}/socket.io`,
       transports: ["websocket"],
       autoConnect: true,
       reconnection: true,
       reconnectionAttempts: 5,
       query: { userId },
     });
+    console.log(
+      `Socket connecting to ${url.origin} with path ${apiBasePath}/socket.io`
+    );
   } else if (!_socket.connected) {
     // Reconnect existing socket if it's disconnected
     console.log("Reconnecting existing socket");
