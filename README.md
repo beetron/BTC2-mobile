@@ -1,50 +1,173 @@
-# Welcome to your Expo app 👋
+# BTC2 Mobile App (Frontend)
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+[![React Native](https://img.shields.io/badge/React_Native-0.76-61DAFB?style=flat-square&logo=react&logoColor=white)](https://reactnative.dev/)
+[![Expo](https://img.shields.io/badge/Expo-52.0-000020?style=flat-square&logo=expo&logoColor=white)](https://expo.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.3-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Firebase](https://img.shields.io/badge/Firebase-Cloud_Messaging-FFCA28?style=flat-square&logo=firebase&logoColor=black)](https://firebase.google.com/)
+[![Socket.io](https://img.shields.io/badge/Socket.io_Client-4.8-010101?style=flat-square&logo=socket.io&logoColor=white)](https://socket.io/)
+[![TailwindCSS](https://img.shields.io/badge/TailwindCSS-NativeWind-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
 
-## Get started
+A modern iOS messaging app built with React Native and Expo, featuring real-time messaging, push notifications. This invite-only app requires an existing member's unique ID to join.
+<br>
+The backend API for BTC2 could be found at: https://github.com/beetron/btc2_API
 
-1. Install dependencies
+## Table of Contents
 
-   ```bash
-   npm install
-   ```
+- [Features](#features)
+- [Setup](#setup)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [Environment Configuration](#environment-configuration)
+  - [Development Setup](#development-setup)
+- [Architecture](#architecture)
+  - [Key Features](#key-features)
+  - [State Management](#state-management)
+  - [Navigation](#navigation)
+  - [Push Notifications](#push-notifications)
+- [Development](#development)
+- [Building for Production](#building-for-production)
 
-2. Start the app
+## Features
 
-   ```bash
-    npx expo start
-   ```
+#### Current Features
 
-In the output, you'll find options to open the app in a
+- User authentication (signup/login/logout)
+- Real-time messaging with socket.io
+- Friend management system
+- Profile customization (nickname, unique ID, profile image)
+- Push notifications with badge count
+- Customizable app icons
+- Secure storage with expo-secure-store
+- Responsive UI with NativeWind (TailwindCSS)
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+#### Update Plans
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+- Group chat support
+- File sharing in messages
+- User blocking
+- Email registration
+- Password recovery
 
-## Get a fresh project
+## Setup
 
-When you're ready, run:
+### Prerequisites
+
+- Node.js 18+
+- Xcode 15+ (for iOS development)
+- Expo CLI
+- iOS Simulator or physical device
+- Firebase project with FCM configured
+- Apple Developer Account (for testing on physical devices)
+
+### Installation
+
+1. Clone the repository:
 
 ```bash
-npm run reset-project
+git clone https://github.com/beetron/btc2
+cd btc2
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+2. Install dependencies:
 
-## Learn more
+```bash
+npm install
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+### Environment Configuration
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+Create a `.env` file in the root directory:
 
-## Join the community
+```bash
+EXPO_PUBLIC_ENV=development
+EXPO_PUBLIC_API_URL=https://api.yourdomain.com/1.0.0
+EXPO_PUBLIC_API_DEV_URL=https://192.168.1.2/1.0.0
+EXPO_PUBLIC_API_PROFILE_IMAGE_URL=/users/profileImage/
+EXPO_PUBLIC_APP_VERSION=1.0.0
+```
 
-Join our community of developers creating universal apps.
+### Development Setup
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+1. Install Expo Go on your iOS device or setup iOS Simulator
+
+2. Start the development server:
+
+```bash
+npx expo start
+```
+
+3. For iOS development build:
+
+```bash
+npx expo run:ios
+```
+
+## Architecture
+
+### Key Features
+
+#### Authentication
+
+- JWT-based authentication
+- Secure token storage using expo-secure-store
+- Protected route handling with expo-router
+
+#### Real-time Communication
+
+- Socket.io client integration
+- Automatic reconnection handling
+- Background connection management
+
+#### UI/UX
+
+- Custom fonts with expo-font
+- Responsive design using NativeWind
+- Custom pre-configured app icon selection
+- Image picker for profile photos
+
+### State Management
+
+- Zustand for global state management
+- Context API for auth and socket state
+
+### Navigation
+
+- File-based routing with expo-router
+- Protected routes
+- Tab-based navigation
+
+### Push Notifications
+
+- Firebase Cloud Messaging (FCM) integration
+- Badge count management
+- Background notification handling
+- Multi-device token management
+
+## Development
+
+### Project Structure
+
+```
+src/
+├── app/              # Application screens and navigation
+├── components/       # Reusable UI components
+├── constants/        # App constants and configs
+├── context/         # React Context providers
+├── hooks/           # Custom React hooks
+├── services/        # API and socket services
+├── utils/           # Helper functions
+└── zustand/         # State management stores
+```
+
+### Running in Development
+
+```bash
+# Start development server
+npm start
+
+# Run on iOS simulator
+npm run ios
+
+# Build development client
+eas build --profile development --platform ios
+```
