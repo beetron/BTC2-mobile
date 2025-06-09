@@ -8,7 +8,7 @@ import React, {
   FC,
   useRef,
 } from "react";
-import { io, Socket } from "socket.io-client";
+import { Socket } from "socket.io-client";
 import { useAuth } from "./AuthContext";
 import { useAppStateListener } from "./AppStateContext";
 import friendStore from "../zustand/friendStore";
@@ -32,60 +32,91 @@ export const SocketProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const socketRef = useRef<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const setShouldRender = friendStore((state) => state.setShouldRender);
-  // const { setShouldRender } = friendStore();
+  const isInitializing = useRef(false);
+  const cleanupInProgress = useRef(false);
 
   // Update ref when state changes
   useEffect(() => {
     socketRef.current = socket;
   }, [socket]);
 
-  // Initialize socket or grab existing socket
-  const initializeSocket = useCallback(() => {
-    if (authState?.authenticated && authState.user?._id) {
-      // Get socket from singleton service
-      const socket = socketService.initialize(authState.user._id);
-      setSocket(socket);
+  // Cleanup function
+  const cleanup = useCallback(async () => {
+    if (cleanupInProgress.current) return;
+    if (!socketRef.current) return;
 
-      // Set up socket events
+    try {
+      cleanupInProgress.current = true;
+      console.log("Cleaning up socket connection");
+
+      socketRef.current.disconnect();
+      socketRef.current = null;
+      setSocket(null);
+      setIsConnected(false);
+    } catch (error) {
+      console.error("Error during socket cleanup:", error);
+    } finally {
+      cleanupInProgress.current = false;
+    }
+  }, []);
+
+  // Initialize socket
+  const initializeSocket = useCallback(() => {
+    if (
+      !authState?.authenticated ||
+      !authState.user?._id ||
+      isInitializing.current
+    ) {
+      return;
+    }
+
+    try {
+      isInitializing.current = true;
+      cleanup();
+
+      const newSocket = socketService.initialize(authState.user._id);
       socketService.setupEvents();
 
-      // Update connection state
-      setIsConnected(socket.connected);
+      setSocket(newSocket);
+      setIsConnected(newSocket.connected);
+    } catch (error) {
+      console.error("Socket initialization error:", error);
+    } finally {
+      isInitializing.current = false;
     }
-  }, [authState?.authenticated]);
+  }, [authState?.authenticated, authState?.user?._id, cleanup]);
 
-  // Reconnect socket
+  // Reconnect socket with debounce
   const reconnect = useCallback(() => {
+    if (!authState?.authenticated) return;
+
     if (socket) {
       socket.connect();
     } else {
       initializeSocket();
     }
-  }, [socket, initializeSocket]);
+  }, [socket, initializeSocket, authState?.authenticated]);
 
-  // Initial socket connection
+  // Handle authentication state changes
   useEffect(() => {
-    initializeSocket();
-    return () => {
-      // Only disconnect if authentication state changes
-      if (!authState?.authenticated) {
-        console.log("User logged out - disconnecting socket");
-        socket?.disconnect();
-      } else {
-        console.log(
-          "Component unmounting but user still logged in - keeping socket alive"
-        );
-      }
-    };
-  }, [authState?.authenticated]);
+    if (authState?.authenticated) {
+      initializeSocket();
+    } else {
+      cleanup();
+    }
 
-  // Listen for connectionChange events from the socket service
+    return () => {
+      cleanup();
+    };
+  }, [authState?.authenticated, initializeSocket, cleanup]);
+
+  // Listen for connection changes
   useEffect(() => {
     if (!authState?.authenticated) return;
 
     const unsubConnection = socketService.addListener(
       "connectionChange",
-      (connected: any) => {
+      (connected: boolean) => {
         console.log("Socket connection changed:", connected);
         setIsConnected(connected);
       }
@@ -96,14 +127,16 @@ export const SocketProvider: FC<{ children: ReactNode }> = ({ children }) => {
     };
   }, [authState?.authenticated]);
 
-  // Listen for newMessageSignal events and update Zustand (setShouldRender)
+  // Listen for new messages
   useEffect(() => {
     if (!authState?.authenticated) return;
 
     console.log("Setting up newMessageSignal listener");
     const unsubMessage = socketService.addListener("newMessageSignal", () => {
-      console.log("SocketContext: Received newMessageSignal");
-      setShouldRender();
+      if (authState?.authenticated) {
+        console.log("SocketContext: Received newMessageSignal");
+        setShouldRender();
+      }
     });
 
     return () => {
@@ -112,20 +145,27 @@ export const SocketProvider: FC<{ children: ReactNode }> = ({ children }) => {
     };
   }, [authState?.authenticated, setShouldRender]);
 
-  // Use AppStateListener instead of directly using AppState
+  // Handle app state changes
   useAppStateListener(() => {
-    console.log("App became active, socket ID:", socket?.id ?? "no socket");
-    reconnect();
+    if (authState?.authenticated) {
+      console.log("App became active, socket ID:", socket?.id ?? "no socket");
+      reconnect();
+    }
   });
 
+  const contextValue = {
+    socket,
+    isConnected,
+    reconnect,
+  };
+
   return (
-    <SocketContext.Provider value={{ socket, isConnected, reconnect }}>
+    <SocketContext.Provider value={contextValue}>
       {children}
     </SocketContext.Provider>
   );
 };
 
-// Export hook
 export const useSocket = () => {
   const context = useContext(SocketContext);
   if (!context) {
@@ -133,3 +173,5 @@ export const useSocket = () => {
   }
   return context;
 };
+
+export default SocketContext;

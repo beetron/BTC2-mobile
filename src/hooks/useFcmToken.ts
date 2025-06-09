@@ -49,7 +49,7 @@ export default function useFcmToken() {
         }
       } catch (error) {
         console.error("Error registering FCM token with backend: ", error);
-        Alert.alert("Failed to register FCM token");
+        // Alert.alert("Failed to register FCM token");
         return false;
       } finally {
         setIsRegistering(false);

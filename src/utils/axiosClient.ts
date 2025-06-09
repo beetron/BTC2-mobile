@@ -1,12 +1,19 @@
 import axios from "axios";
 import * as SecureStore from "expo-secure-store";
 import { API_URL } from "@/src/constants/api";
-import { checkTokenExpiry } from "@/src/utils/checkTokenExpiry";
-import { router } from "expo-router";
-import { Alert } from "react-native";
+import { checkTokenExpiry } from "./checkTokenExpiry";
 
-const JWT_KEY = "jwt";
-const USER_KEY = "user";
+export const JWT_KEY = "jwt";
+export const USER_KEY = "user";
+let isLoggingOut = false;
+
+// Auth state updater function
+let authStateUpdater: ((state: any) => void) | null = null;
+
+export const setAuthStateUpdater = (updater: (state: any) => void) => {
+  authStateUpdater = updater;
+};
+
 console.log("API_URL: ", API_URL);
 
 const axiosClient = axios.create({
@@ -14,21 +21,71 @@ const axiosClient = axios.create({
   timeout: 10000,
 });
 
+export const handleLogout = async () => {
+  if (isLoggingOut) {
+    console.log("Logout already in progress, skipping");
+    return;
+  }
+
+  isLoggingOut = true;
+  console.log("Starting logout process");
+
+  try {
+    // Clear headers and storage
+    delete axiosClient.defaults.headers.common["Authorization"];
+
+    await Promise.all([
+      SecureStore.deleteItemAsync(JWT_KEY),
+      SecureStore.deleteItemAsync(USER_KEY),
+    ]);
+
+    console.log("Logged out - tokens cleared");
+
+    // Immediately update auth state if updater is available
+    if (authStateUpdater) {
+      authStateUpdater({
+        token: null,
+        authenticated: false,
+        user: null,
+      });
+    }
+  } catch (error) {
+    console.error("Error during logout:", error);
+  } finally {
+    setTimeout(() => {
+      isLoggingOut = false;
+    }, 1000);
+  }
+};
+
+// Request interceptor - check token expiry before making calls
 axiosClient.interceptors.request.use(
   async (config) => {
+    if (isLoggingOut) {
+      return Promise.reject(
+        new Error("Request cancelled - logout in progress")
+      );
+    }
+
     try {
       const token = await SecureStore.getItemAsync(JWT_KEY);
+      console.log("Token found:", !!token);
+
       if (token) {
+        console.log("Checking token expiry...");
         const isTokenValid = checkTokenExpiry(token);
+        console.log("Token is valid:", isTokenValid);
+
         if (!isTokenValid) {
-          // Delete token and user data from secure store
+          console.log("Token expired during request - initiating logout");
+
+          // Clear tokens immediately
           await SecureStore.deleteItemAsync(JWT_KEY);
           await SecureStore.deleteItemAsync(USER_KEY);
-          console.log(
-            "Token expired during request - removing from SecureStore"
-          );
-          router.replace("/guests/Login");
-          return config;
+          delete axiosClient.defaults.headers.common["Authorization"];
+
+          await handleLogout();
+          return Promise.reject(new Error("Token expired"));
         }
         config.headers.Authorization = `Bearer ${token}`;
       }
@@ -42,45 +99,21 @@ axiosClient.interceptors.request.use(
   }
 );
 
+// Response interceptor - handle 401 errors
 axiosClient.interceptors.response.use(
   (response) => response,
   async (error) => {
-    // Handle connection errors
-    if (!error.response) {
-      Alert.alert(
-        "Connection Error",
-        "Failed to connect to server. Please check your internet connection.",
-        [{ text: "OK" }],
-        { cancelable: false }
-      );
-      return Promise.reject(new Error("Network Error"));
+    if (
+      error.response?.status === 401 &&
+      !isLoggingOut &&
+      !error.config._retry
+    ) {
+      error.config._retry = true;
+      console.log("401 Unauthorized - initiating logout");
+      await handleLogout();
     }
-
-    // Handle 401 unauthorized errors
-    if (error.response.status === 401) {
-      await SecureStore.deleteItemAsync(JWT_KEY);
-      await SecureStore.deleteItemAsync(USER_KEY);
-      console.log("Authentication error - tokens cleared");
-      router.replace("/guests/Login");
-    }
-
     return Promise.reject(error);
   }
 );
-
-// axiosClient.interceptors.response.use(
-//   (response) => response,
-//   async (error) => {
-//     // Handle 401 unauthorized errors
-//     if (error.response && error.response.status === 401) {
-//       // Delete token and user data from secure store
-//       await SecureStore.deleteItemAsync(JWT_KEY);
-//       await SecureStore.deleteItemAsync(USER_KEY);
-//       console.log("Authentication error - tokens cleared");
-//       router.replace("/guests/Login");
-//     }
-//     return Promise.reject(error);
-//   }
-// );
 
 export default axiosClient;

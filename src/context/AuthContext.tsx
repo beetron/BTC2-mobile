@@ -8,7 +8,12 @@ import {
 import { useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import { checkTokenExpiry } from "@/src/utils/checkTokenExpiry";
-import axiosClient from "@/src/utils/axiosClient";
+import axiosClient, {
+  handleLogout,
+  JWT_KEY,
+  USER_KEY,
+  setAuthStateUpdater,
+} from "@/src/utils/axiosClient";
 
 interface AuthProps {
   authState?: {
@@ -42,9 +47,6 @@ interface AuthProps {
   onLogout?: () => Promise<any>;
 }
 
-const JWT_KEY = "jwt";
-const USER_KEY = "user";
-
 const AuthContext = createContext<AuthProps>({});
 
 export const useAuth = () => {
@@ -63,65 +65,80 @@ export const AuthProvider = ({ children }: any) => {
     } | null;
   }>({
     token: null,
-    authenticated: null,
+    authenticated: false,
     user: null,
   });
 
   const router = useRouter();
 
+  // Register auth state updater with axiosClient
+  useEffect(() => {
+    setAuthStateUpdater(setAuthState);
+
+    return () => {
+      setAuthStateUpdater(() => {});
+    };
+  }, []);
+
   //////////////////////////////////////////
-  // Logout callback function
+  // Logout callback function via axiosClient utility
   const logout = useCallback(async () => {
-    // Delete token and user data from secure store
-    await SecureStore.deleteItemAsync(JWT_KEY);
-    await SecureStore.deleteItemAsync(USER_KEY);
-
-    // Reset HTTP headers
-    // axios.defaults.headers.common["Authorization"] = "";
-    axiosClient.defaults.headers.common["Authorization"] = "";
-
-    // Reset authState
+    await handleLogout();
     setAuthState({
       token: null,
       authenticated: false,
       user: null,
     });
-    router.replace("/guests/Login");
   }, []);
 
   //////////////////////////////////////////
   // Function to restore auth state from SecureStore
   const restoreAuthState = async () => {
     console.log("Restoring JWT/USER from SecureStore");
-    const token = await SecureStore.getItemAsync(JWT_KEY);
-    const userData = await SecureStore.getItemAsync(USER_KEY);
+    try {
+      const token = await SecureStore.getItemAsync(JWT_KEY);
+      const userData = await SecureStore.getItemAsync(USER_KEY);
 
-    if (token) {
-      // Check token expiry
-      const isTokenValid = checkTokenExpiry(token);
-      if (!isTokenValid) {
-        logout();
+      if (!token) {
+        setAuthState((prev) => ({
+          ...prev,
+          token: null,
+          authenticated: false,
+          user: null,
+        }));
         return;
+      } else {
+        const isTokenValid = checkTokenExpiry(token);
+        if (!isTokenValid) {
+          console.log("Token expired during restore - logging out");
+          await logout();
+          return;
+        }
+
+        const parsedUser = userData ? JSON.parse(userData) : null;
+        setAuthState({
+          token: token,
+          authenticated: true,
+          user: parsedUser
+            ? {
+                _id: parsedUser._id,
+                uniqueId: parsedUser.uniqueId,
+                nickname: parsedUser.nickname,
+                profileImage: parsedUser.profileImage,
+              }
+            : null,
+        });
+
+        axiosClient.defaults.headers.common["Authorization"] =
+          `Bearer ${token}`;
       }
-
-      const parsedUser = userData ? JSON.parse(userData) : null;
-
-      // Update state with token and properly structured user data
+    } catch (error) {
+      console.error("Error in restoreAuthState:", error);
       setAuthState({
-        token: token,
-        authenticated: true,
-        user: parsedUser
-          ? {
-              _id: parsedUser._id,
-              uniqueId: parsedUser.uniqueId,
-              nickname: parsedUser.nickname,
-              profileImage: parsedUser.profileImage,
-            }
-          : null,
+        token: null,
+        authenticated: false,
+        user: null,
       });
-
-      // Also restore the Authorization header
-      axiosClient.defaults.headers.common["Authorization"] = `Bearer ${token}`;
     }
   };
 

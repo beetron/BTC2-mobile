@@ -51,7 +51,9 @@ const useGetMyFriends = () => {
       );
       setMyFriends(friendsWithImages);
     } catch (error: any) {
-      console.log("Error: ", error.response?.data?.error || error.message);
+      if (error.message !== "Unauthorized") {
+        console.log("Error: ", error.response?.data?.error || error.message);
+      }
     } finally {
       setIsLoading(false);
     }
