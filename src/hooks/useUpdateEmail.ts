@@ -15,7 +15,7 @@ const useUpdateEmail = () => {
       if (!email || !password) return false;
 
       // Send email and password to API
-      const response = await axiosClient.put("/users/updatemail", {
+      const response = await axiosClient.put("/users/updateemail", {
         email,
         password,
       });
