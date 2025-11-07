@@ -3,10 +3,9 @@ import {
   View,
   Text,
   Keyboard,
-  KeyboardAvoidingView,
   TouchableWithoutFeedback,
-  ScrollView,
   Alert,
+  TouchableOpacity,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { useAuth } from "../../context/AuthContext";
@@ -14,7 +13,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Logo from "../../components/Logo";
 import CustomButton from "../../components/CustomButton";
 import CustomInput from "../../components/CustomInput";
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
+import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 
 interface FormData {
   username: string;
@@ -28,6 +28,7 @@ const Login = () => {
   });
 
   const { onLogin } = useAuth();
+  const router = useRouter();
 
   const onSubmit = async () => {
     if (formData.username === "" || formData.password === "") {
@@ -49,55 +50,65 @@ const Login = () => {
 
   return (
     <SafeAreaView className="h-full bg-btc500">
-      <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
+      <KeyboardAvoidingView
+        behavior="padding"
+        keyboardVerticalOffset={100}
+        style={{ flex: 1 }}
+      >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-            <View className="flex-1 items-center jusitfy-center p-4 mt-16">
-              <Logo />
-              {/* Username input */}
-              <CustomInput
-                title="Username"
-                value={formData.username}
-                onChangeText={(e) => setFormData({ ...formData, username: e })}
-                containerStyles="w-3/5"
-                isPassword={false}
-                autoCompleteType="username"
-              />
+          <View
+            style={{
+              flex: 1,
+              padding: 16,
+              justifyContent: "center",
+              alignItems: "center",
+              marginTop: 40,
+            }}
+          >
+            <Logo />
+            {/* Username input */}
+            <CustomInput
+              title="Username"
+              value={formData.username}
+              onChangeText={(e) => setFormData({ ...formData, username: e })}
+              containerStyles="w-3/5"
+              isPassword={false}
+              autoCompleteType="username"
+            />
 
-              {/* Password input */}
-              <CustomInput
-                title="Password"
-                value={formData.password}
-                onChangeText={(e) => setFormData({ ...formData, password: e })}
-                containerStyles="w-3/5"
-                isPassword={true}
-                autoComleteType="password"
-              />
+            {/* Password input */}
+            <CustomInput
+              title="Password"
+              value={formData.password}
+              onChangeText={(e) => setFormData({ ...formData, password: e })}
+              containerStyles="w-3/5"
+              isPassword={true}
+              autoComleteType="password"
+            />
 
-              {/* Login button */}
-              <CustomButton
-                title="Login"
-                isLoading={false}
-                textStyles="font-funnel-regular"
-                containerStyles="w-3/5 top-5"
-                handlePress={onSubmit}
-              />
-              {/* Signup */}
-              <View className="justify-center pt-8 flex-row">
-                <Text className="text-lg font-funnel-regular color-btc300 right-2">
-                  Need an account?
+            {/* Login button */}
+            <CustomButton
+              title="Login"
+              isLoading={false}
+              textStyles="font-funnel-regular"
+              containerStyles="w-3/5 top-5"
+              handlePress={onSubmit}
+            />
+            {/* Signup */}
+            <View className="justify-center items-center pt-8 flex-row mt-4">
+              <Text className="text-lg font-funnel-regular color-btc300 right-2">
+                Need an account?
+              </Text>
+              <TouchableOpacity
+                style={{ padding: 8, backgroundColor: "transparent" }}
+                onPress={() => router.push("/guests/Signup")}
+              >
+                <Text className="text-lg font-funnel-regular color-btc200">
+                  Sign up here
                 </Text>
-                <Link
-                  href={"/guests/Signup" as any}
-                  className="text-lg font-funnel-regular color-btc200"
-                >
-                  <Text className="text-lg font-funnel-regular color-btc200">
-                    Sign up here
-                  </Text>
-                </Link>
-              </View>
+              </TouchableOpacity>
             </View>
-          </ScrollView>
+          </View>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
       <StatusBar style="light" />
