@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { Alert, Text, TextInput, View, Platform, Keyboard } from "react-native";
+import { Text, TextInput, View, Platform, Keyboard } from "react-native";
 import useUpdateUniqueId from "@/src/hooks/useUpdateUniqueId";
 import { useAuth } from "@/src/context/AuthContext";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
@@ -28,12 +28,7 @@ const SettingsUniqueId = () => {
     if (!checkLengthUsername(uniqueId) || !checkAlphanumeric(uniqueId)) return;
 
     // Send to backend API
-    const success = await updateUniqueId(uniqueId);
-    if (success) {
-      Alert.alert("Unique ID updated");
-    } else {
-      Alert.alert("Error updating Unique ID");
-    }
+    await updateUniqueId(uniqueId);
     Keyboard.dismiss();
   };
 

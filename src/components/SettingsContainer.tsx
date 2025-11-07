@@ -12,12 +12,20 @@ import SettingsUniqueId from "./SettingsUniqueId";
 import SettingsPassword from "./SettingsPassword";
 import SettingsIcon from "./SettingsIcon";
 import SettingsUsername from "./SettingsUsername";
+import SettingsEmail from "./SettingsEmail";
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
+import Border from "./Border";
 
 const SettingsContainer = () => {
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      className="flex-1"
+    <KeyboardAwareScrollView
+      style={{ flex: 1 }}
+      contentContainerStyle={{
+        flexGrow: 1,
+        paddingBottom: 24,
+      }}
+      bottomOffset={100}
+      extraKeyboardSpace={20}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View className="flex bg-btc500 h-full w-full p-8">
@@ -29,23 +37,15 @@ const SettingsContainer = () => {
               <SettingsUniqueId />
             </View>
           </View>
-          <View
-            style={{
-              height: 1,
-              backgroundColor: "grey",
-            }}
-          />
+          <Border />
           <SettingsPassword />
-          <View
-            style={{
-              height: 1,
-              backgroundColor: "grey",
-            }}
-          />
+          <Border />
+          <SettingsEmail />
+          <Border />
           <SettingsIcon />
         </View>
       </TouchableWithoutFeedback>
-    </KeyboardAvoidingView>
+    </KeyboardAwareScrollView>
   );
 };
 

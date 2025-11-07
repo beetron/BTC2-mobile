@@ -10,20 +10,21 @@ const SettingsNickname = () => {
   const currentUsername = authState?.user?.username;
 
   return (
-    <View className="flex-grow justify-center ml-4 max-w-[80%]">
-      <Text
-        style={{
-          height: 40,
-          paddingBottom: 0,
-          paddingTop: Platform.OS === "ios" ? 14 : 0,
-        }}
-        className="text-btc100 font-funnel-regular text-2xl"
-      >
-        Username: {currentUsername}
-      </Text>
-      <Text className="font-funnel-regular text-btc100 text-l opacity-[50%] border-b border-btc100 pb-2">
-        *you cannot change your username*
-      </Text>
+    <View className="flex-grow justify-center max-w-[80%]">
+      <View className="flex-grow justify-center ml-4 max-w-[80%] mt-4">
+        <Text className="font-funnel-regular text-btc100 text-l opacity-[80%]">
+          Current Username
+        </Text>
+        <Text
+          style={{
+            height: 40,
+            textAlignVertical: "center",
+          }}
+          className="text-btc100 font-funnel-regular text-2xl"
+        >
+          {currentUsername}
+        </Text>
+      </View>
     </View>
   );
 };
