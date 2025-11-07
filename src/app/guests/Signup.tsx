@@ -3,42 +3,55 @@ import {
   View,
   Text,
   Keyboard,
-  KeyboardAvoidingView,
   TouchableWithoutFeedback,
-  ScrollView,
   Alert,
+  TouchableOpacity,
 } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useAuth } from "../../context/AuthContext";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CustomButton from "../../components/CustomButton";
 import CustomInput from "../../components/CustomInput";
-import { Link } from "expo-router";
+// removed unused Link import; using router.push with TouchableOpacity instead
 import profileValidator from "@/src/utils/profileValidator";
 
 interface FormData {
+  email: string;
   username: string;
   password: string;
   passwordConfirm: string;
   uniqueId: string;
 }
 
+interface LoginData {
+  username: string;
+  password: string;
+}
+
 const Signup = () => {
-  const { checkLength, checkAlphanumeric } = profileValidator();
+  const {
+    checkLengthUsername,
+    checkLengthPassword,
+    checkAlphanumeric,
+    checkEmailRegex,
+  } = profileValidator();
   const [formData, setFormData] = useState<FormData>({
+    email: "",
     username: "",
     password: "",
     passwordConfirm: "",
     uniqueId: "",
   });
 
-  const { onSignup } = useAuth();
+  const { onSignup, onLogin } = useAuth();
   const router = useRouter();
 
   const onSubmit = async () => {
     // Check if any fields are empty
     if (
+      formData.email === "" ||
       formData.username === "" ||
       formData.password === "" ||
       formData.passwordConfirm === "" ||
@@ -46,11 +59,12 @@ const Signup = () => {
     ) {
       Alert.alert("Please fill in all fields");
     }
-    // Check if username is at least 6 characters long
+    // Validate via utils/profileValidator.ts
     if (
-      !checkLength(formData.username) ||
-      !checkLength(formData.password) ||
-      !checkAlphanumeric(formData.password)
+      !checkLengthUsername(formData.username) ||
+      !checkLengthPassword(formData.password) ||
+      !checkAlphanumeric(formData.password) ||
+      !checkEmailRegex(formData.email)
     ) {
       return;
     }
@@ -62,6 +76,7 @@ const Signup = () => {
       try {
         if (onSignup) {
           const result = await onSignup(
+            formData.email,
             formData.username,
             formData.password,
             formData.uniqueId
@@ -71,14 +86,15 @@ const Signup = () => {
           if (result && (result.status === 200 || result.status === 201)) {
             Alert.alert(
               "Signup Successful",
-              "Please login with your new account",
+              "Logging in with your new account...",
               [
                 {
                   text: "Continue",
                   onPress: () => {
-                    console.log("Please login with your new account");
-                    setTimeout(() => {
-                      router.replace("/guests/Login");
+                    setTimeout(async () => {
+                      if (onLogin) {
+                        await onLogin(formData.username, formData.password);
+                      }
                     }, 500); // 500ms delay
                   },
                 },
@@ -98,73 +114,88 @@ const Signup = () => {
 
   return (
     <SafeAreaView className="h-full bg-btc500">
-      <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
+      <KeyboardAwareScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{
+          flexGrow: 1,
+          paddingTop: 24,
+          paddingBottom: 24,
+        }}
+        bottomOffset={100}
+        extraKeyboardSpace={20}
+      >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-            <View className="flex-1 items-center jusitfy-center p-4 mt-24">
-              {/* <Logo /> */}
-              {/* Username input */}
-              <CustomInput
-                title="Username"
-                value={formData.username}
-                onChangeText={(e) => setFormData({ ...formData, username: e })}
-                containerStyles="w-3/5"
-                isPassword={false}
-              />
+          <View className="flex-1 p-4 items-center justify-start pt-20">
+            {/* <Logo /> */}
+            {/* Email input */}
+            <CustomInput
+              title="Email"
+              value={formData.email}
+              onChangeText={(e) => setFormData({ ...formData, email: e })}
+              containerStyles="w-3/5"
+              isPassword={false}
+            />
+            {/* Username input */}
+            <CustomInput
+              title="Username"
+              value={formData.username}
+              onChangeText={(e) => setFormData({ ...formData, username: e })}
+              containerStyles="w-3/5"
+              isPassword={false}
+            />
 
-              {/* Password input */}
-              <CustomInput
-                title="Password"
-                value={formData.password}
-                onChangeText={(e) => setFormData({ ...formData, password: e })}
-                containerStyles="w-3/5"
-                isPassword={true}
-              />
-              {/* Password Confirmation input */}
-              <CustomInput
-                title="Confirm Password"
-                value={formData.passwordConfirm}
-                onChangeText={(e) =>
-                  setFormData({ ...formData, passwordConfirm: e })
-                }
-                containerStyles="w-3/5"
-                isPassword={true}
-              />
-              {/* Friend's uniqueId */}
-              <CustomInput
-                title="Friend's ID"
-                value={formData.uniqueId}
-                onChangeText={(e) => setFormData({ ...formData, uniqueId: e })}
-                containerStyles="w-3/5"
-                isPassword={false}
-              />
+            {/* Password input */}
+            <CustomInput
+              title="Password"
+              value={formData.password}
+              onChangeText={(e) => setFormData({ ...formData, password: e })}
+              containerStyles="w-3/5"
+              isPassword={true}
+            />
+            {/* Password Confirmation input */}
+            <CustomInput
+              title="Confirm Password"
+              value={formData.passwordConfirm}
+              onChangeText={(e) =>
+                setFormData({ ...formData, passwordConfirm: e })
+              }
+              containerStyles="w-3/5"
+              isPassword={true}
+            />
+            {/* Friend's uniqueId */}
+            <CustomInput
+              title="Friend's ID"
+              value={formData.uniqueId}
+              onChangeText={(e) => setFormData({ ...formData, uniqueId: e })}
+              containerStyles="w-3/5"
+              isPassword={false}
+            />
 
-              {/* Signup button */}
-              <CustomButton
-                title="Signup"
-                isLoading={false}
-                textStyles="font-funnel-regular"
-                containerStyles="w-3/5 top-5"
-                handlePress={onSubmit}
-              />
-              {/* Link to Login screen */}
-              <View className="justify-center pt-8 flex-row">
-                <Text className="text-lg font-funnel-regular color-btc300 right-2">
-                  Already have an account?
+            {/* Signup button */}
+            <CustomButton
+              title="Signup"
+              isLoading={false}
+              textStyles="font-funnel-regular"
+              containerStyles="w-3/5 top-5"
+              handlePress={onSubmit}
+            />
+            {/* Link to Login screen */}
+            <View className="justify-center items-center pt-8 flex-row mt-4">
+              <Text className="text-lg font-funnel-regular color-btc300 right-2">
+                Already have an account?
+              </Text>
+              <TouchableOpacity
+                style={{ padding: 8, backgroundColor: "transparent" }}
+                onPress={() => router.push("/guests/Login")}
+              >
+                <Text className="text-lg font-funnel-regular color-btc200">
+                  Login here
                 </Text>
-                <Link
-                  href={"/guests/Login" as any}
-                  className="text-lg font-funnel-regular color-btc200"
-                >
-                  <Text className="text-lg font-funnel-regular color-btc200">
-                    Login here
-                  </Text>
-                </Link>
-              </View>
+              </TouchableOpacity>
             </View>
-          </ScrollView>
+          </View>
         </TouchableWithoutFeedback>
-      </KeyboardAvoidingView>
+      </KeyboardAwareScrollView>
       <StatusBar style="light" />
     </SafeAreaView>
   );
