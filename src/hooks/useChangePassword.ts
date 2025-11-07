@@ -5,14 +5,18 @@ import { Alert } from "react-native";
 const useChangePassword = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const changePassword = async (newPassword: string): Promise<boolean> => {
+  const changePassword = async (
+    currentPassword: string,
+    newPassword: string
+  ): Promise<boolean> => {
     try {
       setIsLoading(true);
 
-      if (!newPassword) return false;
+      if (!currentPassword || !newPassword) return false;
 
-      // Send new passwrod to API
+      // Send passwords to API
       const response = await axiosClient.put("/users/changepassword", {
+        currentPassword,
         password: newPassword,
       });
 
