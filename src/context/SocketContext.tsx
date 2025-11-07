@@ -10,7 +10,10 @@ import React, {
 } from "react";
 import { Socket } from "socket.io-client";
 import { useAuth } from "./AuthContext";
-import { useAppStateListener } from "./AppStateContext";
+import {
+  useAppStateListener,
+  useBackgroundStateListener,
+} from "./AppStateContext";
 import friendStore from "../zustand/friendStore";
 import socketService from "../services/socketService";
 
@@ -150,6 +153,16 @@ export const SocketProvider: FC<{ children: ReactNode }> = ({ children }) => {
     if (authState?.authenticated) {
       console.log("App became active, socket ID:", socket?.id ?? "no socket");
       reconnect();
+    }
+  });
+
+  // Handle background state
+  useBackgroundStateListener(() => {
+    if (authState?.authenticated) {
+      console.log("App went to background, disconnecting socket");
+      socketService.disconnect();
+      setSocket(null);
+      setIsConnected(false);
     }
   });
 
