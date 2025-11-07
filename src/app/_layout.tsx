@@ -3,6 +3,7 @@ import { useFonts } from "expo-font";
 import { SplashScreen, Stack } from "expo-router";
 import { AuthProvider } from "@/src/context/AuthContext";
 import { AppStateProvider } from "@/src/context/AppStateContext";
+import { KeyboardProvider } from "react-native-keyboard-controller";
 import "../../global.css";
 
 SplashScreen.preventAutoHideAsync();
@@ -31,16 +32,18 @@ const RootLayout = () => {
   return (
     <AuthProvider>
       <AppStateProvider>
-        <Stack
-          screenOptions={{
-            headerShown: false,
-          }}
-        >
-          <Stack.Screen name="members" />
-          <Stack.Screen name="guests" />
-          <Stack.Screen name="index" />
-          <Stack.Screen name="screens" />
-        </Stack>
+        <KeyboardProvider>
+          <Stack
+            screenOptions={{
+              headerShown: false,
+            }}
+          >
+            <Stack.Screen name="members" />
+            <Stack.Screen name="guests" />
+            <Stack.Screen name="index" />
+            <Stack.Screen name="screens" />
+          </Stack>
+        </KeyboardProvider>
       </AppStateProvider>
     </AuthProvider>
   );
