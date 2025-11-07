@@ -1,6 +1,5 @@
 import axiosClient from "@/src/utils/axiosClient";
 import { fromByteArray } from "base64-js";
-import { API_PROFILE_IMAGE_URL } from "@/src/constants/api";
 import { useState } from "react";
 
 const getMimeType = (url: string): string => {
@@ -28,7 +27,7 @@ const useGetProfileImage = () => {
 
       if (!url) return null;
 
-      const response = await axiosClient.get(`${API_PROFILE_IMAGE_URL}${url}`, {
+      const response = await axiosClient.get(`/users/uploads/images/${url}`, {
         responseType: "arraybuffer",
       });
 
