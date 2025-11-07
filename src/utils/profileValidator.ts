@@ -14,17 +14,21 @@ export const profileValidator = () => {
     return true;
   };
 
-  // Check if length is at least 6 chars
-  const checkLength = (data: string): boolean => {
-    if (!data) {
-      console.log("No data passed to profileUpdateValidator");
-      Alert.alert("Error", "Missing data");
+  // Check if username min max length is met
+  const checkLengthUsername = (data: string): boolean => {
+    if (data.length < 6 || data.length > 20) {
+      console.log("Username must be between 6 and 20 characters");
+      Alert.alert("Error", "Username must be between 6 and 20 characters");
       return false;
     }
+    return true;
+  };
 
-    if (data.length < 6) {
-      console.log("Length must be between 6 and 20 characters");
-      Alert.alert("Error", "Length must be between 6 and 20 characters");
+  // Check if password min max length is met
+  const checkLengthPassword = (data: string): boolean => {
+    if (data.length < 6 || data.length > 72) {
+      console.log("Password must be between 6 and 72 characters");
+      Alert.alert("Error", "Password must be between 6 and 72 characters");
       return false;
     }
     return true;
@@ -32,12 +36,6 @@ export const profileValidator = () => {
 
   // Check if data is only using alphanumeric
   const checkAlphanumeric = (data: string): boolean => {
-    if (!data) {
-      console.log("No data passed to profileUpdateValidator");
-      Alert.alert("Error", "Missing data");
-      return false;
-    }
-
     const regex = /^[a-zA-Z0-9]+$/;
     if (!regex.test(data)) {
       console.log("Only letters and numbers are allowed");
@@ -47,7 +45,24 @@ export const profileValidator = () => {
     return true;
   };
 
-  return { checkLength, checkAlphanumeric, checkPassword };
+  // Check if email is valid
+  const checkEmailRegex = (email: string): boolean => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!regex.test(email)) {
+      console.log("Invalid email format");
+      Alert.alert("Error", "Invalid email format");
+      return false;
+    }
+    return true;
+  };
+
+  return {
+    checkLengthUsername,
+    checkLengthPassword,
+    checkAlphanumeric,
+    checkPassword,
+    checkEmailRegex,
+  };
 };
 
 export default profileValidator;
