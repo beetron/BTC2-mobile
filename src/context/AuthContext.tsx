@@ -21,6 +21,8 @@ interface AuthProps {
     authenticated: boolean | null;
     user?: {
       _id: string;
+      username: string;
+      email: string;
       uniqueId: string;
       nickname: string;
       profileImage: string;
@@ -32,6 +34,8 @@ interface AuthProps {
       authenticated: boolean | null;
       user?: {
         _id: string;
+        username: string;
+        email: string;
         uniqueId: string;
         nickname: string;
         profileImage: string;
@@ -39,6 +43,7 @@ interface AuthProps {
     }>
   >;
   onSignup?: (
+    email: string,
     username: string,
     password: string,
     uniqueId: string
@@ -59,6 +64,8 @@ export const AuthProvider = ({ children }: any) => {
     authenticated: boolean | null;
     user?: {
       _id: string;
+      username: string;
+      email: string;
       uniqueId: string;
       nickname: string;
       profileImage: string;
@@ -122,6 +129,8 @@ export const AuthProvider = ({ children }: any) => {
           user: parsedUser
             ? {
                 _id: parsedUser._id,
+                username: parsedUser.username,
+                email: parsedUser.email,
                 uniqueId: parsedUser.uniqueId,
                 nickname: parsedUser.nickname,
                 profileImage: parsedUser.profileImage,
@@ -149,18 +158,20 @@ export const AuthProvider = ({ children }: any) => {
 
   // Signup
   const signup = async (
+    email: string,
     username: string,
     password: string,
     uniqueId: string
   ) => {
     try {
       const result = await axiosClient.post("/auth/signup", {
+        email,
         username,
         password,
         uniqueId,
       });
       return result;
-    } catch (e) {
+    } catch (e: any) {
       throw new Error(e.response.data.error);
     }
   };
@@ -174,7 +185,7 @@ export const AuthProvider = ({ children }: any) => {
       });
 
       // Extract token and user data from the result
-      const { token, _id, uniqueId, nickname, profileImage } = result.data;
+      const { token, _id, email, uniqueId, nickname, profileImage, username: userUsername } = result.data;
 
       console.log("Login result: ", result.data);
 
@@ -183,6 +194,8 @@ export const AuthProvider = ({ children }: any) => {
         authenticated: true,
         user: {
           _id: _id,
+          username: userUsername,
+          email: email,
           uniqueId: uniqueId,
           nickname: nickname,
           profileImage: profileImage,
@@ -196,7 +209,7 @@ export const AuthProvider = ({ children }: any) => {
       await SecureStore.setItemAsync(USER_KEY, JSON.stringify(result.data));
 
       return result;
-    } catch (e) {
+    } catch (e: any) {
       throw new Error(e.response.data.error);
     }
   };
