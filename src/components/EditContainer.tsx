@@ -22,7 +22,19 @@ const EditContainer = () => {
           <View className="bg-btc500 h-full w-full p-8">
             <View className="flex-col gap-8">
               <EditAddFriend />
+              <View
+                style={{
+                  height: 1,
+                  backgroundColor: "grey",
+                }}
+              />
               <EditRemoveFriend />
+              <View
+                style={{
+                  height: 1,
+                  backgroundColor: "grey",
+                }}
+              />
               <EditFriendRequests />
             </View>
           </View>

@@ -11,9 +11,9 @@ const SettingsUniqueId = () => {
   const currentUniqueId = authState?.user?.uniqueId;
   const [uniqueId, setUniqueId] = useState(currentUniqueId || "");
   const { updateUniqueId, isLoading } = useUpdateUniqueId();
-  const { checkLength, checkAlphanumeric } = profileValidator();
+  const { checkLengthUsername, checkAlphanumeric } = profileValidator();
 
-  // Reset current nickname when switching tabs
+  // Reset current unique ID when switching tabs
   useFocusEffect(
     useCallback(() => {
       if (currentUniqueId) {
@@ -25,7 +25,7 @@ const SettingsUniqueId = () => {
   // Handle onPress
   const handleOnPress = async () => {
     // Validate data before sending to API
-    if (!checkLength(uniqueId) || !checkAlphanumeric(uniqueId)) return;
+    if (!checkLengthUsername(uniqueId) || !checkAlphanumeric(uniqueId)) return;
 
     // Send to backend API
     const success = await updateUniqueId(uniqueId);
@@ -39,7 +39,7 @@ const SettingsUniqueId = () => {
 
   return (
     <View className="flex-grow justify-center mt-4 ml-4 max-w-[80%]">
-      <Text className="font-funnel-regular text-btc100 text-l opacity-[50%]">
+      <Text className="font-funnel-regular text-btc100 text-l">
         Unique ID (signup & friend requests)
       </Text>
       <TextInput
@@ -50,10 +50,9 @@ const SettingsUniqueId = () => {
         onChangeText={(text) => setUniqueId(text.toLowerCase())}
         style={{
           height: 40,
-          paddingBottom: 0,
-          paddingTop: Platform.OS === "ios" ? 14 : 0,
+          textAlignVertical: "center",
         }}
-        className="text-btc100 font-funnel-regular text-2xl border-b border-btc300"
+        className="text-btc100 font-funnel-regular text-2xl bg-btc400 border border-btc300 rounded px-2 max-w-[80%]"
       />
       <MaterialIcons
         name="save-as"

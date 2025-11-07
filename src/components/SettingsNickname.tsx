@@ -33,8 +33,8 @@ const SettingsNickname = () => {
   };
 
   return (
-    <View className="flex-grow justify-center ml-4 max-w-[80%]">
-      <Text className="font-funnel-regular text-btc100 text-l opacity-[50%]">
+    <View className="flex-grow justify-center ml-4 mt-4 max-w-[80%]">
+      <Text className="font-funnel-regular text-btc100 text-l">
         Display Name
       </Text>
       <TextInput
@@ -44,10 +44,9 @@ const SettingsNickname = () => {
         onChangeText={(text) => setNickname(text)}
         style={{
           height: 40,
-          paddingBottom: 0,
-          paddingTop: Platform.OS === "ios" ? 14 : 0,
+          textAlignVertical: "center",
         }}
-        className="text-btc100 font-funnel-regular text-2xl border-b border-btc300"
+        className="text-btc100 font-funnel-regular text-2xl bg-btc400 border border-btc300 rounded px-2 max-w-[80%]"
       />
       <MaterialIcons
         name="save-as"

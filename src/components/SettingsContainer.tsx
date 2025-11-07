@@ -11,6 +11,7 @@ import SettingsNickname from "./SettingsNickname";
 import SettingsUniqueId from "./SettingsUniqueId";
 import SettingsPassword from "./SettingsPassword";
 import SettingsIcon from "./SettingsIcon";
+import SettingsUsername from "./SettingsUsername";
 
 const SettingsContainer = () => {
   return (
@@ -23,14 +24,25 @@ const SettingsContainer = () => {
           <View className="flex-row mb-4">
             <SettingsProfileImage />
             <View className="flex-col justify-center w-[90%]">
+              <SettingsUsername />
               <SettingsNickname />
               <SettingsUniqueId />
             </View>
           </View>
-          <View className="flex-1">
-            <SettingsPassword />
-            <SettingsIcon />
-          </View>
+          <View
+            style={{
+              height: 1,
+              backgroundColor: "grey",
+            }}
+          />
+          <SettingsPassword />
+          <View
+            style={{
+              height: 1,
+              backgroundColor: "grey",
+            }}
+          />
+          <SettingsIcon />
         </View>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>

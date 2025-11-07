@@ -58,7 +58,7 @@ const SettingsProfileImage = () => {
   };
 
   return (
-    <View className="mt-4 relative justify-center">
+    <View className="mt-8 relative justify-center">
       {isLoading ? (
         <ActivityIndicator size="small" color="white" />
       ) : (
@@ -83,7 +83,7 @@ const SettingsProfileImage = () => {
         size={28}
         color="white"
         onPress={pickImage}
-        className="absolute top-0 left-0 -ml-2"
+        className="absolute top-6 left-0 -ml-2"
       />
     </View>
   );
