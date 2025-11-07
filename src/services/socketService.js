@@ -7,7 +7,7 @@ const _listeners = new Map();
 
 const initialize = (userId) => {
   const url = new URL(API_URL);
-  const apiBasePath = url.pathname;
+  const isDevelopment = process.env.EXPO_PUBLIC_ENV === "development";
 
   // Create socket connection if it doesn't exist
   if (!_socket) {
@@ -15,7 +15,7 @@ const initialize = (userId) => {
     _userId = userId;
 
     _socket = io(url.origin, {
-      path: `${apiBasePath}/socket.io`,
+      path: isDevelopment ? "/socket.io" : "/btc-api/socket.io",
       transports: ["websocket"],
       autoConnect: true,
       reconnection: true,
@@ -23,7 +23,9 @@ const initialize = (userId) => {
       query: { userId },
     });
     console.log(
-      `Socket connecting to ${url.origin} with path ${apiBasePath}/socket.io`
+      `Socket connecting to ${url.origin} with path ${
+        isDevelopment ? "/socket.io" : "/btc-api/socket.io"
+      }`
     );
   } else if (!_socket.connected) {
     // Reconnect existing socket if it's disconnected
