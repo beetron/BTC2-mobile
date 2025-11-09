@@ -4,6 +4,7 @@ import useUpdateNickname from "@/src/hooks/useUpdateNickname";
 import { useAuth } from "@/src/context/AuthContext";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useFocusEffect } from "expo-router";
+import { opacity } from "react-native-reanimated/lib/typescript/Colors";
 
 const SettingsNickname = () => {
   const { authState } = useAuth();
@@ -46,7 +47,7 @@ const SettingsNickname = () => {
           height: 40,
           textAlignVertical: "center",
         }}
-        className="text-btc100 font-funnel-regular text-2xl bg-btc400 border border-btc300 rounded px-2 max-w-[80%]"
+        className="text-btc100 font-funnel-regular text-2xl bg-btc400 rounded px-2 max-w-[80%]"
       />
       <MaterialIcons
         name="save-as"

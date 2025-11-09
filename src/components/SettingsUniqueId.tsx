@@ -47,7 +47,7 @@ const SettingsUniqueId = () => {
           height: 40,
           textAlignVertical: "center",
         }}
-        className="text-btc100 font-funnel-regular text-2xl bg-btc400 border border-btc300 rounded px-2 max-w-[80%]"
+        className="text-btc100 font-funnel-regular text-2xl bg-btc400 rounded px-2 max-w-[80%]"
       />
       <MaterialIcons
         name="save-as"
