@@ -1,12 +1,11 @@
 import React, { useState } from "react";
-import { View, TouchableOpacity, TextInput, Platform } from "react-native";
+import { View, TouchableOpacity, TextInput } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import useSendeMessages from "../hooks/useSendMessage";
 
 const ConversationInput = () => {
   const [message, setMessage] = useState<string>("");
-  const [inputHeight, setInputHeight] = useState(40);
   const { sendMessage, isLoading } = useSendeMessages();
 
   // Handle send message
@@ -15,25 +14,14 @@ const ConversationInput = () => {
       sendMessage(message);
       console.log("Sending message:", message);
 
-      // Clear input field and reset height
+      // Clear input field
       setMessage("");
-      setInputHeight(40);
     }
   };
 
-  // Handle text change with auto-resize
-  const handleTextChange = (message: string) => {
-    setMessage(message);
-    console.log("Message:", message);
-
-    // Count number of line breaks to adjust height
-    const lineBreaks = (message.match(/\n/g) || []).length;
-    const newHeight = Math.min(Math.max(40, 40 + lineBreaks * 15), 100);
-
-    if (newHeight !== inputHeight) {
-      console.log("Adjusting height to:", newHeight);
-      setInputHeight(newHeight);
-    }
+  // Handle text change
+  const handleTextChange = (text: string) => {
+    setMessage(text);
   };
 
   return (
@@ -42,14 +30,12 @@ const ConversationInput = () => {
         <TextInput
           placeholder="Start typing..."
           placeholderTextColor="black"
-          className="w-3/4 px-4 mr-2 pb-1 text-lg bg-btc100 rounded-2xl border-2 border-btc20"
+          className="w-3/4 px-4 mr-2 text-lg bg-btc100 rounded-2xl border-2 border-btc20"
           multiline={true}
           textAlignVertical="top"
           style={{
-            minHeight: 40,
             maxHeight: 100,
-            height: inputHeight,
-            paddingTop: Platform.OS === "ios" ? 10 : 0, // Fix for iOS text alignment
+            paddingVertical: 8,
           }}
           value={message}
           onChangeText={handleTextChange}
