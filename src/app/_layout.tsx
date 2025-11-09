@@ -3,6 +3,7 @@ import { useFonts } from "expo-font";
 import { SplashScreen, Stack } from "expo-router";
 import { AuthProvider } from "@/src/context/AuthContext";
 import { AppStateProvider } from "@/src/context/AppStateContext";
+import { NetworkProvider } from "@/src/context/NetworkContext";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import "../../global.css";
 
@@ -30,22 +31,24 @@ const RootLayout = () => {
   if (!fontsLoaded && !fontsError) return null;
 
   return (
-    <AuthProvider>
-      <AppStateProvider>
-        <KeyboardProvider>
-          <Stack
-            screenOptions={{
-              headerShown: false,
-            }}
-          >
-            <Stack.Screen name="members" />
-            <Stack.Screen name="guests" />
-            <Stack.Screen name="index" />
-            <Stack.Screen name="screens" />
-          </Stack>
-        </KeyboardProvider>
-      </AppStateProvider>
-    </AuthProvider>
+    <NetworkProvider>
+      <AuthProvider>
+        <AppStateProvider>
+          <KeyboardProvider>
+            <Stack
+              screenOptions={{
+                headerShown: false,
+              }}
+            >
+              <Stack.Screen name="members" />
+              <Stack.Screen name="guests" />
+              <Stack.Screen name="index" />
+              <Stack.Screen name="screens" />
+            </Stack>
+          </KeyboardProvider>
+        </AppStateProvider>
+      </AuthProvider>
+    </NetworkProvider>
   );
 };
 

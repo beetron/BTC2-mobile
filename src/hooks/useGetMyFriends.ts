@@ -1,7 +1,9 @@
 import { useEffect, useState, useCallback } from "react";
 import axiosClient from "../utils/axiosClient";
-import { useRouter } from "expo-router";
+import { useRouter, useFocusEffect } from "expo-router";
+import { Alert } from "react-native";
 import useGetProfileImage from "./useGetProfileImage";
+import { useNetwork } from "@/src/context/NetworkContext";
 
 interface Friend {
   _id: string;
@@ -18,10 +20,21 @@ const useGetMyFriends = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const router = useRouter();
   const { getProfileImage } = useGetProfileImage();
+  const { isConnected } = useNetwork();
 
   const getMyFriends = useCallback(async () => {
     try {
       setIsLoading(true);
+
+      if (!isConnected) {
+        Alert.alert(
+          "No Internet Connection",
+          "Please check your connection to load friends"
+        );
+        setIsLoading(false);
+        return;
+      }
+
       const res = await axiosClient.get("/users/friendlist");
       // console.log("API response data:", res.data);
 
@@ -42,7 +55,6 @@ const useGetMyFriends = () => {
               );
             }
           }
-          setIsLoading(false);
           return {
             ...friend,
             profileImageData: imageData,
@@ -51,18 +63,30 @@ const useGetMyFriends = () => {
       );
       setMyFriends(friendsWithImages);
     } catch (error: any) {
-      if (error.message !== "Unauthorized") {
+      if (error.networkError === "TIMEOUT") {
+        Alert.alert(
+          "Connection Timeout",
+          "Request took too long. Please try again"
+        );
+      } else if (error.networkError === "NO_INTERNET") {
+        Alert.alert(
+          "No Internet Connection",
+          "Please check your connection and try again"
+        );
+      } else if (error.message !== "Unauthorized") {
         console.log("Error: ", error.response?.data?.error || error.message);
       }
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [isConnected]);
 
-  useEffect(() => {
-    console.log("useGetMyFriends" + new Date());
-    getMyFriends();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      console.log("useGetMyFriends" + new Date());
+      getMyFriends();
+    }, [getMyFriends])
+  );
 
   return { myFriends, isLoading, getMyFriends };
 };

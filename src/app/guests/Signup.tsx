@@ -103,10 +103,14 @@ const Signup = () => {
           }
         }
       } catch (e) {
+        // Only show alert if it's not a network error (network errors already alerted in AuthContext)
         if (e instanceof Error) {
-          Alert.alert("Signup failed", e.message);
-        } else {
-          Alert.alert("Signup failed", "An unknown error occurred");
+          if (
+            !e.message.includes("internet") &&
+            !e.message.includes("timeout")
+          ) {
+            Alert.alert("Signup failed", e.message);
+          }
         }
       }
     }

@@ -40,9 +40,13 @@ const Login = () => {
         }
       } catch (e) {
         if (e instanceof Error) {
-          Alert.alert("Login failed", e.message);
-        } else {
-          Alert.alert("Login failed", "An unknown error occurred");
+          // Only show alert if it's not a network error (network errors already alerted in AuthContext)
+          if (
+            !e.message.includes("internet") &&
+            !e.message.includes("timeout")
+          ) {
+            Alert.alert("Login failed", e.message);
+          }
         }
       }
     }

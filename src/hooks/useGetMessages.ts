@@ -3,22 +3,34 @@ import axiosClient from "../utils/axiosClient";
 import FriendStore from "../zustand/friendStore";
 import { useAuth } from "../context/AuthContext";
 import { Alert } from "react-native";
+import { useNetwork } from "@/src/context/NetworkContext";
 
 const useGetMessages = () => {
   const { authState } = useAuth();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const { selectedFriend, messages, setMessages, shouldRender, setMessageId } =
     FriendStore();
+  const { isConnected } = useNetwork();
 
   const getMessages = useCallback(async () => {
     if (selectedFriend) {
       try {
         setIsLoading(true);
+
+        if (!isConnected) {
+          Alert.alert(
+            "No Internet Connection",
+            "Please check your connection to load messages"
+          );
+          setIsLoading(false);
+          return;
+        }
+
         const res = await axiosClient.get(
           `/messages/get/${selectedFriend._id}`
         );
         if (res.status === 200) {
-          setMessages([...messages, ...res.data]);
+          setMessages(res.data);
 
           // Set the most recent message ID for useDeleteMessages hook
           if (res.data.length > 0) {
@@ -34,17 +46,31 @@ const useGetMessages = () => {
 
         setIsLoading(false);
       } catch (error: any) {
-        console.log("Error: ", error.response?.data?.error || error.message);
-        // Alert.alert("Error", e.response?.data?.error || e.message);
+        if (error.networkError === "TIMEOUT") {
+          Alert.alert(
+            "Connection Timeout",
+            "Request took too long. Please try again"
+          );
+        } else if (error.networkError === "NO_INTERNET") {
+          // Already alerted in pre-flight check
+        } else {
+          console.log("Error: ", error.response?.data?.error || error.message);
+        }
       } finally {
         setIsLoading(false);
       }
     }
-  }, [authState?.authenticated]);
+  }, [
+    authState?.authenticated,
+    isConnected,
+    selectedFriend,
+    setMessages,
+    setMessageId,
+  ]);
 
   useEffect(() => {
     getMessages();
-  }, [shouldRender]);
+  }, [shouldRender, getMessages]);
 
   return { getMessages, messages, isLoading };
 };

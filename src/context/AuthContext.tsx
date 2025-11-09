@@ -6,6 +6,7 @@ import {
   useState,
 } from "react";
 import { useRouter } from "expo-router";
+import { Alert } from "react-native";
 import * as SecureStore from "expo-secure-store";
 import { checkTokenExpiry } from "@/src/utils/checkTokenExpiry";
 import axiosClient, {
@@ -14,6 +15,7 @@ import axiosClient, {
   USER_KEY,
   setAuthStateUpdater,
 } from "@/src/utils/axiosClient";
+import { useNetwork } from "@/src/context/NetworkContext";
 
 interface AuthProps {
   authState?: {
@@ -77,6 +79,7 @@ export const AuthProvider = ({ children }: any) => {
   });
 
   const router = useRouter();
+  const { isConnected } = useNetwork();
 
   // Register auth state updater with axiosClient
   useEffect(() => {
@@ -164,6 +167,14 @@ export const AuthProvider = ({ children }: any) => {
     uniqueId: string
   ) => {
     try {
+      if (!isConnected) {
+        Alert.alert(
+          "No Internet Connection",
+          "Please check your connection and try again"
+        );
+        throw new Error("No internet connection");
+      }
+
       const result = await axiosClient.post("/auth/signup", {
         email,
         username,
@@ -172,20 +183,46 @@ export const AuthProvider = ({ children }: any) => {
       });
       return result;
     } catch (e: any) {
-      throw new Error(e.response.data.error);
+      if (e.networkError === "TIMEOUT") {
+        Alert.alert(
+          "Connection Timeout",
+          "Request took too long. Please try again"
+        );
+        throw new Error("Request timeout");
+      } else if (e.networkError === "NO_INTERNET") {
+        throw new Error("No internet connection");
+      } else {
+        throw new Error(e.response?.data?.error || e.message);
+      }
     }
   };
 
   // Login
   const login = async (username: string, password: string) => {
     try {
+      if (!isConnected) {
+        Alert.alert(
+          "No Internet Connection",
+          "Please check your connection and try again"
+        );
+        throw new Error("No internet connection");
+      }
+
       const result = await axiosClient.post("/auth/login", {
         username,
         password,
       });
 
       // Extract token and user data from the result
-      const { token, _id, email, uniqueId, nickname, profileImage, username: userUsername } = result.data;
+      const {
+        token,
+        _id,
+        email,
+        uniqueId,
+        nickname,
+        profileImage,
+        username: userUsername,
+      } = result.data;
 
       console.log("Login result: ", result.data);
 
@@ -210,7 +247,17 @@ export const AuthProvider = ({ children }: any) => {
 
       return result;
     } catch (e: any) {
-      throw new Error(e.response.data.error);
+      if (e.networkError === "TIMEOUT") {
+        Alert.alert(
+          "Connection Timeout",
+          "Request took too long. Please try again"
+        );
+        throw new Error("Request timeout");
+      } else if (e.networkError === "NO_INTERNET") {
+        throw new Error("No internet connection");
+      } else {
+        throw new Error(e.response?.data?.error || e.message);
+      }
     }
   };
 

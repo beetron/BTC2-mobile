@@ -2,10 +2,13 @@ import axiosClient from "@/src/utils/axiosClient";
 import { useState } from "react";
 import { useAuth } from "@/src/context/AuthContext";
 import * as SecureStore from "expo-secure-store";
+import { Alert } from "react-native";
+import { useNetwork } from "@/src/context/NetworkContext";
 
 const useUpdateProfileImage = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { authState, setAuthState } = useAuth();
+  const { isConnected } = useNetwork();
   const USER_KEY = "user";
 
   const updateProfileImage = async (imageData: string) => {
@@ -14,6 +17,14 @@ const useUpdateProfileImage = () => {
 
       if (!imageData) {
         throw new Error("No image data");
+      }
+
+      if (!isConnected) {
+        Alert.alert(
+          "No Internet Connection",
+          "Please check your connection and try again"
+        );
+        return false;
       }
 
       // Create file from URI
@@ -63,8 +74,19 @@ const useUpdateProfileImage = () => {
         }
         return true;
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error updating profile image: ", error);
+
+      if (error.networkError === "TIMEOUT") {
+        Alert.alert(
+          "Connection Timeout",
+          "Request took too long. Please try again"
+        );
+      } else if (error.networkError === "NO_INTERNET") {
+        // Already alerted in pre-flight check
+      } else {
+        Alert.alert("Error", "Failed to update profile image");
+      }
       return false;
     } finally {
       setIsLoading(false);

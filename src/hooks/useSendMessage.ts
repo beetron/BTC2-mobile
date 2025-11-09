@@ -3,15 +3,26 @@ import axiosClient from "../utils/axiosClient";
 import FriendStore from "../zustand/friendStore";
 import { useAuth } from "../context/AuthContext";
 import { Alert } from "react-native";
+import { useNetwork } from "@/src/context/NetworkContext";
 
 const useSendMessage = () => {
   const { authState } = useAuth();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { selectedFriend, setShouldRender } = FriendStore();
+  const { isConnected } = useNetwork();
 
   const sendMessage = async (message: string) => {
     try {
       setIsLoading(true);
+
+      if (!isConnected) {
+        Alert.alert(
+          "No Internet Connection",
+          "Please check your connection to send messages"
+        );
+        setIsLoading(false);
+        return;
+      }
 
       if (authState?.authenticated && selectedFriend && message) {
         const res = await axiosClient.post(
@@ -27,9 +38,17 @@ const useSendMessage = () => {
         }
         setIsLoading(false);
       }
-    } catch (e) {
-      console.log("Error: ", e.response?.data?.error || e.message);
-      // Alert.alert("Error", e.response?.data?.error || e.message);
+    } catch (e: any) {
+      if (e.networkError === "TIMEOUT") {
+        Alert.alert(
+          "Connection Timeout",
+          "Request took too long. Please try again"
+        );
+      } else if (e.networkError === "NO_INTERNET") {
+        // Already alerted in pre-flight check
+      } else {
+        console.log("Error: ", e.response?.data?.error || e.message);
+      }
     } finally {
       setIsLoading(false);
     }

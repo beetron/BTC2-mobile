@@ -5,6 +5,7 @@ import * as Device from "expo-device";
 import axiosClient from "@/src/utils/axiosClient";
 import { useAuth } from "@/src/context/AuthContext";
 import { Alert } from "react-native";
+import { useNetwork } from "@/src/context/NetworkContext";
 
 const FCM_TOKEN = "fcm_token";
 
@@ -12,6 +13,7 @@ export default function useFcmToken() {
   const [fcmToken, setFcmToken] = useState<string | null>(null);
   const [isRegistering, setIsRegistering] = useState(false);
   const { authState } = useAuth();
+  const { isConnected } = useNetwork();
 
   // Get mobile device info
   const getDeviceInfo = async () => {
@@ -32,6 +34,13 @@ export default function useFcmToken() {
         return false;
       }
 
+      if (!isConnected) {
+        console.warn(
+          "No internet connection - FCM registration will retry later"
+        );
+        return false;
+      }
+
       try {
         setIsRegistering(true);
         const deviceInfo = await getDeviceInfo();
@@ -47,15 +56,22 @@ export default function useFcmToken() {
         } else {
           throw new Error("Failed to register FCM token");
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error registering FCM token with backend: ", error);
-        // Alert.alert("Failed to register FCM token");
+
+        if (error.networkError === "TIMEOUT") {
+          console.warn("FCM registration timeout - will retry");
+        } else if (error.networkError === "NO_INTERNET") {
+          console.warn(
+            "No internet for FCM registration - will retry when online"
+          );
+        }
         return false;
       } finally {
         setIsRegistering(false);
       }
     },
-    [authState?.authenticated]
+    [authState?.authenticated, isConnected]
   );
 
   /////////////////////////////////////////////

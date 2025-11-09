@@ -1,6 +1,8 @@
 import axiosClient from "@/src/utils/axiosClient";
 import { fromByteArray } from "base64-js";
 import { useState } from "react";
+import { Alert } from "react-native";
+import { useNetwork } from "@/src/context/NetworkContext";
 
 const getMimeType = (url: string): string => {
   const extension = url.toLowerCase().split(".").pop();
@@ -20,12 +22,18 @@ const getMimeType = (url: string): string => {
 
 const useGetProfileImage = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { isConnected } = useNetwork();
 
   const getProfileImage = async (url: string) => {
     try {
       setIsLoading(true);
 
       if (!url) return null;
+
+      if (!isConnected) {
+        console.warn("No internet connection - cannot load profile image");
+        return null;
+      }
 
       const response = await axiosClient.get(`/users/uploads/images/${url}`, {
         responseType: "arraybuffer",
@@ -40,8 +48,14 @@ const useGetProfileImage = () => {
         console.log("Non-200 response:", response.status);
       }
       return null;
-    } catch (error) {
-      console.error("Error fetching profile image: ", error);
+    } catch (error: any) {
+      if (error.networkError === "TIMEOUT") {
+        console.warn("Profile image request timeout");
+      } else if (error.networkError === "NO_INTERNET") {
+        console.warn("No internet connection - cannot load profile image");
+      } else {
+        console.error("Error fetching profile image: ", error);
+      }
       return null;
     } finally {
       setIsLoading(false);

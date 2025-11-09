@@ -1,11 +1,14 @@
 import { useState } from "react";
+import { Alert } from "react-native";
 import { useAuth } from "@/src/context/AuthContext";
 import * as SecureStore from "expo-secure-store";
 import axiosClient from "@/src/utils/axiosClient";
+import { useNetwork } from "@/src/context/NetworkContext";
 
 const useUpdateNickname = () => {
   const { authState, setAuthState } = useAuth();
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { isConnected } = useNetwork();
   const USER_KEY = "user";
 
   const updateNickname = async (newNickname: string) => {
@@ -13,6 +16,15 @@ const useUpdateNickname = () => {
 
     try {
       setIsLoading(true);
+
+      if (!isConnected) {
+        Alert.alert(
+          "No Internet Connection",
+          "Please check your connection and try again"
+        );
+        return false;
+      }
+
       const response = await axiosClient.put(
         `/users/updatenickname/${newNickname}`
       );
@@ -38,8 +50,20 @@ const useUpdateNickname = () => {
         }
         return false;
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error updating nickname: ", error);
+
+      if (error.networkError === "TIMEOUT") {
+        Alert.alert(
+          "Connection Timeout",
+          "Request took too long. Please try again"
+        );
+      } else if (error.networkError === "NO_INTERNET") {
+        // Already alerted in pre-flight check
+      } else {
+        Alert.alert("Error", "Failed to update nickname");
+      }
+      return false;
     } finally {
       setIsLoading(false);
     }

@@ -3,10 +3,12 @@ import { useAuth } from "@/src/context/AuthContext";
 import * as SecureStore from "expo-secure-store";
 import axiosClient from "@/src/utils/axiosClient";
 import { Alert } from "react-native";
+import { useNetwork } from "@/src/context/NetworkContext";
 
 const useUpdateUniqueId = () => {
   const { authState, setAuthState } = useAuth();
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { isConnected } = useNetwork();
   const USER_KEY = "user";
 
   const updateUniqueId = async (newUniqueId: string) => {
@@ -14,6 +16,14 @@ const useUpdateUniqueId = () => {
 
     try {
       setIsLoading(true);
+
+      if (!isConnected) {
+        Alert.alert(
+          "No Internet Connection",
+          "Please check your connection and try again"
+        );
+        return false;
+      }
 
       // Convert unique ID to lowercase
       const lowercaseUniqueId = newUniqueId.toLowerCase();
@@ -57,7 +67,17 @@ const useUpdateUniqueId = () => {
       }
     } catch (error: any) {
       console.log("Error in useUpdateUniqueId: ", error);
-      Alert.alert("Error", "An unknown error occurred");
+
+      if (error.networkError === "TIMEOUT") {
+        Alert.alert(
+          "Connection Timeout",
+          "Request took too long. Please try again"
+        );
+      } else if (error.networkError === "NO_INTERNET") {
+        // Already alerted in pre-flight check
+      } else {
+        Alert.alert("Error", "An unknown error occurred");
+      }
       return false;
     } finally {
       setIsLoading(false);

@@ -1,9 +1,11 @@
 import axiosClient from "@/src/utils/axiosClient";
 import { useState } from "react";
 import { Alert } from "react-native";
+import { useNetwork } from "@/src/context/NetworkContext";
 
 const useUpdateEmail = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { isConnected } = useNetwork();
 
   const updateEmail = async (
     email: string,
@@ -13,6 +15,15 @@ const useUpdateEmail = () => {
       setIsLoading(true);
 
       if (!email || !password) return false;
+
+      // Check network connection before making request
+      if (!isConnected) {
+        Alert.alert(
+          "No Internet Connection",
+          "Please check your connection and try again"
+        );
+        return false;
+      }
 
       // Send email and password to API
       const response = await axiosClient.put("/users/updateemail", {
@@ -28,7 +39,16 @@ const useUpdateEmail = () => {
       return false;
     } catch (error: any) {
       console.log("Error in useUpdateEmail: ", error);
-      if (error.response && error.response.data) {
+
+      // Handle network errors tagged by axios interceptor
+      if (error.networkError === "TIMEOUT") {
+        Alert.alert(
+          "Connection Timeout",
+          "Request took too long. Please try again"
+        );
+      } else if (error.networkError === "NO_INTERNET") {
+        // Already alerted in pre-flight check
+      } else if (error.response && error.response.data) {
         if (error.response.data.error) {
           Alert.alert("Error", error.response.data.error);
         } else if (error.response.data.message) {

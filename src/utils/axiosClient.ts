@@ -99,7 +99,7 @@ axiosClient.interceptors.request.use(
   }
 );
 
-// Response interceptor - handle 401 errors
+// Response interceptor - handle 401 errors and network errors
 axiosClient.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -112,6 +112,20 @@ axiosClient.interceptors.response.use(
       console.log("401 Unauthorized - initiating logout");
       await handleLogout();
     }
+
+    // Tag network/timeout errors for better handling in hooks
+    if (!error.response) {
+      if (error.code === "ECONNABORTED") {
+        error.networkError = "TIMEOUT";
+      } else if (
+        error.message === "Network Error" ||
+        error.code === "ENOTFOUND" ||
+        error.code === "ECONNREFUSED"
+      ) {
+        error.networkError = "NO_INTERNET";
+      }
+    }
+
     return Promise.reject(error);
   }
 );

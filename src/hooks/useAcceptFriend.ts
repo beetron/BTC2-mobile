@@ -1,13 +1,23 @@
 import { Alert } from "react-native";
 import axiosClient from "../utils/axiosClient";
 import { useState } from "react";
+import { useNetwork } from "@/src/context/NetworkContext";
 
 const useAcceptFriend = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const { isConnected } = useNetwork();
 
   const acceptFriend = async (uniqueId: string): Promise<boolean> => {
     try {
       setIsLoading(true);
+
+      if (!isConnected) {
+        Alert.alert(
+          "No Internet Connection",
+          "Please check your connection and try again"
+        );
+        return false;
+      }
 
       const response = await axiosClient.put(`/users/acceptfriend/${uniqueId}`);
 
@@ -17,7 +27,18 @@ const useAcceptFriend = () => {
       }
       return false;
     } catch (error: any) {
-      if (error.response && error.response.data && error.response.data.error) {
+      if (error.networkError === "TIMEOUT") {
+        Alert.alert(
+          "Connection Timeout",
+          "Request took too long. Please try again"
+        );
+      } else if (error.networkError === "NO_INTERNET") {
+        // Already alerted in pre-flight check
+      } else if (
+        error.response &&
+        error.response.data &&
+        error.response.data.error
+      ) {
         Alert.alert("Error", error.response.data.error);
         console.error("Error in useAcceptFriend: ", error);
       } else {
