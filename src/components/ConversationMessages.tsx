@@ -4,14 +4,17 @@ import React, { useEffect } from "react";
 import { useAppStateListener } from "../context/AppStateContext";
 import friendStore from "../zustand/friendStore";
 import useGetMessages from "../hooks/useGetMessages";
+import useGetMessageImages from "../hooks/useGetMessageImages";
 import formatDate from "../utils/formatDate";
 import Autolink from "react-native-autolink";
 import { images } from "../constants/images";
 import useSetBadgeCount from "../hooks/useSetBadgeCount";
+import MessageImageGallery from "./MessageImageGallery";
 
 const ConversationMessages = () => {
   const { isLoading, isSyncing, getMessages } = useGetMessages();
   const { messages, selectedFriend, shouldRender } = friendStore();
+  const { getMessageImageSource } = useGetMessageImages();
   // Using getMyFriends to use update BadgeCount (temporary solution)
   const { setBadgeCount } = useSetBadgeCount();
   const placeholderProfileImage = images.placeholderProfileImage;
@@ -81,11 +84,29 @@ const ConversationMessages = () => {
                       className="bg-btc100"
                     />
                   )}
-                  <Autolink
-                    text={message.message}
-                    className="text-btc100 text-lg pl-2"
-                    linkStyle={{ color: "#75E6DA" }}
-                  />
+                  <View className="flex-1 pl-2">
+                    <Autolink
+                      text={message.message}
+                      className="text-btc100 text-lg"
+                      linkStyle={{ color: "#75E6DA" }}
+                    />
+                    {message.imageFiles && message.imageFiles.length > 0 && (
+                      <>
+                        {console.log(
+                          "🖼️ From friend - Rendering image gallery:",
+                          message.imageFiles
+                        )}
+                        <MessageImageGallery
+                          imageFilenames={message.imageFiles}
+                          imageSources={message.imageFiles.map((filename) => {
+                            const source = getMessageImageSource(filename);
+                            console.log("📸 From friend image source:", source);
+                            return source;
+                          })}
+                        />
+                      </>
+                    )}
+                  </View>
                 </View>
                 <Text className="font-funnel-regular text-btc100 text-sm ml-2">
                   {formatDate(message.createdAt)}
@@ -99,6 +120,22 @@ const ConversationMessages = () => {
                     className="text-btc400 text-lg"
                     linkStyle={{ color: "#D4F1F4" }}
                   />
+                  {message.imageFiles && message.imageFiles.length > 0 && (
+                    <>
+                      {console.log(
+                        "🖼️ From me - Rendering image gallery:",
+                        message.imageFiles
+                      )}
+                      <MessageImageGallery
+                        imageFilenames={message.imageFiles}
+                        imageSources={message.imageFiles.map((filename) => {
+                          const source = getMessageImageSource(filename);
+                          console.log("📸 From me image source:", source);
+                          return source;
+                        })}
+                      />
+                    </>
+                  )}
                 </View>
                 <Text className="font-funnel-regular text-btc100 text-sm mr-2">
                   {formatDate(message.createdAt)}
