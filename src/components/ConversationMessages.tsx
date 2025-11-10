@@ -1,4 +1,4 @@
-import { View, Text, FlatList } from "react-native";
+import { View, Text, FlatList, ActivityIndicator } from "react-native";
 import { Image } from "expo-image";
 import React, { useEffect } from "react";
 import { useAppStateListener } from "../context/AppStateContext";
@@ -10,7 +10,7 @@ import { images } from "../constants/images";
 import useSetBadgeCount from "../hooks/useSetBadgeCount";
 
 const ConversationMessages = () => {
-  const { isLoading, getMessages } = useGetMessages();
+  const { isLoading, isSyncing, getMessages } = useGetMessages();
   const { messages, selectedFriend, shouldRender } = friendStore();
   // Using getMyFriends to use update BadgeCount (temporary solution)
   const { setBadgeCount } = useSetBadgeCount();
@@ -28,7 +28,7 @@ const ConversationMessages = () => {
     setBadgeCount();
   });
 
-  if (isLoading) {
+  if (isLoading && messages.length === 0) {
     return (
       <View className="justify-center items-center mt-14">
         <Text className="font-funnel-regular text-btc100 text-2xl">
@@ -40,11 +40,21 @@ const ConversationMessages = () => {
 
   return (
     <View className="flex-1">
+      {/* Subtle syncing indicator when fetching fresh messages but cache is displayed */}
+      {isSyncing && messages.length > 0 && (
+        <View className="flex-row items-center justify-center py-1 bg-btc400">
+          <ActivityIndicator size="small" color="#75E6DA" />
+          <Text className="font-funnel-regular text-btc100 text-xs ml-2">
+            Syncing…
+          </Text>
+        </View>
+      )}
+
       <FlatList
         className="flex-1"
         data={messages}
         inverted={true}
-        keyExtractor={(item, index) => index.toString()}
+        keyExtractor={(item, index) => item._id || index.toString()}
         ListEmptyComponent={
           <View className="justify-center items-center mt-64">
             <Text className="font-funnel-regular text-btc100 text-2xl">

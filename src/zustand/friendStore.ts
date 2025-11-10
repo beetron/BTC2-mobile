@@ -10,10 +10,12 @@ interface Friend {
 }
 
 interface Message {
+  _id: string;
   senderId: string;
   nickname: string;
   message: string;
   createdAt: string;
+  imageFiles?: string[];
 }
 
 interface FriendStore {
