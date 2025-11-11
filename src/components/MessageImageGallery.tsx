@@ -50,8 +50,9 @@ const MessageImageGallery: React.FC<MessageImageGalleryProps> = ({
   };
 
   const isSingleImage = imageSources.length === 1;
-  const gridSize = isSingleImage ? imageSize : imageSize / 2.5;
+  const gridSize = isSingleImage ? imageSize : imageSize / 2.2; // Slightly larger grid items
   const singleImageHeight = screenWidth * 0.55; // Bigger height for single image
+  const gridSpacing = 6; // Consistent spacing between grid items
 
   const renderImageItem = ({
     item,
@@ -75,10 +76,11 @@ const MessageImageGallery: React.FC<MessageImageGalleryProps> = ({
         height: isSingleImage ? singleImageHeight : gridSize,
         aspectRatio: isSingleImage ? undefined : 1,
         overflow: "hidden",
+        borderRadius: 16,
       }}
     >
       {errors[index] ? (
-        <View className="flex-1 bg-btc100 rounded-lg justify-center items-center">
+        <View className="flex-1 bg-btc100 rounded-2xl justify-center items-center">
           <Ionicons name="alert-circle-outline" size={32} color="#D4F1F4" />
         </View>
       ) : (
@@ -103,7 +105,7 @@ const MessageImageGallery: React.FC<MessageImageGalleryProps> = ({
               width: "100%",
               height: "100%",
             }}
-            contentFit={isSingleImage ? "contain" : "cover"}
+            contentFit="cover"
             onLoad={() => handleImageLoad(index)}
             onError={() => handleImageError(index)}
           />
@@ -120,16 +122,19 @@ const MessageImageGallery: React.FC<MessageImageGalleryProps> = ({
             flexDirection: "row",
             flexWrap: "wrap",
             width: "100%",
+            justifyContent: isSingleImage ? "flex-start" : "center",
+            alignItems: "center",
           }}
         >
           {imageSources.map((source, index) => (
             <View
               key={index}
-              className="rounded-lg"
+              className="rounded-2xl"
               style={{
                 width: isSingleImage ? "100%" : "auto",
-                marginRight: !isSingleImage ? 4 : 0,
-                marginBottom: !isSingleImage ? 4 : 0,
+                marginRight: !isSingleImage ? gridSpacing / 2 : 0,
+                marginLeft: !isSingleImage ? gridSpacing / 2 : 0,
+                marginBottom: !isSingleImage ? gridSpacing : 0,
                 overflow: "hidden",
               }}
             >
