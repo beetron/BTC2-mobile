@@ -8,13 +8,13 @@ module.exports = {
       width: {
         "7/10": "70%",
       },
-    },
-    colors: {
-      btc100: "#D4F1F4",
-      btc200: "#75E6DA",
-      btc300: "#189AB4",
-      btc400: "#05445E",
-      btc500: "#2a2a3c",
+      colors: {
+        btc100: "#D4F1F4",
+        btc200: "#75E6DA",
+        btc300: "#189AB4",
+        btc400: "#05445E",
+        btc500: "#2a2a3c",
+      },
     },
     fontFamily: {
       "funnel-bold": ["funnel-bold"],
@@ -24,7 +24,6 @@ module.exports = {
       "funnel-regular": ["funnel-regular"],
       "funnel-semi-bold": ["funnel-semi-bold"],
     },
-    extend: {},
   },
   plugins: [],
 };
