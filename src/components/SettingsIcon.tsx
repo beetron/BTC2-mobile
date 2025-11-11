@@ -5,7 +5,7 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 const SettingsIcon = () => {
   const router = useRouter();
   return (
-    <View className="w-full bg-btc500" style={{ paddingTop: 50 }}>
+    <View className="w-full bg-btc500 p-4">
       <TouchableOpacity
         onPress={() => router.push("../screens/settingsChangeIcon")}
       >
