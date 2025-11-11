@@ -23,6 +23,8 @@ const _layout = () => {
     <Stack>
       <Stack.Screen name="Login" options={{ headerShown: false }} />
       <Stack.Screen name="Signup" options={{ headerShown: false }} />
+      <Stack.Screen name="ForgotPassword" options={{ headerShown: false }} />
+      <Stack.Screen name="ForgotUsername" options={{ headerShown: false }} />
     </Stack>
   );
 };

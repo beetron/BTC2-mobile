@@ -90,6 +90,15 @@ const Login = () => {
               autoComleteType="password"
             />
 
+            {/* Forgot Password link */}
+            <View className="w-3/5 justify-end flex-row mt-4">
+              <TouchableOpacity onPress={() => router.push("./ForgotPassword")}>
+                <Text className="text-lg font-funnel-regular color-btc200">
+                  Forgot Password?
+                </Text>
+              </TouchableOpacity>
+            </View>
+
             {/* Login button */}
             <CustomButton
               title="Login"
