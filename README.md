@@ -1,4 +1,4 @@
-# BTC2 Mobile App (Frontend)
+# bTC2 Mobile App (Frontend)
 
 [![React Native](https://img.shields.io/badge/React_Native-0.76-61DAFB?style=flat-square&logo=react&logoColor=white)](https://reactnative.dev/)
 [![Expo](https://img.shields.io/badge/Expo-52.0-000020?style=flat-square&logo=expo&logoColor=white)](https://expo.dev/)
