@@ -33,11 +33,8 @@ export const NetworkProvider = ({
         setIsInternetReachable(state.isInternetReachable ?? null);
         setType(state.type ?? null);
       } catch (error) {
-        console.warn(
-          "Network module not available - using fallback. Rebuild with EAS or expo run:ios",
-          error
-        );
-        setIsConnected(true); // Default to online if module not available
+        console.error("Error getting initial network state:", error);
+        setIsConnected(true); // Default to online if check fails
       } finally {
         setIsLoading(false);
       }
@@ -46,17 +43,13 @@ export const NetworkProvider = ({
     initializeNetwork();
 
     // Subscribe to network state changes
-    try {
-      const subscription = Network.addNetworkStateListener((state) => {
-        setIsConnected(state.isConnected ?? true);
-        setIsInternetReachable(state.isInternetReachable ?? null);
-        setType(state.type ?? null);
-      });
+    const subscription = Network.addNetworkStateListener((state) => {
+      setIsConnected(state.isConnected ?? true);
+      setIsInternetReachable(state.isInternetReachable ?? null);
+      setType(state.type ?? null);
+    });
 
-      unsubscribe = subscription.remove;
-    } catch (error) {
-      console.warn("Network listener not available - skipping", error);
-    }
+    unsubscribe = subscription.remove;
 
     return () => {
       if (unsubscribe) {
