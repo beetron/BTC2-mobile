@@ -1,9 +1,16 @@
 # bTChatty2 (bTC2)
 
+- [Support](#support)
 - [Privacy Policy](#privacy-policy)
 - [Terms & Conditions](#terms-conditions)
 
-<h1 id="privacy-policy">Privacy Policy</h1>
+<h2 id="support">Support</h2>
+
+If you need help with bTChatty2, please contact us at btro-contact@btro.jp.
+
+For privacy or terms questions, visit our [Privacy Policy](#privacy-policy) and [Terms & Conditions](#terms-conditions).
+
+<h2 id="privacy-policy">Privacy Policy</h2>
 
 This privacy policy applies to the bTChatty2 app (hereby referred to as "Application") for mobile devices that was created by Brian Imai (hereby referred to as "Service Provider") as a Free service. This service is intended for use "AS IS".
 
