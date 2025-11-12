@@ -8,8 +8,9 @@
 [![TailwindCSS](https://img.shields.io/badge/TailwindCSS-NativeWind-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
 
 A modern iOS messaging app built with React Native and Expo, featuring real-time messaging, push notifications, image sharing, and comprehensive member management. This invite-only app requires an existing member's unique ID to join.
-<br>
-The backend API for BTC2 could be found at: https://github.com/beetron/btc2_API
+<br><br>
+The backend API for bTC2 could be found at: https://github.com/beetron/BTC2-API<br>
+Web version: https://github.com/beetron/BTC2-web
 
 ## Table of Contents
 
