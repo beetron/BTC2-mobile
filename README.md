@@ -7,7 +7,7 @@
 [![Socket.io](https://img.shields.io/badge/Socket.io_Client-4.8-010101?style=flat-square&logo=socket.io&logoColor=white)](https://socket.io/)
 [![TailwindCSS](https://img.shields.io/badge/TailwindCSS-NativeWind-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
 
-A modern iOS messaging app built with React Native and Expo, featuring real-time messaging, push notifications. This invite-only app requires an existing member's unique ID to join.
+A modern iOS messaging app built with React Native and Expo, featuring real-time messaging, push notifications, image sharing, and comprehensive member management. This invite-only app requires an existing member's unique ID to join.
 <br>
 The backend API for BTC2 could be found at: https://github.com/beetron/btc2_API
 
@@ -33,20 +33,26 @@ The backend API for BTC2 could be found at: https://github.com/beetron/btc2_API
 
 - User authentication (signup/login/logout)
 - Real-time messaging with socket.io
-- Friend management system
+- Friend management system (add, accept, reject, remove friends)
 - Profile customization (nickname, unique ID, profile image)
 - Push notifications with badge count
-- Customizable app icons
+- Image sharing in conversations (multi-select support)
+- Message management (delete messages, view message history)
+- Password recovery (forgot password/username)
+- Account management (change password, update email, delete account)
+- Customizable app icons (multiple theme options)
 - Secure storage with expo-secure-store
 - Responsive UI with NativeWind (TailwindCSS)
+- Network-aware connectivity handling
+- Message caching for offline viewing
 
-#### Update Plans
+#### Future Plans
 
 - Group chat support
-- File sharing in messages
-- User blocking
-- Email registration
-- Password recovery
+- User blocking functionality
+- Voice messages
+- Message reactions and replies
+- Single message deletions
 
 ## Setup
 
@@ -79,12 +85,14 @@ npm install
 Create a `.env` file in the root directory:
 
 ```bash
+# Comment out for production builds (app will use EXPO_PUBLIC_API_URL)
 EXPO_PUBLIC_ENV=development
-EXPO_PUBLIC_API_URL=https://api.yourdomain.com/1.0.0
-EXPO_PUBLIC_API_DEV_URL=https://192.168.1.2/1.0.0
-EXPO_PUBLIC_API_PROFILE_IMAGE_URL=/users/profileImage/
+EXPO_PUBLIC_API_URL=https://your-api-url.com
+EXPO_PUBLIC_API_DEV_URL=http://192.168.1.2:3000
 EXPO_PUBLIC_APP_VERSION=1.0.0
 ```
+
+**Important:** For production builds, comment out `EXPO_PUBLIC_ENV=development` so the app uses `EXPO_PUBLIC_API_URL` instead of the development URL.
 
 ### Development Setup
 
@@ -106,24 +114,38 @@ npx expo run:ios
 
 ### Key Features
 
-#### Authentication
+#### Authentication & Account Management
 
-- JWT-based authentication
-- Secure token storage using expo-secure-store
+- JWT-based authentication with secure token storage
+- Password recovery via email
+- Username recovery functionality
+- Account deletion with secure logout
+- Email and password updates
 - Protected route handling with expo-router
 
 #### Real-time Communication
 
-- Socket.io client integration
-- Automatic reconnection handling
+- Socket.io client integration with automatic reconnection
 - Background connection management
+- Real-time messaging with delivery status
+- Image sharing with multi-select support
+- Message caching for offline viewing
+- Network-aware connectivity handling
 
-#### UI/UX
+#### Friend & Social Features
+
+- Comprehensive friend management (add, accept, reject, remove)
+- Friend request system
+- Profile customization with images and nicknames
+- Unique ID system for member identification
+
+#### UI/UX & Media
 
 - Custom fonts with expo-font
-- Responsive design using NativeWind
-- Custom pre-configured app icon selection
-- Image picker for profile photos
+- Responsive design using NativeWind (TailwindCSS)
+- Multiple app icon themes
+- Image picker for profile photos and message attachments
+- Full-screen image gallery with swipe navigation
 
 ### State Management
 
@@ -149,14 +171,22 @@ npx expo run:ios
 
 ```
 src/
-├── app/              # Application screens and navigation
-├── components/       # Reusable UI components
-├── constants/        # App constants and configs
-├── context/         # React Context providers
-├── hooks/           # Custom React hooks
-├── services/        # API and socket services
-├── utils/           # Helper functions
-└── zustand/         # State management stores
+├── app/                    # Application screens and navigation
+│   ├── guests/            # Authentication screens (login, signup, forgot password)
+│   ├── members/           # Member-only screens (home, settings, logout)
+│   └── screens/           # Shared screens (conversation, settings pages)
+├── components/            # Reusable UI components
+│   ├── *Conversation*     # Chat-related components
+│   ├── *Edit*            # Friend management components
+│   ├── *Message*         # Image/message display components
+│   ├── *Settings*        # Account settings components
+│   └── *Custom*          # Generic UI components
+├── constants/            # App constants and configurations
+├── context/              # React Context providers (Auth, Socket, Network)
+├── hooks/               # Custom React hooks for API calls and state
+├── services/            # External service integrations
+├── utils/               # Helper functions and utilities
+└── zustand/             # Global state management stores
 ```
 
 ### Running in Development
@@ -170,4 +200,25 @@ npm run ios
 
 # Build development client
 eas build --profile development --platform ios
+```
+
+## Building for Production
+
+### Prerequisites for Production Builds
+
+- EAS CLI installed: `npm install -g @expo/eas-cli`
+- Apple Developer Account with App Store Connect access
+- Firebase project configured for push notifications
+
+### Production Build Commands
+
+```bash
+# Build for iOS App Store
+eas build --platform ios --profile production
+
+# Submit to TestFlight for testing
+eas submit --platform ios --profile testflight
+
+# Submit to App Store Review
+eas submit --platform ios --profile production
 ```
