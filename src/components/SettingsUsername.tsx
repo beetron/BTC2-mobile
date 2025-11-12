@@ -1,9 +1,5 @@
-import { useState, useCallback } from "react";
-import { Alert, Text, TextInput, View, Platform, Keyboard } from "react-native";
-import useUpdateNickname from "@/src/hooks/useUpdateNickname";
+import { Text, View } from "react-native";
 import { useAuth } from "@/src/context/AuthContext";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { useFocusEffect } from "expo-router";
 
 const SettingsNickname = () => {
   const { authState } = useAuth();

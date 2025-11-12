@@ -24,7 +24,7 @@ const useGetMessages = () => {
     const userId = authState.user._id;
     const friendId = selectedFriend._id;
 
-    // 1) Load cache first and display immediately
+    // Load cache first and display immediately
     try {
       const cached = await loadMessagesFromCache(userId, friendId);
       if (cached && cached.messages && cached.messages.length > 0) {
@@ -42,12 +42,11 @@ const useGetMessages = () => {
       setIsLoading(true);
     }
 
-    // 2) Fetch fresh messages in background
+    // Fetch fresh messages in background
     try {
       setIsSyncing(true);
 
       if (!isConnected) {
-        // Offline: just use cache (already set above)
         setIsLoading(false);
         setIsSyncing(false);
         return;
