@@ -23,8 +23,6 @@ module.exports = {
       },
       infoPlist: {
         UIBackgroundModes: ["remote-notification"],
-        NSPhotoLibraryUsageDescription:
-          "This app accesses your photo library to allow you to select and upload images for your profile picture, and to attach photos from your library to send in chat messages.",
       },
       supportsTablet: true,
       bundleIdentifier: "com.beetron.btc2",
@@ -79,7 +77,13 @@ module.exports = {
           },
         },
       ],
-      "expo-image-picker",
+      [
+        "expo-image-picker",
+        {
+          photosPermission:
+            "This app accesses your photo library to allow you to select and upload images for your profile picture, and to attach photos from your library to send in chat messages.",
+        },
+      ],
       "expo-router",
       [
         "expo-font",
