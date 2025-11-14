@@ -18,7 +18,7 @@ const HeaderBackButton = ({ routerOption }: HeaderBackButtonProps) => {
     }
   };
   return (
-    <View className="flex-1 items-start justify-end mb-2 ml-4">
+    <View className="items-start justify-end mb-2 ml-4">
       <Entypo name="back" size={36} color="white" onPress={handleOnPress} />
     </View>
   );
