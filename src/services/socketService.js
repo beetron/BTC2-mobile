@@ -6,12 +6,19 @@ let _userId = null;
 const _listeners = new Map();
 
 const initialize = (userId) => {
+  console.log(
+    "🔌 socketService.initialize called with userId:",
+    userId,
+    "existing socket:",
+    !!_socket
+  );
+
   const url = new URL(API_URL);
   const isDevelopment = process.env.EXPO_PUBLIC_ENV === "development";
 
   // Create socket connection if it doesn't exist
   if (!_socket) {
-    console.log("Creating new socket connection");
+    console.log("🔌 Creating NEW socket connection");
     _userId = userId;
 
     _socket = io(url.origin, {
@@ -23,14 +30,16 @@ const initialize = (userId) => {
       query: { userId },
     });
     console.log(
-      `Socket connecting to ${url.origin} with path ${
+      `🔌 New socket connecting to ${url.origin} with path ${
         isDevelopment ? "/socket.io" : "/btc-api/socket.io"
       }`
     );
   } else if (!_socket.connected) {
     // Reconnect existing socket if it's disconnected
-    console.log("Reconnecting existing socket");
+    console.log("🔌 Reconnecting EXISTING socket");
     _socket.connect();
+  } else {
+    console.log("🔌 Socket already exists and connected, reusing connection");
   }
 
   return _socket;
@@ -44,6 +53,7 @@ const isConnected = () => Boolean(_socket?.connected);
 
 // Disconnect the socket
 const disconnect = () => {
+  console.log("🔌 socketService.disconnect called, socket exists:", !!_socket);
   if (_socket) {
     _socket.disconnect();
     _socket = null;

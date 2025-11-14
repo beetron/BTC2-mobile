@@ -45,12 +45,18 @@ export const SocketProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
   // Cleanup function
   const cleanup = useCallback(async () => {
-    if (cleanupInProgress.current) return;
-    if (!socketRef.current) return;
+    if (cleanupInProgress.current) {
+      console.log("🧹 cleanup: already in progress, skipping");
+      return;
+    }
+    if (!socketRef.current) {
+      console.log("🧹 cleanup: no socket to cleanup");
+      return;
+    }
 
     try {
       cleanupInProgress.current = true;
-      console.log("Cleaning up socket connection");
+      console.log("🧹 Cleaning up socket connection");
 
       socketRef.current.disconnect();
       socketRef.current = null;
@@ -65,23 +71,39 @@ export const SocketProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
   // Initialize socket
   const initializeSocket = useCallback(() => {
+    console.log(
+      "🚀 initializeSocket called - authenticated:",
+      authState?.authenticated,
+      "userId:",
+      authState?.user?._id,
+      "isInitializing:",
+      isInitializing.current
+    );
+
     if (
       !authState?.authenticated ||
       !authState.user?._id ||
       isInitializing.current
     ) {
+      console.log("🚀 initializeSocket early return - conditions not met");
       return;
     }
 
     try {
       isInitializing.current = true;
+      console.log("🚀 initializeSocket: calling cleanup");
       cleanup();
 
+      console.log("🚀 initializeSocket: calling socketService.initialize");
       const newSocket = socketService.initialize(authState.user._id);
       socketService.setupEvents();
 
       setSocket(newSocket);
       setIsConnected(newSocket.connected);
+      console.log(
+        "🚀 initializeSocket completed - socket connected:",
+        newSocket.connected
+      );
     } catch (error) {
       console.error("Socket initialization error:", error);
     } finally {
@@ -102,13 +124,20 @@ export const SocketProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
   // Handle authentication state changes
   useEffect(() => {
+    console.log(
+      "🔄 SocketContext useEffect triggered - authState.authenticated:",
+      authState?.authenticated
+    );
     if (authState?.authenticated) {
+      console.log("🔄 Calling initializeSocket from useEffect");
       initializeSocket();
     } else {
+      console.log("🔄 Calling cleanup from useEffect (not authenticated)");
       cleanup();
     }
 
     return () => {
+      console.log("🔄 SocketContext useEffect cleanup");
       cleanup();
     };
   }, [authState?.authenticated, initializeSocket, cleanup]);
