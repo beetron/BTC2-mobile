@@ -1,5 +1,5 @@
 import { View } from "react-native";
-import EditContainer from "../../components/EditContainer";
+import EditContainer from "../../../components/EditContainer";
 
 const EditFriends = () => {
   return (

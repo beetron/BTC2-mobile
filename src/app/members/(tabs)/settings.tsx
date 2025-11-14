@@ -1,5 +1,5 @@
 import { View } from "react-native";
-import SettingsContainer from "../../components/SettingsContainer";
+import SettingsContainer from "../../../components/SettingsContainer";
 
 const Settings = () => {
   return (
