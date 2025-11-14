@@ -3,6 +3,7 @@
 - [Support](#support)
 - [Privacy Policy](#privacy-policy)
 - [Terms & Conditions](#terms-conditions)
+- [End User License Agreement](https://beetron.github.io/BTC2-mobile/eula.html)
 
 <h2 id="support">Support</h2>
 
@@ -112,3 +113,7 @@ These terms and conditions are effective as of 2025-11-12
 
 Contact Us
 If you have any questions or suggestions about the Terms and Conditions, please do not hesitate to contact the Service Provider at btro-contact@btro.jp.
+
+<h1 id="eula">End User License Agreement</h1>
+
+For the complete End User License Agreement, please visit: [https://beetron.github.io/BTC2-mobile/eula.html](https://beetron.github.io/BTC2-mobile/eula.html)
