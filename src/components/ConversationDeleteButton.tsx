@@ -14,7 +14,7 @@ const ConversationDeleteButton = () => {
     }
     // Alert to confirm deletion
     const confirmDelete = await new Promise((resolve) => {
-      Alert.alert("", "Delete Message", [
+      Alert.alert("", "Delete Messages?", [
         { text: "Cancel", onPress: () => resolve(false), style: "cancel" },
         { text: "OK", onPress: () => resolve(true) },
       ]);
