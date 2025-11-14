@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -13,8 +13,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Logo from "../../components/Logo";
 import CustomButton from "../../components/CustomButton";
 import CustomInput from "../../components/CustomInput";
-import { Link, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { KeyboardAvoidingView } from "react-native-keyboard-controller";
+import * as SecureStore from "expo-secure-store";
 
 interface FormData {
   username: string;
@@ -30,6 +31,21 @@ const Login = () => {
   const { onLogin } = useAuth();
   const router = useRouter();
 
+  useEffect(() => {
+    const checkEulaAcceptance = async () => {
+      try {
+        const eulaAccepted = await SecureStore.getItemAsync("eulaAccepted");
+        if (!eulaAccepted || eulaAccepted !== "true") {
+          router.replace("./Eula");
+        }
+      } catch (error) {
+        // If SecureStore fails, show EULA for safety
+        router.replace("./Eula");
+      }
+    };
+
+    checkEulaAcceptance();
+  }, [router]);
   const onSubmit = async () => {
     if (formData.username === "" || formData.password === "") {
       Alert.alert("Please fill in all fields");
