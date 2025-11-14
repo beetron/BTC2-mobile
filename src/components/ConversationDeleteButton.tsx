@@ -31,9 +31,9 @@ const ConversationDeleteButton = () => {
     }
   };
   return (
-    <View className="flex-1 items-end justify-end mb-2 mr-4">
+    <View>
       <TouchableOpacity onPress={handleOnPress} disabled={isLoading}>
-        <AntDesign name="delete" size={36} style={{ color: "#991b1b" }} />
+        <AntDesign name="delete" size={34} style={{ color: "#D4F1F4" }} />
       </TouchableOpacity>
     </View>
   );
