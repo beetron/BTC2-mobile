@@ -7,9 +7,7 @@ const EditRemoveFriend = () => {
   return (
     <View className="bg-btc500 mt-4 mb-4 flex-1">
       <View>
-        <TouchableOpacity
-          onPress={() => router.push("../screens/removeFriend")}
-        >
+        <TouchableOpacity onPress={() => router.push("../removeFriend")}>
           <Text className="text-btc100 font-funnel-regular text-2xl items-start">
             Remove Friend(s)
           </Text>

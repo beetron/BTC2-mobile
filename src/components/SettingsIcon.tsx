@@ -6,9 +6,7 @@ const SettingsIcon = () => {
   const router = useRouter();
   return (
     <View className="w-full bg-btc500 p-4">
-      <TouchableOpacity
-        onPress={() => router.push("../screens/settingsChangeIcon")}
-      >
+      <TouchableOpacity onPress={() => router.push("../settingsChangeIcon")}>
         <View className="flex-row justify-between items-center py-2">
           <Text className="text-btc100 font-funnel-regular text-2xl">
             Change App Icon

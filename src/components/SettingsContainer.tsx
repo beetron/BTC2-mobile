@@ -16,6 +16,7 @@ import SettingsEmail from "./SettingsEmail";
 import SettingsDeleteAccount from "./SettingsDeleteAccount";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import Border from "./Border";
+import LegalNotices from "./LegalNotices";
 
 const SettingsContainer = () => {
   return (
@@ -45,9 +46,8 @@ const SettingsContainer = () => {
           <Border />
           <SettingsIcon />
           <Border />
-          <View style={{ marginTop: 24 }}>
-            <SettingsDeleteAccount />
-          </View>
+          <SettingsDeleteAccount />
+          <LegalNotices />
         </View>
       </TouchableWithoutFeedback>
     </KeyboardAwareScrollView>
