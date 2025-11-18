@@ -9,7 +9,7 @@ const EditRemoveFriend = () => {
       <View>
         <TouchableOpacity onPress={() => router.push("../removeFriend")}>
           <Text className="text-btc100 font-funnel-regular text-2xl items-start">
-            Remove Friend(s)
+            Remove / Block Friend
           </Text>
           <AntDesign
             name="arrowright"
