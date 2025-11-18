@@ -65,7 +65,7 @@ const TabsLayout = () => {
         <Tabs.Screen
           name="editFriends"
           options={{
-            title: "Add / Remove",
+            title: "Edit Friends",
             tabBarIcon: ({ color }) => (
               <FontAwesome5 size={24} name="user-edit" color={color} />
             ),

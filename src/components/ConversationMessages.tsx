@@ -1,6 +1,12 @@
-import { View, Text, FlatList, ActivityIndicator } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  ActivityIndicator,
+  TouchableOpacity,
+} from "react-native";
 import { Image } from "expo-image";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useAppStateListener } from "../context/AppStateContext";
 import friendStore from "../zustand/friendStore";
 import useGetMessages from "../hooks/useGetMessages";
@@ -10,10 +16,13 @@ import Autolink from "react-native-autolink";
 import { images } from "../constants/images";
 import useSetBadgeCount from "../hooks/useSetBadgeCount";
 import MessageImageGallery from "./MessageImageGallery";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 const ConversationMessages = () => {
   const { isLoading, isSyncing, getMessages } = useGetMessages();
   const { messages, selectedFriend, shouldRender } = friendStore();
+  const flatListRef = useRef<FlatList<any> | null>(null);
+  const [showScrollToLatest, setShowScrollToLatest] = useState(false);
   const { getMessageImageSource } = useGetMessageImages();
   // Using getMyFriends to use update BadgeCount (temporary solution)
   const { setBadgeCount } = useSetBadgeCount();
@@ -55,8 +64,17 @@ const ConversationMessages = () => {
 
       <FlatList
         className="flex-1"
+        ref={flatListRef}
         data={messages}
         inverted={true}
+        // show scroll-to-latest button when user scrolls up away from the newest message
+        onScroll={({ nativeEvent }) => {
+          const { contentOffset } = nativeEvent;
+          // When inverted, offset near 0 indicates we're at / near the newest message
+          const atBottom = contentOffset.y <= 40; // small threshold
+          setShowScrollToLatest(!atBottom);
+        }}
+        scrollEventThrottle={16}
         keyExtractor={(item, index) => item._id || index.toString()}
         ListEmptyComponent={
           <View className="justify-center items-center mt-64">
@@ -71,7 +89,7 @@ const ConversationMessages = () => {
             {message.senderId === selectedFriend?._id ? (
               <View className="items-start mb-5 mr-auto max-w-[80%]">
                 <View className="flex-row bg-btc400 rounded-e-2xl pl-2 p-4">
-                  {selectedFriend.profileImageData ? (
+                  {selectedFriend?.profileImageData ? (
                     <Image
                       source={{ uri: selectedFriend.profileImageData }}
                       style={{ width: 50, height: 50, borderRadius: 50 }}
@@ -98,11 +116,16 @@ const ConversationMessages = () => {
                         )}
                         <MessageImageGallery
                           imageFilenames={message.imageFiles}
-                          imageSources={message.imageFiles.map((filename) => {
-                            const source = getMessageImageSource(filename);
-                            console.log("📸 From friend image source:", source);
-                            return source;
-                          })}
+                          imageSources={message.imageFiles.map(
+                            (filename: string) => {
+                              const source = getMessageImageSource(filename);
+                              console.log(
+                                "📸 From friend image source:",
+                                source
+                              );
+                              return source;
+                            }
+                          )}
                         />
                       </>
                     )}
@@ -128,11 +151,13 @@ const ConversationMessages = () => {
                       )}
                       <MessageImageGallery
                         imageFilenames={message.imageFiles}
-                        imageSources={message.imageFiles.map((filename) => {
-                          const source = getMessageImageSource(filename);
-                          console.log("📸 From me image source:", source);
-                          return source;
-                        })}
+                        imageSources={message.imageFiles.map(
+                          (filename: string) => {
+                            const source = getMessageImageSource(filename);
+                            console.log("📸 From me image source:", source);
+                            return source;
+                          }
+                        )}
                       />
                     </>
                   )}
@@ -145,6 +170,41 @@ const ConversationMessages = () => {
           </View>
         )}
       />
+
+      {/* Floating scroll-to-latest button */}
+      {messages.length > 0 && showScrollToLatest && (
+        <View className="absolute right-4 bottom-24 z-50">
+          <TouchableOpacity
+            className="rounded-full bg-btc300 p-2 shadow-lg"
+            onPress={() => {
+              // Scroll to newest: with inverted FlatList, offset 0 is newest
+              try {
+                flatListRef.current?.scrollToOffset({
+                  offset: 0,
+                  animated: true,
+                });
+              } catch (err) {
+                // fallback to scrollToIndex
+                try {
+                  flatListRef.current?.scrollToIndex({
+                    index: 0,
+                    animated: true,
+                  });
+                } catch (err2) {
+                  console.warn("Scrolling to latest failed:", err2);
+                }
+              }
+              setShowScrollToLatest(false);
+            }}
+          >
+            <MaterialCommunityIcons
+              name="arrow-down-circle"
+              size={28}
+              color="#D4F1F4"
+            />
+          </TouchableOpacity>
+        </View>
+      )}
     </View>
   );
 };

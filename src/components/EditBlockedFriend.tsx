@@ -2,14 +2,14 @@ import { View, Text, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 import AntDesign from "@expo/vector-icons/AntDesign";
 
-const EditRemoveFriend = () => {
+const EditBlockedFriend = () => {
   const router = useRouter();
   return (
     <View className="bg-btc500 mt-4 mb-4 flex-1">
       <View>
-        <TouchableOpacity onPress={() => router.push("../removeFriend")}>
+        <TouchableOpacity onPress={() => router.push("../blockedFriend")}>
           <Text className="text-btc100 font-funnel-regular text-2xl items-start">
-            Remove / Block Friend
+            Blocked Users
           </Text>
           <AntDesign
             name="arrowright"
@@ -23,4 +23,4 @@ const EditRemoveFriend = () => {
   );
 };
 
-export default EditRemoveFriend;
+export default EditBlockedFriend;

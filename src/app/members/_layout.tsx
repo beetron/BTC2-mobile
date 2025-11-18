@@ -21,6 +21,7 @@ const TabLayout = () => {
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="conversation" />
         <Stack.Screen name="removeFriend" />
+        <Stack.Screen name="blockedFriend" />
         <Stack.Screen name="settingsChangeIcon" />
       </Stack>
     </SocketProvider>
