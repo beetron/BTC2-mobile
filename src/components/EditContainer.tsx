@@ -9,6 +9,7 @@ import {
 import React from "react";
 import EditAddFriend from "./EditAddFriend";
 import EditFriendRequests from "./EditFriendRequests";
+import EditBlockedFriend from "./EditBlockedFriend";
 import EditRemoveFriend from "./EditRemoveFriend";
 
 const EditContainer = () => {
@@ -29,6 +30,13 @@ const EditContainer = () => {
                 }}
               />
               <EditRemoveFriend />
+              <View
+                style={{
+                  height: 1,
+                  backgroundColor: "grey",
+                }}
+              />
+              <EditBlockedFriend />
               <View
                 style={{
                   height: 1,

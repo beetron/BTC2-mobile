@@ -1,8 +1,8 @@
 import { View, Text } from "react-native";
 import HeaderBackButton from "./HeaderBackButton";
-import ConversationDeleteButton from "./ConversationDeleteButton";
-import ConversationReportButton from "./ConversationReportButton";
+// Replaced header icons with an overflow menu
 import friendStore from "../zustand/friendStore";
+import ConversationActionMenu from "./ConversationActionMenu";
 
 const ConversationHeader = () => {
   const { selectedFriend } = friendStore();
@@ -22,10 +22,7 @@ const ConversationHeader = () => {
             </Text>
           )}
         </View>
-        <View className="mr-2">
-          <ConversationReportButton />
-        </View>
-        <ConversationDeleteButton />
+        <ConversationActionMenu />
       </View>
     </View>
   );

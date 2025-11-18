@@ -1,13 +1,11 @@
-import { View, Text, ActivityIndicator } from "react-native";
+import { View, Text, ActivityIndicator, Alert } from "react-native";
 import { useState, useEffect } from "react";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import CustomButton from "../../components/CustomButton";
-import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
-import useBlockUser from "@/src/hooks/useBlockUser";
 import { Image } from "expo-image";
 import { images } from "../../constants/images";
-import useGetMyFriends from "@/src/hooks/useGetMyFriends";
-import useRemoveFriend from "@/src/hooks/useRemoveFriend";
+import useGetBlockedFriends from "@/src/hooks/useGetBlockedFriends";
+import useUnblockUser from "@/src/hooks/useUnblockUser";
+import friendStore from "@/src/zustand/friendStore";
 import RemoveFriendHeader from "../../components/RemoveFriendHeader";
 
 interface Friend {
@@ -18,32 +16,26 @@ interface Friend {
   profileImageData?: string;
 }
 
-const removeFriend = () => {
+const BlockedFriend = () => {
   const placeholderProfileImage = images.placeholderProfileImage;
   const [shouldRender, setShouldRender] = useState(false);
-  const { myFriends, getMyFriends, isLoading } = useGetMyFriends();
-  const { removeFriend, isLoading: removeIsLoading } = useRemoveFriend();
-  const { blockUser, isLoading: blockIsLoading } = useBlockUser();
+  const { blockedFriends, getBlockedFriends, isLoading } =
+    useGetBlockedFriends();
 
-  // Refresh list after removing a friend
   useEffect(() => {
-    getMyFriends();
+    getBlockedFriends();
   }, [shouldRender]);
 
-  // Handle onPress remove
-  const handleOnPressRemove = async (friendId: string) => {
-    const success = await removeFriend(friendId);
-    if (success) {
-      console.log("Friend removed successfully");
-      setShouldRender((prev) => !prev);
-    }
-  };
+  const { unblockUser } = useUnblockUser();
 
-  // Handle onPress Block friend
-  const handleOnPressBlock = async (friendId: string) => {
-    const success = await blockUser(friendId);
-    if (success) {
-      setShouldRender((prev) => !prev);
+  const handleOnPress = async (friendId: string) => {
+    try {
+      const success = await unblockUser(friendId);
+      if (success) {
+        setShouldRender((prev) => !prev);
+      }
+    } catch (error) {
+      console.error("Error unblocking user: ", error);
     }
   };
 
@@ -59,10 +51,11 @@ const removeFriend = () => {
             className="m-2"
           />
           <Text className="text-btc100 font-funnel-regular text-xl">
-            Removing a friend will remove yourself from their friend list.{"\n"}
-            Blocking a friend will make you completely unreachable.
+            You could unblock users here. {"\n"}Unblocking enables sending
+            friend requests again.
           </Text>
         </View>
+
         {isLoading ? (
           <View className="mt-2 items-center jusitfy-center">
             <ActivityIndicator size="large" color="white" />
@@ -70,12 +63,12 @@ const removeFriend = () => {
         ) : (
           <>
             <View className="mt-2 flex-col items-start w-full">
-              {!myFriends || myFriends.length === 0 ? (
+              {!blockedFriends || blockedFriends.length === 0 ? (
                 <Text className="text-btc100 font-funnel-regular text-2xl mt-4">
-                  You have no friends to remove
+                  You have no blocked users
                 </Text>
               ) : (
-                myFriends.map((friend: Friend) => (
+                blockedFriends.map((friend: Friend) => (
                   <View
                     key={friend._id}
                     className="flex-row items-center justify-between w-full m-2"
@@ -102,22 +95,12 @@ const removeFriend = () => {
                         {friend.nickname}
                       </Text>
                     </View>
-                    <View
-                      className="flex-row justify-end items-center"
-                      style={{ width: 180, marginLeft: 8 }}
-                    >
-                      <CustomButton
-                        title="Remove"
-                        handlePress={() => handleOnPressRemove(friend.uniqueId)}
-                        containerStyles="px-4 py-2 mr-2 bg-yellow-700"
-                        textStyles="text-base"
-                      />
-
-                      <CustomButton
-                        title="Block"
-                        handlePress={() => handleOnPressBlock(friend._id)}
-                        containerStyles="px-4 py-2 bg-red-700"
-                        textStyles="text-base"
+                    <View className="flex-row justify-end">
+                      <AntDesign
+                        name="unlock"
+                        size={28}
+                        color="skyblue"
+                        onPress={() => handleOnPress(friend._id)}
                       />
                     </View>
                   </View>
@@ -131,4 +114,4 @@ const removeFriend = () => {
   );
 };
 
-export default removeFriend;
+export default BlockedFriend;
