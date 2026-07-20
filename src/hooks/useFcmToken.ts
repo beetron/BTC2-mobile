@@ -1,5 +1,11 @@
 import { useState, useCallback } from "react";
-import messaging from "@react-native-firebase/messaging";
+import {
+  getMessaging,
+  requestPermission,
+  getToken,
+  hasPermission,
+  AuthorizationStatus,
+} from "@react-native-firebase/messaging";
 import * as SecureStore from "expo-secure-store";
 import * as Device from "expo-device";
 import axiosClient from "@/src/utils/axiosClient";
@@ -79,12 +85,14 @@ export default function useFcmToken() {
   /////////////////////////////////////////////
   const generateNewFcmToken = useCallback(async () => {
     try {
+      const messagingInstance = getMessaging();
+
       // Request client for notification permission
-      const permStatus = await messaging().requestPermission();
+      const permStatus = await requestPermission(messagingInstance);
       console.log("Notification permission status: ", permStatus);
 
       // Get FCM token
-      const token = await messaging().getToken();
+      const token = await getToken(messagingInstance);
 
       if (token) {
         // Save FCM token to SecureStore
@@ -111,13 +119,14 @@ export default function useFcmToken() {
     try {
       // First check notification permission status
       // Permission status needs re-checking when app is re-installed
-      const permStatus = await messaging().hasPermission();
+      const messagingInstance = getMessaging();
+      const permStatus = await hasPermission(messagingInstance);
       console.log("Current notification permission status:", permStatus);
 
       // If permission not granted, generate new token which will trigger permission request
       if (
-        permStatus === messaging.AuthorizationStatus.NOT_DETERMINED ||
-        permStatus === messaging.AuthorizationStatus.DENIED
+        permStatus === AuthorizationStatus.NOT_DETERMINED ||
+        permStatus === AuthorizationStatus.DENIED
       ) {
         console.log(
           "Notification permission not granted, requesting permission..."

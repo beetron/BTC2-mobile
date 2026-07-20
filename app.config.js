@@ -1,5 +1,3 @@
-const withFirebaseAppDelegate = require("./plugins/withFirebaseAppDelegate");
-
 const IS_DEV_VARIANT = process.env.APP_VARIANT === "development";
 
 module.exports = {
@@ -126,7 +124,6 @@ module.exports = {
       "expo-secure-store",
       "expo-image",
       "expo-web-browser",
-      withFirebaseAppDelegate,
     ],
     experiments: {
       typedRoutes: true,
