@@ -1,8 +1,10 @@
 const withFirebaseAppDelegate = require("./plugins/withFirebaseAppDelegate");
 
+const IS_DEV_VARIANT = process.env.APP_VARIANT === "development";
+
 module.exports = {
   expo: {
-    name: "bTC2",
+    name: IS_DEV_VARIANT ? "bTC2 Dev" : "bTC2",
     slug: "btc2",
     version: "1.1.0",
     orientation: "portrait",
@@ -12,16 +14,23 @@ module.exports = {
     newArchEnabled: true,
     ios: {
       useFrameworks: "static",
-      googleServicesFile:
-        process.env.EXPO_PUBLIC_ENV === "development"
+      googleServicesFile: IS_DEV_VARIANT
+        ? "./prebuild/dev-GoogleService-Info.plist"
+        : process.env.EXPO_PUBLIC_ENV === "development"
           ? "./prebuild/GoogleService-Info.plist"
           : process.env.GOOGLESERVICE_INFO_PLIST,
-      icon: {
-        // Default IOS icon
-        dark: "./src/assets/icons/ios-dark.png",
-        light: "./src/assets/icons/ios-light.png",
-        tinted: "./src/assets/icons/ios-tinted.png",
-      },
+      icon: IS_DEV_VARIANT
+        ? {
+            dark: "./src/assets/icons/ios-icon1.png",
+            light: "./src/assets/icons/ios-icon1.png",
+            tinted: "./src/assets/icons/ios-icon1.png",
+          }
+        : {
+            // Default IOS icon
+            dark: "./src/assets/icons/ios-dark.png",
+            light: "./src/assets/icons/ios-light.png",
+            tinted: "./src/assets/icons/ios-tinted.png",
+          },
       entitlements: {
         "aps-environment": "development",
       },
@@ -31,7 +40,9 @@ module.exports = {
           "This app accesses your photo library to allow you to select and upload images for your profile picture, and to attach photos from your library to send in chat messages.",
       },
       supportsTablet: true,
-      bundleIdentifier: "com.beetron.btc2",
+      bundleIdentifier: IS_DEV_VARIANT
+        ? "com.beetron.btc2.dev"
+        : "com.beetron.btc2",
       config: {
         usesNonExemptEncryption: false,
       },
@@ -41,7 +52,7 @@ module.exports = {
         foregroundImage: "",
         backgroundColor: "#ffffff",
       },
-      package: "com.beetron.btc2",
+      package: IS_DEV_VARIANT ? "com.beetron.btc2.dev" : "com.beetron.btc2",
     },
     web: {
       bundler: "metro",
