@@ -3,7 +3,7 @@ import { Redirect, Stack } from "expo-router";
 import { useAuth } from "../../context/AuthContext";
 import { useLocalSearchParams } from "expo-router";
 
-const _layout = () => {
+const GuestsLayout = () => {
   const { authState } = useAuth();
   const params = useLocalSearchParams();
 
@@ -29,4 +29,4 @@ const _layout = () => {
   );
 };
 
-export default _layout;
+export default GuestsLayout;

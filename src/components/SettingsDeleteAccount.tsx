@@ -71,7 +71,7 @@ const SettingsDeleteAccount = () => {
         style={{ opacity: isLoading ? 0.6 : 1 }}
       >
         {isLoading ? (
-          <AntDesign name="loading1" size={18} color="white" />
+          <AntDesign name="loading" size={18} color="white" />
         ) : null}
         <Text className="text-white text-base font-funnel-regular font-semibold">
           {isLoading ? "Deleting..." : "Delete Account"}

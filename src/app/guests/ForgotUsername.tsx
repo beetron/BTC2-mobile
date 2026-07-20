@@ -75,7 +75,7 @@ const ForgotUsername = () => {
 
             {/* Subtitle */}
             <Text className="text-btc100 text-center mb-6 px-4">
-              Enter your email address and we'll send you your username
+              Enter your email address and we&apos;ll send you your username
             </Text>
 
             {/* Email input */}

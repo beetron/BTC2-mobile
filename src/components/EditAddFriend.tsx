@@ -55,7 +55,7 @@ const EditAddFriend = () => {
           {friendUniqueId.length}/20
         </Text>
         <AntDesign
-          name="adduser"
+          name="user-add"
           size={34}
           color="white"
           className="absolute right-0 top-2"

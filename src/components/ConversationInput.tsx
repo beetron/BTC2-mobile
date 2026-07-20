@@ -68,7 +68,7 @@ const ConversationInput = () => {
           style={{ opacity: message.trim() && !isDisabled ? 1 : 0.2 }}
         >
           {isLoading ? (
-            <AntDesign name="loading1" size={24} color="black" />
+            <AntDesign name="loading" size={24} color="black" />
           ) : (
             <Ionicons name="send-sharp" size={24} color="white" />
           )}

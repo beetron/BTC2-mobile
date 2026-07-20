@@ -11,7 +11,7 @@ const SettingsIcon = () => {
           <Text className="text-btc100 font-funnel-regular text-2xl">
             Change App Icon
           </Text>
-          <AntDesign name="arrowright" size={28} color="white" />
+          <AntDesign name="arrow-right" size={28} color="white" />
         </View>
       </TouchableOpacity>
     </View>

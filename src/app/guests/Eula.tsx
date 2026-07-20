@@ -71,7 +71,7 @@ const Eula = () => {
           </TouchableOpacity>
 
           <Text className="text-base font-funnel-regular text-btc300 text-center mb-8 leading-5">
-            By clicking "Agree", you confirm that you have read and agree to the
+            By clicking &quot;Agree&quot;, you confirm that you have read and agree to the
             terms and conditions.
           </Text>
 

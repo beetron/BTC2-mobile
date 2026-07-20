@@ -12,7 +12,7 @@ const EditRemoveFriend = () => {
             Remove / Block Friend
           </Text>
           <AntDesign
-            name="arrowright"
+            name="arrow-right"
             size={28}
             color="white"
             className="absolute right-0"

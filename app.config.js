@@ -1,3 +1,5 @@
+const withFirebaseAppDelegate = require("./plugins/withFirebaseAppDelegate");
+
 module.exports = {
   expo: {
     name: "bTC2",
@@ -10,8 +12,10 @@ module.exports = {
     newArchEnabled: true,
     ios: {
       useFrameworks: "static",
-      googleServicesFile: process.env.GOOGLESERVICE_INFO_PLIST,
-      // googleServicesFile: "./prebuild/GoogleService-Info.plist",
+      googleServicesFile:
+        process.env.EXPO_PUBLIC_ENV === "development"
+          ? "./prebuild/GoogleService-Info.plist"
+          : process.env.GOOGLESERVICE_INFO_PLIST,
       icon: {
         // Default IOS icon
         dark: "./src/assets/icons/ios-dark.png",
@@ -73,6 +77,7 @@ module.exports = {
         {
           ios: {
             useFrameworks: "static",
+            forceStaticLinking: ["RNFBApp", "RNFBMessaging"],
             podfileProperties: {
               "use_modular_headers!": true,
             },
@@ -108,6 +113,9 @@ module.exports = {
         },
       ],
       "expo-secure-store",
+      "expo-image",
+      "expo-web-browser",
+      withFirebaseAppDelegate,
     ],
     experiments: {
       typedRoutes: true,

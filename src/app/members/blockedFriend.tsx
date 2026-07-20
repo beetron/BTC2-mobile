@@ -45,7 +45,7 @@ const BlockedFriend = () => {
       <View className="bg-btc500 m-6">
         <View className="flex-row items-start max-w-[90%]">
           <AntDesign
-            name="exclamationcircleo"
+            name="exclamation-circle"
             size={28}
             color="yellow"
             className="m-2"

@@ -12,7 +12,7 @@ const EditBlockedFriend = () => {
             Blocked Users
           </Text>
           <AntDesign
-            name="arrowright"
+            name="arrow-right"
             size={28}
             color="white"
             className="absolute right-0"

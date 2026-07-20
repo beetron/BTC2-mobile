@@ -103,14 +103,14 @@ const EditFriendRequests = () => {
                   </View>
                   <View className="flex-row justify-end">
                     <AntDesign
-                      name="checkcircleo"
+                      name="check-circle"
                       size={28}
                       color="#AAFF00"
                       className="mr-4"
                       onPress={() => handleOnPressAccept(friend.uniqueId)}
                     />
                     <AntDesign
-                      name="closecircleo"
+                      name="close-circle"
                       size={28}
                       color="red"
                       onPress={() => handleOnPressReject(friend.uniqueId)}

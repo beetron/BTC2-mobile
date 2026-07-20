@@ -18,7 +18,7 @@ interface Friend {
   profileImageData?: string;
 }
 
-const removeFriend = () => {
+const RemoveFriendScreen = () => {
   const placeholderProfileImage = images.placeholderProfileImage;
   const [shouldRender, setShouldRender] = useState(false);
   const { myFriends, getMyFriends, isLoading } = useGetMyFriends();
@@ -53,7 +53,7 @@ const removeFriend = () => {
       <View className="bg-btc500 m-6">
         <View className="flex-row items-start max-w-[90%]">
           <AntDesign
-            name="exclamationcircleo"
+            name="exclamation-circle"
             size={28}
             color="yellow"
             className="m-2"
@@ -131,4 +131,4 @@ const removeFriend = () => {
   );
 };
 
-export default removeFriend;
+export default RemoveFriendScreen;
