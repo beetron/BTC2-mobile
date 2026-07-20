@@ -30,7 +30,7 @@ module.exports = {
             tinted: "./src/assets/icons/ios-tinted.png",
           },
       entitlements: {
-        "aps-environment": "development",
+        "aps-environment": IS_DEV_VARIANT ? "development" : "production",
       },
       infoPlist: {
         UIBackgroundModes: ["remote-notification"],
