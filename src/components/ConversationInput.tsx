@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import { View, TouchableOpacity, TextInput } from "react-native";
-import Ionicons from "@expo/vector-icons/Ionicons";
-import AntDesign from "@expo/vector-icons/AntDesign";
+import { View, TouchableOpacity, TextInput, ActivityIndicator } from "react-native";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import useSendeMessages from "../hooks/useSendMessage";
 import { useAttachImages } from "../hooks/useAttachImages";
 import { useSendImages } from "../hooks/useSendImages";
@@ -50,7 +49,7 @@ const ConversationInput = () => {
           disabled={isDisabled}
           style={{ opacity: isDisabled ? 0.2 : 1 }}
         >
-          <Ionicons name="attach" size={24} color="white" />
+          <MaterialCommunityIcons name="paperclip" size={24} color="white" />
         </TouchableOpacity>
         <TextInput
           placeholder={t("conversation.inputPlaceholder")}
@@ -72,9 +71,9 @@ const ConversationInput = () => {
           style={{ opacity: message.trim() && !isDisabled ? 1 : 0.2 }}
         >
           {isLoading ? (
-            <AntDesign name="loading" size={24} color="black" />
+            <ActivityIndicator size="small" color="white" />
           ) : (
-            <Ionicons name="send-sharp" size={24} color="white" />
+            <MaterialCommunityIcons name="send" size={24} color="white" />
           )}
         </TouchableOpacity>
       </View>

@@ -12,12 +12,13 @@ import useUpdateGroupInfo from "../../hooks/useUpdateGroupInfo";
 import useAddGroupMembers from "../../hooks/useAddGroupMembers";
 import useRemoveGroupMember from "../../hooks/useRemoveGroupMember";
 import { useTranslation } from "../../hooks/useTranslation";
+import { colors } from "../../constants/colors";
 
 const MAX_NAME_LENGTH = 60;
 
 const roleBadgeColor = (role: string) => {
-  if (role === "owner") return "#b47cd6"; // grape
-  return "#D4F1F4";
+  if (role === "owner") return colors.accent;
+  return colors.btc100;
 };
 
 const GroupSettingsScreen = () => {
@@ -125,7 +126,7 @@ const GroupSettingsScreen = () => {
               editable={!isRenaming}
               className="text-btc100 font-funnel-regular text-xl border-b-hairline border-btc100 pb-2 flex-1"
             />
-            {isRenaming && <ActivityIndicator size="small" color="#75E6DA" className="ml-2" />}
+            {isRenaming && <ActivityIndicator size="small" color={colors.btc200} className="ml-2" />}
           </View>
         ) : (
           <Text className="text-btc100 font-funnel-semi-bold text-xl mb-6">
@@ -160,7 +161,7 @@ const GroupSettingsScreen = () => {
                 onPress={() => handleRemoveMember(member.userId, member.nickname)}
                 disabled={isRemoving}
               >
-                <MaterialCommunityIcons name="account-remove" size={24} color="#e07a7a" />
+                <MaterialCommunityIcons name="account-remove" size={24} color={colors.danger} />
               </TouchableOpacity>
             )}
           </View>
@@ -182,7 +183,8 @@ const GroupSettingsScreen = () => {
                     setShowAddMembers(false);
                     setSelectedNewMemberIds([]);
                   }}
-                  containerStyles="flex-1 bg-btc400"
+                  variant="secondary"
+                  containerStyles="flex-1"
                   textStyles="text-xl"
                 />
                 <CustomButton
@@ -200,7 +202,7 @@ const GroupSettingsScreen = () => {
               onPress={() => setShowAddMembers(true)}
               className="flex-row items-center justify-center bg-btc400 rounded-xl py-3"
             >
-              <MaterialCommunityIcons name="account-plus" size={22} color="#75E6DA" />
+              <MaterialCommunityIcons name="account-plus" size={22} color={colors.btc200} />
               <Text className="text-btc100 font-funnel-semi-bold text-lg ml-2">
                 {t("group.addMembersButton")}
               </Text>
@@ -212,7 +214,8 @@ const GroupSettingsScreen = () => {
           <CustomButton
             title={t("group.leaveGroupTitle")}
             handlePress={handleLeaveGroup}
-            containerStyles="w-full bg-red-700"
+            variant="danger"
+            containerStyles="w-full"
           />
         </View>
       </ScrollView>

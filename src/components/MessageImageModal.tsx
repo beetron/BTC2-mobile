@@ -10,11 +10,12 @@ import {
   Alert,
 } from "react-native";
 import { Image, ImageSource } from "expo-image";
-import { Ionicons } from "@expo/vector-icons";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import * as MediaLibrary from "expo-media-library";
 import * as FileSystem from "expo-file-system/legacy";
 import { useAuth } from "@/src/context/AuthContext";
 import { useTranslation } from "@/src/hooks/useTranslation";
+import { colors } from "@/src/constants/colors";
 
 interface MessageImageModalProps {
   imageSources: ImageSource[];
@@ -197,7 +198,7 @@ const MessageImageModal: React.FC<MessageImageModalProps> = ({
     >
       {errors[index] ? (
         <View className="flex-1 bg-btc100 justify-center items-center">
-          <Ionicons name="alert-circle-outline" size={64} color="#D4F1F4" />
+          <MaterialCommunityIcons name="alert-circle-outline" size={64} color={colors.btc100} />
           <Text className="text-btc400 text-lg mt-4">{t("media.failedToLoad")}</Text>
         </View>
       ) : (
@@ -278,7 +279,7 @@ const MessageImageModal: React.FC<MessageImageModalProps> = ({
               activeOpacity={0.6}
               hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
             >
-              <Ionicons name="close" size={32} color="#75E6DA" />
+              <MaterialCommunityIcons name="close" size={32} color={colors.btc200} />
             </TouchableOpacity>
           </View>
 
@@ -337,7 +338,7 @@ const MessageImageModal: React.FC<MessageImageModalProps> = ({
               {isSaving ? (
                 <ActivityIndicator size={32} color="#75E6DA" />
               ) : (
-                <Ionicons name="download" size={32} color="#75E6DA" />
+                <MaterialCommunityIcons name="download" size={32} color={colors.btc200} />
               )}
               <Text
                 style={{ color: "#75E6DA", fontSize: 18, fontWeight: "600" }}
@@ -365,7 +366,7 @@ const MessageImageModal: React.FC<MessageImageModalProps> = ({
                 {isSaving ? (
                   <ActivityIndicator size={32} color="#75E6DA" />
                 ) : (
-                  <Ionicons name="albums" size={32} color="#75E6DA" />
+                  <MaterialCommunityIcons name="image-multiple" size={32} color={colors.btc200} />
                 )}
                 <Text
                   style={{ color: "#75E6DA", fontSize: 18, fontWeight: "600" }}

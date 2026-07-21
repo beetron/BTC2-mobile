@@ -1,11 +1,11 @@
 import { useState, useCallback } from "react";
-import { Text, TextInput, View, Platform, Keyboard } from "react-native";
+import { Text, TextInput, View, Keyboard } from "react-native";
 import useUpdateUniqueId from "@/src/hooks/useUpdateUniqueId";
 import { useAuth } from "@/src/context/AuthContext";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useFocusEffect } from "expo-router";
 import profileValidator from "@/src/utils/profileValidator";
 import { useTranslation } from "@/src/hooks/useTranslation";
+import CustomButton from "./CustomButton";
 
 const SettingsUniqueId = () => {
   const { authState } = useAuth();
@@ -29,40 +29,47 @@ const SettingsUniqueId = () => {
     // Validate data before sending to API
     if (!checkLengthUsername(uniqueId) || !checkAlphanumeric(uniqueId)) return;
 
+    Keyboard.dismiss();
     // Send to backend API
     await updateUniqueId(uniqueId);
-    Keyboard.dismiss();
   };
 
+  // Pure format check for the Save button's enabled state -- must not call
+  // checkLengthUsername/checkAlphanumeric here, they Alert.alert() on
+  // failure and this runs on every render (every keystroke).
+  const isValidFormat =
+    uniqueId.length >= 6 &&
+    uniqueId.length <= 20 &&
+    /^[a-zA-Z0-9]+$/.test(uniqueId);
+
   return (
-    <View className="flex-grow justify-center mt-4 ml-4 max-w-[80%]">
-      <Text className="font-funnel-regular text-btc100 text-l">
-        {t("settings.uniqueId.label")}
-      </Text>
-      <TextInput
-        value={uniqueId}
-        maxLength={20}
-        autoCapitalize="none"
-        multiline={true}
-        onChangeText={(text) => setUniqueId(text.toLowerCase())}
-        style={{
-          height: 40,
-          textAlignVertical: "center",
-        }}
-        className="text-btc100 font-funnel-regular text-2xl bg-btc400 rounded px-2 max-w-[80%]"
+    <View>
+      <View className="bg-card rounded-xl p-4">
+        <Text className="font-funnel-regular text-btc300 text-sm mb-2">
+          {t("settings.uniqueId.label")}
+        </Text>
+        <TextInput
+          value={uniqueId}
+          maxLength={20}
+          autoCapitalize="none"
+          onChangeText={(text) => setUniqueId(text.toLowerCase())}
+          style={{
+            height: 44,
+            textAlignVertical: "center",
+          }}
+          className="text-btc100 font-funnel-regular text-xl bg-btc400 rounded-lg px-3"
+        />
+        <Text className="text-btc300 text-xs mt-2 text-right">
+          {uniqueId.length}/20
+        </Text>
+      </View>
+      <CustomButton
+        title={t("common.save")}
+        handlePress={handleOnPress}
+        isLoading={isLoading}
+        disabled={currentUniqueId === uniqueId || !isValidFormat}
+        containerStyles="mt-4"
       />
-      <MaterialIcons
-        name="save-as"
-        size={26}
-        color="white"
-        className="absolute right-0 top-6"
-        style={{ opacity: currentUniqueId === uniqueId ? 0.5 : 1 }}
-        disabled={currentUniqueId === uniqueId || isLoading}
-        onPress={handleOnPress}
-      />
-      <Text className="absolute top-0 right-0 text-btc100 text-l opacity-[50%]">
-        {uniqueId.length}/20
-      </Text>
     </View>
   );
 };

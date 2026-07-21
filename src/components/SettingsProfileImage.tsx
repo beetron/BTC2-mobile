@@ -5,8 +5,9 @@ import { useAuth } from "@/src/context/AuthContext";
 import useGetProfileImage from "@/src/hooks/useGetProfileImage";
 import * as ImagePicker from "expo-image-picker";
 import { images } from "@/src/constants/images";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import useUpdateProfileImage from "@/src/hooks/useUpdateProfileImage";
+import { colors } from "@/src/constants/colors";
 
 const SettingsProfileImage = () => {
   const [image, setImage] = useState<string | null>(null);
@@ -58,9 +59,9 @@ const SettingsProfileImage = () => {
   };
 
   return (
-    <View className="mt-8 relative justify-center">
+    <View className="relative justify-center">
       {isLoading ? (
-        <ActivityIndicator size="small" color="white" />
+        <ActivityIndicator size="small" color={colors.btc100} />
       ) : (
         <>
           {image ? (
@@ -78,12 +79,12 @@ const SettingsProfileImage = () => {
           )}
         </>
       )}
-      <MaterialIcons
-        name="add-photo-alternate"
-        size={28}
-        color="white"
+      <MaterialCommunityIcons
+        name="image-plus"
+        size={22}
+        color={colors.accent}
         onPress={pickImage}
-        className="absolute top-6 left-0 -ml-2"
+        className="absolute bottom-0 right-0 bg-btc500 rounded-full p-0.5"
       />
     </View>
   );

@@ -1,9 +1,10 @@
-import { View, Text, TextInput, Platform, Alert, Keyboard } from "react-native";
+import { View, Text, TextInput, Alert, Keyboard } from "react-native";
 import { useState, useCallback } from "react";
 import useAddFriend from "@/src/hooks/useAddFriend";
-import AntDesign from "@expo/vector-icons/AntDesign";
 import { useFocusEffect } from "expo-router";
 import { useTranslation } from "../hooks/useTranslation";
+import { colors } from "../constants/colors";
+import CustomButton from "./CustomButton";
 
 const EditAddFriend = () => {
   const [friendUniqueId, setFriendUniqueId] = useState("");
@@ -23,48 +24,40 @@ const EditAddFriend = () => {
       Alert.alert(t("friends.addFriend.missingIdTitle"));
       return;
     }
+    Keyboard.dismiss();
     const success = await addFriend(friendUniqueId);
     if (success) {
       setFriendUniqueId("");
-      Keyboard.dismiss();
     }
   };
 
   return (
-    <View className="bg-btc500">
-      <View className="flex-row items-center">
-        <Text className="text-btc100 font-funnel-regular text-2xl items-start">
-          {t("friends.addFriend.title")}
-        </Text>
-      </View>
-      <View className="mt-2">
+    <View>
+      <View className="bg-card rounded-xl p-4">
         <TextInput
           value={friendUniqueId}
           placeholder={t("friends.addFriend.placeholder")}
-          placeholderTextColor="grey"
+          placeholderTextColor={colors.btc300}
           autoCapitalize="none"
           maxLength={20}
-          multiline={true}
           onChangeText={(text) => setFriendUniqueId(text)}
           style={{
-            height: 40,
-            paddingBottom: 0,
-            paddingTop: Platform.OS === "ios" ? 14 : 0,
+            height: 44,
+            textAlignVertical: "center",
           }}
-          className="text-btc100 font-funnel-regular text-2xl border-b border-btc300 max-w-[80%]"
+          className="text-btc100 font-funnel-regular text-xl bg-btc400 rounded-lg px-3"
         />
-        <Text className="absolute top-0 right-16 text-btc100 text-l opacity-[50%]">
+        <Text className="text-btc300 text-xs mt-2 text-right">
           {friendUniqueId.length}/20
         </Text>
-        <AntDesign
-          name="user-add"
-          size={34}
-          color="white"
-          className="absolute right-0 top-2"
-          disabled={loading}
-          onPress={handleOnPress}
-        />
       </View>
+      <CustomButton
+        title={t("common.add")}
+        handlePress={handleOnPress}
+        isLoading={loading}
+        disabled={!friendUniqueId.trim()}
+        containerStyles="mt-4"
+      />
     </View>
   );
 };

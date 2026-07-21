@@ -1,8 +1,7 @@
 import { View, Text, ActivityIndicator } from "react-native";
 import { useState, useEffect } from "react";
-import AntDesign from "@expo/vector-icons/AntDesign";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import CustomButton from "../../components/CustomButton";
-import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import useBlockUser from "@/src/hooks/useBlockUser";
 import { Image } from "expo-image";
 import { images } from "../../constants/images";
@@ -10,6 +9,7 @@ import useGetMyFriends from "@/src/hooks/useGetMyFriends";
 import useRemoveFriend from "@/src/hooks/useRemoveFriend";
 import RemoveFriendHeader from "../../components/RemoveFriendHeader";
 import { useTranslation } from "../../hooks/useTranslation";
+import { colors } from "../../constants/colors";
 
 interface Friend {
   _id: string;
@@ -54,10 +54,10 @@ const RemoveFriendScreen = () => {
       <RemoveFriendHeader />
       <View className="bg-btc500 m-6">
         <View className="flex-row items-start max-w-[90%]">
-          <AntDesign
-            name="exclamation-circle"
+          <MaterialCommunityIcons
+            name="alert-circle-outline"
             size={28}
-            color="yellow"
+            color={colors.warning}
             className="m-2"
           />
           <Text className="text-btc100 font-funnel-regular text-xl">
@@ -66,7 +66,7 @@ const RemoveFriendScreen = () => {
         </View>
         {isLoading ? (
           <View className="mt-2 items-center jusitfy-center">
-            <ActivityIndicator size="large" color="white" />
+            <ActivityIndicator size="large" color={colors.btc100} />
           </View>
         ) : (
           <>
@@ -110,14 +110,16 @@ const RemoveFriendScreen = () => {
                       <CustomButton
                         title={t("common.remove")}
                         handlePress={() => handleOnPressRemove(friend.uniqueId)}
-                        containerStyles="px-4 py-2 mr-2 bg-yellow-700"
+                        variant="danger"
+                        containerStyles="px-4 py-2 mr-2"
                         textStyles="text-base"
                       />
 
                       <CustomButton
                         title={t("common.block")}
                         handlePress={() => handleOnPressBlock(friend._id)}
-                        containerStyles="px-4 py-2 bg-red-700"
+                        variant="danger"
+                        containerStyles="px-4 py-2"
                         textStyles="text-base"
                       />
                     </View>

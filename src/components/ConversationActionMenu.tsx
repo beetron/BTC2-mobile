@@ -1,6 +1,7 @@
 import React from "react";
 import { View, TouchableOpacity, Alert } from "react-native";
-import { MaterialIcons } from "@expo/vector-icons";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { colors } from "@/src/constants/colors";
 import useDeleteMessages from "@/src/hooks/useDeleteMessages";
 import useReportUser from "@/src/hooks/useReportUser";
 import useBlockUser from "@/src/hooks/useBlockUser";
@@ -40,6 +41,7 @@ const ConversationActionMenu = () => {
         { text: t("common.cancel"), style: "cancel" },
         {
           text: t("common.ok"),
+          style: "destructive",
           onPress: async () => {
             const success = await deleteMessages(latestMessageId);
             if (success) {
@@ -175,7 +177,7 @@ const ConversationActionMenu = () => {
   return (
     <View>
       <TouchableOpacity onPress={handleMenu}>
-        <MaterialIcons name="more-horiz" size={40} color="#D4F1F4" />
+        <MaterialCommunityIcons name="dots-horizontal" size={40} color={colors.btc100} />
       </TouchableOpacity>
     </View>
   );

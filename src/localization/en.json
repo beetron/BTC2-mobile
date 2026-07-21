@@ -197,6 +197,12 @@
     }
   },
   "settings": {
+    "sections": {
+      "account": "Account",
+      "preferences": "Preferences",
+      "legal": "Legal",
+      "dangerZone": "Danger zone"
+    },
     "languageRow": "Language",
     "language": {
       "title": "Language",
@@ -215,6 +221,7 @@
       "updateFailedError": "Failed to update nickname"
     },
     "uniqueId": {
+      "rowLabel": "Unique ID",
       "label": "Unique ID (signup & friend requests)",
       "updatedFallback": "Unique ID updated",
       "badRequest": "Bad request"
@@ -241,7 +248,6 @@
     },
     "deleteAccount": {
       "buttonLabel": "Delete Account",
-      "deletingLabel": "Deleting...",
       "confirmTitle": "Delete Account",
       "confirmMessage": "Are you sure you want to delete your account? This action cannot be undone.",
       "userIdNotFoundError": "Unable to delete account. User ID not found.",

@@ -1,12 +1,11 @@
-import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
-import Ionicons from "@expo/vector-icons/Ionicons";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { Alert } from "react-native";
 import { Tabs } from "expo-router";
 import { useAuth } from "../../../context/AuthContext";
 import React from "react";
 import HeaderPrimary from "../../../components/HeaderPrimary";
 import { useTranslation } from "../../../hooks/useTranslation";
+import { colors } from "../../../constants/colors";
 
 const TabsLayout = () => {
   const { onLogout } = useAuth();
@@ -44,8 +43,8 @@ const TabsLayout = () => {
       <Tabs
         screenOptions={{
           headerShown: false,
-          tabBarActiveTintColor: "skyblue",
-          tabBarInactiveTintColor: "white",
+          tabBarActiveTintColor: colors.accent,
+          tabBarInactiveTintColor: colors.btc300,
           tabBarStyle: {
             backgroundColor: "#1f1f2e",
           },
@@ -60,7 +59,7 @@ const TabsLayout = () => {
           options={{
             title: t("tabs.home"),
             tabBarIcon: ({ color }) => (
-              <FontAwesome5 size={24} name="user-friends" color={color} />
+              <MaterialCommunityIcons size={24} name="account-group" color={color} />
             ),
           }}
         />
@@ -69,7 +68,7 @@ const TabsLayout = () => {
           options={{
             title: t("tabs.editFriends"),
             tabBarIcon: ({ color }) => (
-              <FontAwesome5 size={24} name="user-edit" color={color} />
+              <MaterialCommunityIcons size={24} name="account-edit" color={color} />
             ),
           }}
         />
@@ -78,7 +77,7 @@ const TabsLayout = () => {
           options={{
             title: t("tabs.settings"),
             tabBarIcon: ({ color }) => (
-              <Ionicons name="settings-sharp" size={24} color={color} />
+              <MaterialCommunityIcons name="cog-outline" size={24} color={color} />
             ),
           }}
         />
@@ -93,7 +92,7 @@ const TabsLayout = () => {
           options={{
             title: t("tabs.logout"),
             tabBarIcon: ({ color }) => (
-              <MaterialIcons name="logout" size={24} color={color} />
+              <MaterialCommunityIcons name="logout" size={24} color={color} />
             ),
           }}
         />

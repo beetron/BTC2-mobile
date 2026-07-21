@@ -197,6 +197,12 @@
     }
   },
   "settings": {
+    "sections": {
+      "account": "アカウント",
+      "preferences": "環境設定",
+      "legal": "法的情報",
+      "dangerZone": "危険な操作"
+    },
     "languageRow": "言語",
     "language": {
       "title": "言語",
@@ -215,6 +221,7 @@
       "updateFailedError": "ニックネームの更新に失敗しました"
     },
     "uniqueId": {
+      "rowLabel": "固有ID",
       "label": "固有ID(登録・友達リクエスト用)",
       "updatedFallback": "固有IDを更新しました",
       "badRequest": "リクエストが不正です"
@@ -241,7 +248,6 @@
     },
     "deleteAccount": {
       "buttonLabel": "アカウントを削除",
-      "deletingLabel": "削除中...",
       "confirmTitle": "アカウントを削除",
       "confirmMessage": "本当にアカウントを削除しますか?この操作は取り消せません。",
       "userIdNotFoundError": "アカウントを削除できません。ユーザーIDが見つかりません。",

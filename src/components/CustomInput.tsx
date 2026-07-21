@@ -1,6 +1,6 @@
 import { View, Text, TextInput, TouchableOpacity } from "react-native";
 import { useState } from "react";
-import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 interface CustomInputProps {
   title: string;
@@ -48,9 +48,9 @@ const CustomInput: React.FC<CustomInputProps> = ({
         {isPassword && (
           <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
             {showPassword ? (
-              <FontAwesome5 name="eye" size={24} color="black" />
+              <MaterialCommunityIcons name="eye" size={24} color="black" />
             ) : (
-              <FontAwesome5 name="eye-slash" size={24} color="black" />
+              <MaterialCommunityIcons name="eye-off" size={24} color="black" />
             )}
           </TouchableOpacity>
         )}
