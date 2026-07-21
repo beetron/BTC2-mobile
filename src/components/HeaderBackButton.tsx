@@ -1,5 +1,5 @@
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { View } from "react-native";
+import { TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 import { colors } from "../constants/colors";
 
@@ -19,14 +19,16 @@ const HeaderBackButton = ({ routerOption }: HeaderBackButtonProps) => {
     }
   };
   return (
-    <View>
+    <TouchableOpacity
+      onPress={handleOnPress}
+      hitSlop={{ top: 12, bottom: 12, left: 12, right: 28 }}
+    >
       <MaterialCommunityIcons
         name="chevron-left"
-        size={36}
+        size={40}
         color={colors.btc100}
-        onPress={handleOnPress}
       />
-    </View>
+    </TouchableOpacity>
   );
 };
 

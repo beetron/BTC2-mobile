@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, TouchableOpacity, Alert } from "react-native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { colors } from "@/src/constants/colors";
@@ -8,6 +8,7 @@ import useBlockUser from "@/src/hooks/useBlockUser";
 import conversationStore from "@/src/zustand/conversationStore";
 import { useRouter } from "expo-router";
 import { useTranslation } from "@/src/hooks/useTranslation";
+import ActionSheet from "./ActionSheet";
 
 // Direct chats: Delete Messages / Report User / Block User (report/block
 // need selectedConversation.partnerId, which is null for groups).
@@ -27,6 +28,7 @@ const ConversationActionMenu = () => {
     setMessages,
   } = conversationStore();
   const router = useRouter();
+  const [menuVisible, setMenuVisible] = useState(false);
 
   const handleDelete = () => {
     if (!latestMessageId) {
@@ -151,34 +153,51 @@ const ConversationActionMenu = () => {
     );
   };
 
-  const handleMenu = () => {
-    if (selectedConversation?.type === "group") {
-      Alert.alert(t("conversation.actionMenu.menuTitle"), undefined, [
-        { text: t("conversation.actionMenu.deleteMessages"), onPress: handleDelete },
-        {
-          text: t("conversation.actionMenu.groupSettings"),
-          onPress: () => router.push("/members/groupSettings"),
-        },
-        { text: t("common.cancel"), style: "cancel" },
-      ]);
-      return;
-    }
-
-    Alert.alert(t("conversation.actionMenu.menuTitle"), undefined, [
-      { text: t("conversation.actionMenu.deleteMessages"), onPress: handleDelete },
-      { text: t("conversation.actionMenu.reportUser"), onPress: handleReport },
-      { text: t("conversation.actionMenu.blockUser"), onPress: handleBlock },
-      // Blank spacer row for visual separation before Cancel
-      { text: " ", onPress: () => {} },
-      { text: t("common.cancel"), style: "cancel" },
-    ]);
-  };
+  const menuOptions =
+    selectedConversation?.type === "group"
+      ? [
+          {
+            label: t("conversation.actionMenu.deleteMessages"),
+            icon: "trash-can-outline",
+            variant: "danger" as const,
+            onPress: handleDelete,
+          },
+          {
+            label: t("conversation.actionMenu.groupSettings"),
+            icon: "account-group",
+            onPress: () => router.push("/members/groupSettings"),
+          },
+        ]
+      : [
+          {
+            label: t("conversation.actionMenu.deleteMessages"),
+            icon: "trash-can-outline",
+            variant: "danger" as const,
+            onPress: handleDelete,
+          },
+          {
+            label: t("conversation.actionMenu.reportUser"),
+            icon: "flag-outline",
+            onPress: handleReport,
+          },
+          {
+            label: t("conversation.actionMenu.blockUser"),
+            icon: "account-cancel-outline",
+            variant: "danger" as const,
+            onPress: handleBlock,
+          },
+        ];
 
   return (
     <View>
-      <TouchableOpacity onPress={handleMenu}>
-        <MaterialCommunityIcons name="dots-horizontal" size={40} color={colors.btc100} />
+      <TouchableOpacity onPress={() => setMenuVisible(true)}>
+        <MaterialCommunityIcons name="cog-outline" size={32} color={colors.btc100} />
       </TouchableOpacity>
+      <ActionSheet
+        visible={menuVisible}
+        onClose={() => setMenuVisible(false)}
+        options={menuOptions}
+      />
     </View>
   );
 };

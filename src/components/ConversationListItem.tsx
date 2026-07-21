@@ -5,6 +5,9 @@ import { Image } from "expo-image";
 import { images } from "../constants/images";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import axiosClient from "../utils/axiosClient";
+import { colors } from "../constants/colors";
+import { useLocale } from "../context/LocaleContext";
+import { formatConversationTimestamp } from "../utils/formatConversationTimestamp";
 
 interface FriendProps {
   _id: string;
@@ -24,6 +27,8 @@ const ConversationListItem = ({ friend }: { friend: FriendProps }) => {
   const { nickname, unreadCount } = friend;
   const [isOpening, setIsOpening] = useState(false);
   const router = useRouter();
+  const { locale } = useLocale();
+  const timestamp = formatConversationTimestamp(friend.updatedAt, locale);
 
   const handleOnPress = async () => {
     if (isOpening) return;
@@ -69,20 +74,27 @@ const ConversationListItem = ({ friend }: { friend: FriendProps }) => {
               {nickname}
             </Text>
           </View>
-          {isOpening ? (
-            <ActivityIndicator size="small" color="#75E6DA" />
-          ) : unreadCount !== 0 ? (
-            <View className="flex-row items-start justify-center w-1/4">
-              <MaterialCommunityIcons
-                name="message-alert-outline"
-                size={24}
-                color="#75E6DA"
-              />
-              <Text className="text-btc100 text-xl font-funnel-semi-bold ml-2">
-                + {unreadCount}
+          <View className="items-end">
+            {timestamp && (
+              <Text className="text-btc100 text-xs font-funnel-regular mb-1">
+                {timestamp}
               </Text>
-            </View>
-          ) : null}
+            )}
+            {isOpening ? (
+              <ActivityIndicator size="small" color={colors.btc200} />
+            ) : unreadCount !== 0 ? (
+              <View className="flex-row items-center">
+                <MaterialCommunityIcons
+                  name="message-alert-outline"
+                  size={24}
+                  color={colors.btc200}
+                />
+                <Text className="text-btc100 text-xl font-funnel-semi-bold ml-2">
+                  + {unreadCount}
+                </Text>
+              </View>
+            ) : null}
+          </View>
         </View>
       </View>
     </TouchableOpacity>

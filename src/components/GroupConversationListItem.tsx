@@ -4,6 +4,9 @@ import { useRouter } from "expo-router";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { GroupConversationSummary } from "../hooks/useGetGroupConversations";
 import { useTranslation } from "../hooks/useTranslation";
+import { useLocale } from "../context/LocaleContext";
+import { formatConversationTimestamp } from "../utils/formatConversationTimestamp";
+import { colors } from "../constants/colors";
 
 // Sibling to ConversationListItem.tsx rather than a merged/branching
 // component -- groups have no avatar image (skipped for v1) and no lazy
@@ -15,6 +18,8 @@ const GroupConversationListItem = ({
 }) => {
   const router = useRouter();
   const { t } = useTranslation();
+  const { locale } = useLocale();
+  const timestamp = formatConversationTimestamp(group.lastMessageAt, locale);
 
   const handleOnPress = () => {
     router.push(`/members/conversation?conversationId=${group.conversationId}`);
@@ -37,18 +42,25 @@ const GroupConversationListItem = ({
               </Text>
             </View>
           </View>
-          {group.unreadCount !== 0 && (
-            <View className="flex-row items-start justify-center w-1/4">
-              <MaterialCommunityIcons
-                name="message-alert-outline"
-                size={24}
-                color="#75E6DA"
-              />
-              <Text className="text-btc100 text-xl font-funnel-semi-bold ml-2">
-                + {group.unreadCount}
+          <View className="items-end">
+            {timestamp && (
+              <Text className="text-btc100 text-xs font-funnel-regular mb-1">
+                {timestamp}
               </Text>
-            </View>
-          )}
+            )}
+            {group.unreadCount !== 0 && (
+              <View className="flex-row items-center">
+                <MaterialCommunityIcons
+                  name="message-alert-outline"
+                  size={24}
+                  color={colors.btc200}
+                />
+                <Text className="text-btc100 text-xl font-funnel-semi-bold ml-2">
+                  + {group.unreadCount}
+                </Text>
+              </View>
+            )}
+          </View>
         </View>
       </View>
     </TouchableOpacity>

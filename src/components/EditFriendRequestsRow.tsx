@@ -10,9 +10,16 @@ const EditFriendRequestsRow = () => {
   return (
     <TouchableOpacity onPress={() => router.push("../friendRequests")}>
       <View className="flex-row justify-between items-center px-4 py-3 border-t border-btc500">
-        <Text className="text-btc100 font-funnel-regular text-lg">
-          {t("friends.requests.title")}
-        </Text>
+        <View className="flex-row items-center gap-3">
+          <MaterialCommunityIcons
+            name="account-clock-outline"
+            size={20}
+            color={colors.accent}
+          />
+          <Text className="text-btc100 font-funnel-regular text-lg">
+            {t("friends.requests.title")}
+          </Text>
+        </View>
         <MaterialCommunityIcons
           name="chevron-right"
           size={22}

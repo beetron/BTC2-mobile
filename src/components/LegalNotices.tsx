@@ -32,9 +32,16 @@ const LegalNotices = () => {
     <View>
       <TouchableOpacity onPress={openPrivacyPolicy}>
         <View className="flex-row justify-between items-center px-4 py-3 border-b border-btc500">
-          <Text className="text-btc100 font-funnel-regular text-lg">
-            {t("settings.legal.privacyPolicy")}
-          </Text>
+          <View className="flex-row items-center gap-3">
+            <MaterialCommunityIcons
+              name="shield-check-outline"
+              size={20}
+              color={colors.accent}
+            />
+            <Text className="text-btc100 font-funnel-regular text-lg">
+              {t("settings.legal.privacyPolicy")}
+            </Text>
+          </View>
           <MaterialCommunityIcons
             name="chevron-right"
             size={22}
@@ -44,9 +51,16 @@ const LegalNotices = () => {
       </TouchableOpacity>
       <TouchableOpacity onPress={openEULA}>
         <View className="flex-row justify-between items-center px-4 py-3">
-          <Text className="text-btc100 font-funnel-regular text-lg">
-            {t("settings.legal.eula")}
-          </Text>
+          <View className="flex-row items-center gap-3">
+            <MaterialCommunityIcons
+              name="file-document-outline"
+              size={20}
+              color={colors.accent}
+            />
+            <Text className="text-btc100 font-funnel-regular text-lg">
+              {t("settings.legal.eula")}
+            </Text>
+          </View>
           <MaterialCommunityIcons
             name="chevron-right"
             size={22}
