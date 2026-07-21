@@ -15,7 +15,12 @@ const initialize = (userId, token) => {
   );
 
   const url = new URL(API_URL);
-  const isDevelopment = process.env.EXPO_PUBLIC_ENV === "development";
+  // Derived from API_URL itself rather than EXPO_PUBLIC_ENV -- a dev build
+  // can point at a local server (no path prefix) or the live API behind a
+  // reverse proxy (/btc-api prefix) just as easily as a prod build can, so
+  // "development" is not a reliable signal for whether a prefix is needed.
+  // Whatever prefix API_URL has (or doesn't), the socket path matches it.
+  const basePath = url.pathname.replace(/\/$/, "");
 
   // Create socket connection if it doesn't exist
   if (!_socket) {
@@ -25,7 +30,7 @@ const initialize = (userId, token) => {
     // query param, matching where the backend's SOCKET_REQUIRE_AUTH flag
     // is headed.
     _socket = io(url.origin, {
-      path: isDevelopment ? "/socket.io" : "/btc-api/socket.io",
+      path: `${basePath}/socket.io`,
       transports: ["websocket"],
       autoConnect: true,
       reconnection: true,
@@ -33,9 +38,7 @@ const initialize = (userId, token) => {
       auth: { token },
     });
     console.log(
-      `🔌 New socket connecting to ${url.origin} with path ${
-        isDevelopment ? "/socket.io" : "/btc-api/socket.io"
-      }`
+      `🔌 New socket connecting to ${url.origin} with path ${basePath}/socket.io`
     );
   } else if (!_socket.connected) {
     // Reconnect existing socket if it's disconnected
