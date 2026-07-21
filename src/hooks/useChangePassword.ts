@@ -2,10 +2,12 @@ import axiosClient from "@/src/utils/axiosClient";
 import { useState } from "react";
 import { Alert } from "react-native";
 import { useNetwork } from "@/src/context/NetworkContext";
+import { useTranslation } from "@/src/hooks/useTranslation";
 
 const useChangePassword = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { isConnected } = useNetwork();
+  const { t } = useTranslation();
 
   const changePassword = async (
     currentPassword: string,
@@ -17,10 +19,7 @@ const useChangePassword = () => {
       if (!currentPassword || !newPassword) return false;
 
       if (!isConnected) {
-        Alert.alert(
-          "No Internet Connection",
-          "Please check your connection and try again"
-        );
+        Alert.alert(t("errors.noInternetTitle"), t("errors.noInternetGeneric"));
         return false;
       }
 
@@ -31,7 +30,7 @@ const useChangePassword = () => {
       });
 
       if (response.status === 200) {
-        Alert.alert("Password changed");
+        Alert.alert(t("settings.password.changedSuccess"));
         console.log("Password changed via useChangePassword hook");
         return true;
       }
@@ -41,8 +40,8 @@ const useChangePassword = () => {
 
       if (error.networkError === "TIMEOUT") {
         Alert.alert(
-          "Connection Timeout",
-          "Request took too long. Please try again"
+          t("errors.connectionTimeoutTitle"),
+          t("errors.connectionTimeoutMessage")
         );
       } else if (error.networkError === "NO_INTERNET") {
         // Already alerted in pre-flight check
@@ -51,9 +50,9 @@ const useChangePassword = () => {
         error.response.data &&
         error.response.data.error
       ) {
-        Alert.alert("Error", error.response.data.error);
+        Alert.alert(t("common.error"), error.response.data.error);
       } else {
-        Alert.alert("Error", "An unknown error occurred");
+        Alert.alert(t("common.error"), t("errors.generic"));
       }
       return false;
     } finally {

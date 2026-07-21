@@ -16,6 +16,7 @@ import CustomInput from "../../components/CustomInput";
 import { useRouter } from "expo-router";
 import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 import * as SecureStore from "expo-secure-store";
+import { useTranslation } from "../../hooks/useTranslation";
 
 interface FormData {
   username: string;
@@ -30,6 +31,7 @@ const Login = () => {
 
   const { onLogin } = useAuth();
   const router = useRouter();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const checkEulaAcceptance = async () => {
@@ -48,7 +50,7 @@ const Login = () => {
   }, [router]);
   const onSubmit = async () => {
     if (formData.username === "" || formData.password === "") {
-      Alert.alert("Please fill in all fields");
+      Alert.alert(t("auth.fillAllFieldsTitle"));
     } else {
       try {
         if (onLogin) {
@@ -61,7 +63,7 @@ const Login = () => {
             !e.message.includes("internet") &&
             !e.message.includes("timeout")
           ) {
-            Alert.alert("Login failed", e.message);
+            Alert.alert(t("auth.login.failedTitle"), e.message);
           }
         }
       }
@@ -88,7 +90,7 @@ const Login = () => {
             <Logo />
             {/* Username input */}
             <CustomInput
-              title="Username"
+              title={t("auth.login.usernameLabel")}
               value={formData.username}
               onChangeText={(e) => setFormData({ ...formData, username: e })}
               containerStyles="w-3/5"
@@ -98,7 +100,7 @@ const Login = () => {
 
             {/* Password input */}
             <CustomInput
-              title="Password"
+              title={t("auth.login.passwordLabel")}
               value={formData.password}
               onChangeText={(e) => setFormData({ ...formData, password: e })}
               containerStyles="w-3/5"
@@ -110,14 +112,14 @@ const Login = () => {
             <View className="w-3/5 justify-end flex-row mt-4">
               <TouchableOpacity onPress={() => router.push("./ForgotPassword")}>
                 <Text className="text-lg font-funnel-regular color-btc200">
-                  Forgot Password?
+                  {t("auth.login.forgotPasswordLink")}
                 </Text>
               </TouchableOpacity>
             </View>
 
             {/* Login button */}
             <CustomButton
-              title="Login"
+              title={t("auth.login.loginButton")}
               isLoading={false}
               textStyles="font-funnel-regular"
               containerStyles="w-3/5 top-5"
@@ -126,14 +128,14 @@ const Login = () => {
             {/* Signup */}
             <View className="justify-center items-center pt-8 flex-row mt-4">
               <Text className="text-lg font-funnel-regular color-btc300 right-2">
-                Need an account?
+                {t("auth.login.needAccount")}
               </Text>
               <TouchableOpacity
                 style={{ padding: 8, backgroundColor: "transparent" }}
                 onPress={() => router.push("/guests/Signup")}
               >
                 <Text className="text-lg font-funnel-regular color-btc200">
-                  Sign up here
+                  {t("auth.login.signUpHere")}
                 </Text>
               </TouchableOpacity>
             </View>

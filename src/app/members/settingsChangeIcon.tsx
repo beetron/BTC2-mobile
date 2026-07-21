@@ -10,8 +10,10 @@ import SettingsChangeIconHeader from "../../components/SettingsChangeIconHeader"
 import { icons } from "../../constants/icons";
 import React, { useCallback, useState } from "react";
 import { Text } from "react-native";
+import { useTranslation } from "../../hooks/useTranslation";
 
 const SettingsChangeIcon = () => {
+  const { t } = useTranslation();
   const [currentIconName, setCurrentIconName] = useState<string | null>(
     getAppIconName()
   );
@@ -59,7 +61,7 @@ const SettingsChangeIcon = () => {
           onPress={handleReset}
         >
           <Text className="font-funnel-regular text-center text-btc100 text-xl">
-            Reset to Default Icon
+            {t("settings.changeIcon.resetButton")}
           </Text>
         </TouchableOpacity>
       </View>

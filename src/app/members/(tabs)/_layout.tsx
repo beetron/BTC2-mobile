@@ -6,21 +6,23 @@ import { Tabs } from "expo-router";
 import { useAuth } from "../../../context/AuthContext";
 import React from "react";
 import HeaderPrimary from "../../../components/HeaderPrimary";
+import { useTranslation } from "../../../hooks/useTranslation";
 
 const TabsLayout = () => {
   const { onLogout } = useAuth();
+  const { t } = useTranslation();
 
   const handleLogout = () => {
     Alert.alert(
-      "Logout?",
+      t("tabs.logoutConfirmTitle"),
       "",
       [
         {
-          text: "Cancel",
+          text: t("common.cancel"),
           style: "cancel",
         },
         {
-          text: "OK",
+          text: t("common.ok"),
           onPress: async () => {
             try {
               if (onLogout) {
@@ -56,7 +58,7 @@ const TabsLayout = () => {
         <Tabs.Screen
           name="index"
           options={{
-            title: "Home",
+            title: t("tabs.home"),
             tabBarIcon: ({ color }) => (
               <FontAwesome5 size={24} name="user-friends" color={color} />
             ),
@@ -65,7 +67,7 @@ const TabsLayout = () => {
         <Tabs.Screen
           name="editFriends"
           options={{
-            title: "Edit Friends",
+            title: t("tabs.editFriends"),
             tabBarIcon: ({ color }) => (
               <FontAwesome5 size={24} name="user-edit" color={color} />
             ),
@@ -74,7 +76,7 @@ const TabsLayout = () => {
         <Tabs.Screen
           name="settings"
           options={{
-            title: "Settings",
+            title: t("tabs.settings"),
             tabBarIcon: ({ color }) => (
               <Ionicons name="settings-sharp" size={24} color={color} />
             ),
@@ -89,7 +91,7 @@ const TabsLayout = () => {
             },
           }}
           options={{
-            title: "Logout",
+            title: t("tabs.logout"),
             tabBarIcon: ({ color }) => (
               <MaterialIcons name="logout" size={24} color={color} />
             ),

@@ -3,6 +3,7 @@ import axiosClient from "../utils/axiosClient";
 import { useFocusEffect } from "expo-router";
 import { Alert } from "react-native";
 import { useNetwork } from "@/src/context/NetworkContext";
+import { useTranslation } from "@/src/hooks/useTranslation";
 
 export interface GroupConversationSummary {
   conversationId: string;
@@ -21,16 +22,14 @@ const useGetGroupConversations = () => {
   >([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { isConnected } = useNetwork();
+  const { t } = useTranslation();
 
   const getGroupConversations = useCallback(async () => {
     try {
       setIsLoading(true);
 
       if (!isConnected) {
-        Alert.alert(
-          "No Internet Connection",
-          "Please check your connection to load groups"
-        );
+        Alert.alert(t("errors.noInternetTitle"), t("errors.noInternetLoadGroups"));
         setIsLoading(false);
         return;
       }
@@ -43,21 +42,18 @@ const useGetGroupConversations = () => {
     } catch (error: any) {
       if (error.networkError === "TIMEOUT") {
         Alert.alert(
-          "Connection Timeout",
-          "Request took too long. Please try again"
+          t("errors.connectionTimeoutTitle"),
+          t("errors.connectionTimeoutMessage")
         );
       } else if (error.networkError === "NO_INTERNET") {
-        Alert.alert(
-          "No Internet Connection",
-          "Please check your connection and try again"
-        );
+        Alert.alert(t("errors.noInternetTitle"), t("errors.noInternetGeneric"));
       } else if (error.message !== "Unauthorized") {
         console.log("Error: ", error.response?.data?.error || error.message);
       }
     } finally {
       setIsLoading(false);
     }
-  }, [isConnected]);
+  }, [isConnected, t]);
 
   useFocusEffect(
     useCallback(() => {

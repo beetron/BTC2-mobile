@@ -4,6 +4,7 @@ import axiosClient from "../utils/axiosClient";
 import { Alert } from "react-native";
 import useGetProfileImage from "./useGetProfileImage";
 import { useNetwork } from "@/src/context/NetworkContext";
+import { useTranslation } from "./useTranslation";
 
 interface Friend {
   _id: string;
@@ -18,16 +19,14 @@ const useGetBlockedFriends = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const { getProfileImage } = useGetProfileImage();
   const { isConnected } = useNetwork();
+  const { t } = useTranslation();
 
   const getBlockedFriends = useCallback(async () => {
     try {
       setIsLoading(true);
 
       if (!isConnected) {
-        Alert.alert(
-          "No Internet Connection",
-          "Please check your connection to load blocked users"
-        );
+        Alert.alert(t("errors.noInternetTitle"), t("errors.noInternetLoadBlocked"));
         setIsLoading(false);
         return;
       }
@@ -55,14 +54,11 @@ const useGetBlockedFriends = () => {
     } catch (error: any) {
       if (error.networkError === "TIMEOUT") {
         Alert.alert(
-          "Connection Timeout",
-          "Request took too long. Please try again"
+          t("errors.connectionTimeoutTitle"),
+          t("errors.connectionTimeoutMessage")
         );
       } else if (error.networkError === "NO_INTERNET") {
-        Alert.alert(
-          "No Internet Connection",
-          "Please check your connection and try again"
-        );
+        Alert.alert(t("errors.noInternetTitle"), t("errors.noInternetGeneric"));
       } else {
         console.error(
           "Error fetching blocked users:",
@@ -72,7 +68,7 @@ const useGetBlockedFriends = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [isConnected]);
+  }, [isConnected, t]);
 
   useFocusEffect(
     useCallback(() => {

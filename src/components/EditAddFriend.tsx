@@ -3,10 +3,12 @@ import { useState, useCallback } from "react";
 import useAddFriend from "@/src/hooks/useAddFriend";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { useFocusEffect } from "expo-router";
+import { useTranslation } from "../hooks/useTranslation";
 
 const EditAddFriend = () => {
   const [friendUniqueId, setFriendUniqueId] = useState("");
   const { addFriend, loading } = useAddFriend();
+  const { t } = useTranslation();
 
   // Reset text input when switching tabs
   useFocusEffect(
@@ -18,7 +20,7 @@ const EditAddFriend = () => {
   // Handle onPress
   const handleOnPress = async () => {
     if (!friendUniqueId) {
-      Alert.alert("Missing Unique ID");
+      Alert.alert(t("friends.addFriend.missingIdTitle"));
       return;
     }
     const success = await addFriend(friendUniqueId);
@@ -32,13 +34,13 @@ const EditAddFriend = () => {
     <View className="bg-btc500">
       <View className="flex-row items-center">
         <Text className="text-btc100 font-funnel-regular text-2xl items-start">
-          Add Friend
+          {t("friends.addFriend.title")}
         </Text>
       </View>
       <View className="mt-2">
         <TextInput
           value={friendUniqueId}
-          placeholder="Unique ID"
+          placeholder={t("friends.addFriend.placeholder")}
           placeholderTextColor="grey"
           autoCapitalize="none"
           maxLength={20}

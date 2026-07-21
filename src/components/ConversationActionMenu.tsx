@@ -6,6 +6,7 @@ import useReportUser from "@/src/hooks/useReportUser";
 import useBlockUser from "@/src/hooks/useBlockUser";
 import conversationStore from "@/src/zustand/conversationStore";
 import { useRouter } from "expo-router";
+import { useTranslation } from "@/src/hooks/useTranslation";
 
 // Direct chats: Delete Messages / Report User / Block User (report/block
 // need selectedConversation.partnerId, which is null for groups).
@@ -16,6 +17,7 @@ const ConversationActionMenu = () => {
   const { deleteMessages } = useDeleteMessages();
   const { reportUser } = useReportUser();
   const { blockUser } = useBlockUser();
+  const { t } = useTranslation();
   const {
     latestMessageId,
     selectedConversation,
@@ -27,64 +29,78 @@ const ConversationActionMenu = () => {
 
   const handleDelete = () => {
     if (!latestMessageId) {
-      Alert.alert("No messages to delete");
+      Alert.alert(t("conversation.actionMenu.noMessagesToDelete"));
       return;
     }
 
-    Alert.alert("Delete Messages", "Delete Messages?", [
-      { text: "Cancel", style: "cancel" },
-      {
-        text: "OK",
-        onPress: async () => {
-          const success = await deleteMessages(latestMessageId);
-          if (success) {
-            setLatestMessageId(null);
-          }
+    Alert.alert(
+      t("conversation.actionMenu.deleteMessages"),
+      t("conversation.actionMenu.deleteConfirmMessage"),
+      [
+        { text: t("common.cancel"), style: "cancel" },
+        {
+          text: t("common.ok"),
+          onPress: async () => {
+            const success = await deleteMessages(latestMessageId);
+            if (success) {
+              setLatestMessageId(null);
+            }
+          },
         },
-      },
-    ]);
+      ]
+    );
   };
 
   const handleReport = () => {
     if (!latestMessageId) {
-      Alert.alert("No messages selected", "Please select a message to report.");
+      Alert.alert(
+        t("conversation.actionMenu.noMessageSelectedTitle"),
+        t("conversation.actionMenu.noMessageSelectedMessage")
+      );
       return;
     }
 
     if (!selectedConversation?.partnerId) {
-      Alert.alert("Error", "Unable to identify user to report.");
+      Alert.alert(t("common.error"), t("conversation.actionMenu.unableToIdentifyReport"));
       return;
     }
 
-    Alert.alert("Report User", "Why are you reporting this user?", [
-      {
-        text: "Inappropriate Content",
-        onPress: () => showConfirmation("Inappropriate Content"),
-      },
-      {
-        text: "Harassment",
-        onPress: () => showConfirmation("Harassment"),
-      },
-      {
-        text: "Spam",
-        onPress: () => showConfirmation("Spam"),
-      },
-      { text: "Other", onPress: () => showConfirmation("Other") },
-      { text: "Cancel", style: "cancel" },
-    ]);
+    Alert.alert(
+      t("conversation.actionMenu.reportUser"),
+      t("conversation.actionMenu.reportReasonMessage"),
+      [
+        {
+          text: t("conversation.actionMenu.reasonInappropriate"),
+          onPress: () => showConfirmation(t("conversation.actionMenu.reasonInappropriate")),
+        },
+        {
+          text: t("conversation.actionMenu.reasonHarassment"),
+          onPress: () => showConfirmation(t("conversation.actionMenu.reasonHarassment")),
+        },
+        {
+          text: t("conversation.actionMenu.reasonSpam"),
+          onPress: () => showConfirmation(t("conversation.actionMenu.reasonSpam")),
+        },
+        {
+          text: t("conversation.actionMenu.reasonOther"),
+          onPress: () => showConfirmation(t("conversation.actionMenu.reasonOther")),
+        },
+        { text: t("common.cancel"), style: "cancel" },
+      ]
+    );
   };
 
   const showConfirmation = (reason: string) => {
     Alert.alert(
-      "Confirm Report",
-      `Are you sure you want to report this user for "${reason}"?`,
+      t("conversation.actionMenu.confirmReportTitle"),
+      t("conversation.actionMenu.confirmReportMessage", { reason }),
       [
         {
-          text: "Report",
+          text: t("conversation.actionMenu.reportButton"),
           style: "destructive",
           onPress: async () => {
             if (!selectedConversation?.partnerId) {
-              Alert.alert("Error", "Unable to identify user to report.");
+              Alert.alert(t("common.error"), t("conversation.actionMenu.unableToIdentifyReport"));
               return;
             }
             const success = await reportUser({
@@ -92,28 +108,31 @@ const ConversationActionMenu = () => {
               friendId: selectedConversation.partnerId,
             });
             if (success) {
-              Alert.alert("Report Submitted", "Thank you for your report.");
+              Alert.alert(
+                t("conversation.actionMenu.reportSubmittedTitle"),
+                t("conversation.actionMenu.reportSubmittedMessage")
+              );
             }
           },
         },
-        { text: "Cancel", style: "cancel" },
+        { text: t("common.cancel"), style: "cancel" },
       ]
     );
   };
 
   const handleBlock = () => {
     if (!selectedConversation?.partnerId) {
-      Alert.alert("Error", "Unable to identify user to block.");
+      Alert.alert(t("common.error"), t("conversation.actionMenu.unableToIdentifyBlock"));
       return;
     }
 
     Alert.alert(
-      "Block User",
-      "Blocking a user will remove them from your friend list and delete conversations. Continue?",
+      t("conversation.actionMenu.blockConfirmTitle"),
+      t("conversation.actionMenu.blockConfirmMessage"),
       [
-        { text: "Cancel", style: "cancel" },
+        { text: t("common.cancel"), style: "cancel" },
         {
-          text: "Block",
+          text: t("common.block"),
           style: "destructive",
           onPress: async () => {
             const success = await blockUser(selectedConversation.partnerId!);
@@ -132,21 +151,24 @@ const ConversationActionMenu = () => {
 
   const handleMenu = () => {
     if (selectedConversation?.type === "group") {
-      Alert.alert("Actions", undefined, [
-        { text: "Delete Messages", onPress: handleDelete },
-        { text: "Group Settings", onPress: () => router.push("/members/groupSettings") },
-        { text: "Cancel", style: "cancel" },
+      Alert.alert(t("conversation.actionMenu.menuTitle"), undefined, [
+        { text: t("conversation.actionMenu.deleteMessages"), onPress: handleDelete },
+        {
+          text: t("conversation.actionMenu.groupSettings"),
+          onPress: () => router.push("/members/groupSettings"),
+        },
+        { text: t("common.cancel"), style: "cancel" },
       ]);
       return;
     }
 
-    Alert.alert("Actions", undefined, [
-      { text: "Delete Messages", onPress: handleDelete },
-      { text: "Report User", onPress: handleReport },
-      { text: "Block User", onPress: handleBlock },
+    Alert.alert(t("conversation.actionMenu.menuTitle"), undefined, [
+      { text: t("conversation.actionMenu.deleteMessages"), onPress: handleDelete },
+      { text: t("conversation.actionMenu.reportUser"), onPress: handleReport },
+      { text: t("conversation.actionMenu.blockUser"), onPress: handleBlock },
       // Blank spacer row for visual separation before Cancel
-      { text: " ", onPress: () => {} },
-      { text: "Cancel", style: "cancel" },
+      { text: " ", onPress: () => {} },
+      { text: t("common.cancel"), style: "cancel" },
     ]);
   };
 

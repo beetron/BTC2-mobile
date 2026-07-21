@@ -12,6 +12,7 @@ import { useFocusEffect } from "expo-router";
 import profileValidator from "@/src/utils/profileValidator";
 import useChangePassword from "@/src/hooks/useChangePassword";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import { useTranslation } from "@/src/hooks/useTranslation";
 
 const SettingsPassword = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -20,6 +21,7 @@ const SettingsPassword = () => {
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const { changePassword, isLoading } = useChangePassword();
   const { checkLengthPassword, checkPassword } = profileValidator();
+  const { t } = useTranslation();
 
   // Clear passwords when switching tabs
   useFocusEffect(
@@ -53,12 +55,12 @@ const SettingsPassword = () => {
     <View className="justify-center" style={{ paddingTop: 30 }}>
       <View className="justify-center items-start">
         <Text className="font-funnel-regular text-btc100 text-2xl">
-          Change Password
+          {t("settings.password.title")}
         </Text>
       </View>
       <View className="flex items-start pt-4">
         <Text className="font-funnel-regular text-btc100 text-l">
-          Current Password
+          {t("settings.password.currentLabel")}
         </Text>
         <MaterialIcons
           name="save-as"
@@ -100,7 +102,7 @@ const SettingsPassword = () => {
         </TouchableOpacity>
       </View>
       <View className="flex items-start pt-4">
-        <Text className="font-funnel-regular text-btc100 text-l">Password</Text>
+        <Text className="font-funnel-regular text-btc100 text-l">{t("settings.password.newLabel")}</Text>
       </View>
       <View>
         <TextInput
@@ -128,7 +130,7 @@ const SettingsPassword = () => {
       </View>
       <View className="flex items-start pt-4">
         <Text className="font-funnel-regular text-btc100 text-l">
-          Confirm Password
+          {t("settings.password.confirmLabel")}
         </Text>
       </View>
       <View className="mb-8">

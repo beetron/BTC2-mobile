@@ -4,6 +4,7 @@ import conversationStore from "../zustand/conversationStore";
 import { useAuth } from "../context/AuthContext";
 import { Alert } from "react-native";
 import { useNetwork } from "@/src/context/NetworkContext";
+import { useTranslation } from "./useTranslation";
 
 const useSendMessage = () => {
   const { authState } = useAuth();
@@ -11,16 +12,14 @@ const useSendMessage = () => {
   const { selectedConversation, prependMessage, setLatestMessageId } =
     conversationStore();
   const { isConnected } = useNetwork();
+  const { t } = useTranslation();
 
   const sendMessage = async (message: string) => {
     try {
       setIsLoading(true);
 
       if (!isConnected) {
-        Alert.alert(
-          "No Internet Connection",
-          "Please check your connection to send messages"
-        );
+        Alert.alert(t("errors.noInternetTitle"), t("errors.noInternetSendMessages"));
         setIsLoading(false);
         return;
       }
@@ -45,15 +44,15 @@ const useSendMessage = () => {
           });
           setLatestMessageId(messageId);
         } else {
-          Alert.alert("Error", "Failed to send message");
+          Alert.alert(t("common.error"), t("conversation.sendMessageFailed"));
         }
         setIsLoading(false);
       }
     } catch (e: any) {
       if (e.networkError === "TIMEOUT") {
         Alert.alert(
-          "Connection Timeout",
-          "Request took too long. Please try again"
+          t("errors.connectionTimeoutTitle"),
+          t("errors.connectionTimeoutMessage")
         );
       } else if (e.networkError === "NO_INTERNET") {
         // Already alerted in pre-flight check

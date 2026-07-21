@@ -5,9 +5,11 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import useSendeMessages from "../hooks/useSendMessage";
 import { useAttachImages } from "../hooks/useAttachImages";
 import { useSendImages } from "../hooks/useSendImages";
+import { useTranslation } from "../hooks/useTranslation";
 
 const ConversationInput = () => {
   const [message, setMessage] = useState<string>("");
+  const { t } = useTranslation();
   const { sendMessage, isLoading } = useSendeMessages();
   const { attachImages } = useAttachImages();
   const { sendImages, isLoading: isImageLoading } = useSendImages();
@@ -51,7 +53,7 @@ const ConversationInput = () => {
           <Ionicons name="attach" size={24} color="white" />
         </TouchableOpacity>
         <TextInput
-          placeholder="Start typing..."
+          placeholder={t("conversation.inputPlaceholder")}
           placeholderTextColor="black"
           className="flex-1 px-4 text-lg bg-btc100 rounded-2xl border-2 border-btc20"
           multiline={true}

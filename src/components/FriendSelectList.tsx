@@ -3,6 +3,7 @@ import { Image } from "expo-image";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { images } from "../constants/images";
 import useGetMyFriends from "../hooks/useGetMyFriends";
+import { useTranslation } from "../hooks/useTranslation";
 
 interface FriendSelectListProps {
   selectedIds: string[];
@@ -17,10 +18,12 @@ const FriendSelectList = ({
   selectedIds,
   onChange,
   excludeIds = [],
-  emptyMessage = "Add a friend first to start a group.",
+  emptyMessage,
 }: FriendSelectListProps) => {
   const placeholderProfileImage = images.placeholderProfileImage;
   const { myFriends, isLoading } = useGetMyFriends();
+  const { t } = useTranslation();
+  const resolvedEmptyMessage = emptyMessage ?? t("group.friendSelectDefaultEmpty");
 
   const candidates = myFriends.filter((f) => !excludeIds.includes(f._id));
 
@@ -43,7 +46,7 @@ const FriendSelectList = ({
   if (candidates.length === 0) {
     return (
       <Text className="font-funnel-regular text-btc100 text-lg text-center mt-4">
-        {emptyMessage}
+        {resolvedEmptyMessage}
       </Text>
     );
   }

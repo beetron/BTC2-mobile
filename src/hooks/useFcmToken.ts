@@ -7,6 +7,7 @@ import axiosClient from "@/src/utils/axiosClient";
 import { useAuth } from "@/src/context/AuthContext";
 import { Alert } from "react-native";
 import { useNetwork } from "@/src/context/NetworkContext";
+import { useTranslation } from "@/src/hooks/useTranslation";
 
 const FCM_TOKEN = "fcm_token";
 
@@ -15,6 +16,7 @@ export default function useFcmToken() {
   const [isRegistering, setIsRegistering] = useState(false);
   const { authState } = useAuth();
   const { isConnected } = useNetwork();
+  const { t } = useTranslation();
 
   // Get mobile device info
   const getDeviceInfo = async () => {
@@ -98,10 +100,10 @@ export default function useFcmToken() {
       return null;
     } catch (error) {
       console.error("Error generating FCM token: ", error);
-      Alert.alert("Error generating FCM token");
+      Alert.alert(t("fcm.tokenGenerationFailed"));
       return null;
     }
-  }, []);
+  }, [t]);
 
   /////////////////////////////////////////////
   // Token registration
@@ -148,9 +150,9 @@ export default function useFcmToken() {
       }
     } catch (error) {
       console.error("Error managing FCM token: ", error);
-      Alert.alert("Failed managing FCM token");
+      Alert.alert(t("fcm.manageFailed"));
     }
-  }, [authState?.authenticated, generateNewFcmToken, registerFcmToken]);
+  }, [authState?.authenticated, generateNewFcmToken, registerFcmToken, t]);
 
   return { fcmToken, isRegistering, manageFcmToken };
 }

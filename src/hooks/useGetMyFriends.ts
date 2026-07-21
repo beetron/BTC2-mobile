@@ -4,6 +4,7 @@ import { useRouter, useFocusEffect } from "expo-router";
 import { Alert } from "react-native";
 import useGetProfileImage from "./useGetProfileImage";
 import { useNetwork } from "@/src/context/NetworkContext";
+import { useTranslation } from "./useTranslation";
 
 interface Friend {
   _id: string;
@@ -21,16 +22,14 @@ const useGetMyFriends = () => {
   const router = useRouter();
   const { getProfileImage } = useGetProfileImage();
   const { isConnected } = useNetwork();
+  const { t } = useTranslation();
 
   const getMyFriends = useCallback(async () => {
     try {
       setIsLoading(true);
 
       if (!isConnected) {
-        Alert.alert(
-          "No Internet Connection",
-          "Please check your connection to load friends"
-        );
+        Alert.alert(t("errors.noInternetTitle"), t("errors.noInternetLoadFriends"));
         setIsLoading(false);
         return;
       }
@@ -65,21 +64,18 @@ const useGetMyFriends = () => {
     } catch (error: any) {
       if (error.networkError === "TIMEOUT") {
         Alert.alert(
-          "Connection Timeout",
-          "Request took too long. Please try again"
+          t("errors.connectionTimeoutTitle"),
+          t("errors.connectionTimeoutMessage")
         );
       } else if (error.networkError === "NO_INTERNET") {
-        Alert.alert(
-          "No Internet Connection",
-          "Please check your connection and try again"
-        );
+        Alert.alert(t("errors.noInternetTitle"), t("errors.noInternetGeneric"));
       } else if (error.message !== "Unauthorized") {
         console.log("Error: ", error.response?.data?.error || error.message);
       }
     } finally {
       setIsLoading(false);
     }
-  }, [isConnected]);
+  }, [isConnected, t]);
 
   useFocusEffect(
     useCallback(() => {

@@ -25,6 +25,7 @@ const TabLayout = () => {
         <Stack.Screen name="settingsChangeIcon" />
         <Stack.Screen name="createGroup" />
         <Stack.Screen name="groupSettings" />
+        <Stack.Screen name="settingsLanguage" />
       </Stack>
     </SocketProvider>
   );

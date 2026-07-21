@@ -11,6 +11,7 @@ import useGetConversationDetail from "../../hooks/useGetConversationDetail";
 import useUpdateGroupInfo from "../../hooks/useUpdateGroupInfo";
 import useAddGroupMembers from "../../hooks/useAddGroupMembers";
 import useRemoveGroupMember from "../../hooks/useRemoveGroupMember";
+import { useTranslation } from "../../hooks/useTranslation";
 
 const MAX_NAME_LENGTH = 60;
 
@@ -21,6 +22,7 @@ const roleBadgeColor = (role: string) => {
 
 const GroupSettingsScreen = () => {
   const router = useRouter();
+  const { t } = useTranslation();
   const { authState } = useAuth();
   const { selectedConversation, setSelectedConversation, setMessages } =
     conversationStore();
@@ -66,24 +68,30 @@ const GroupSettingsScreen = () => {
   };
 
   const handleRemoveMember = (targetUserId: string, nickname: string | null) => {
-    Alert.alert("Remove Member", `Remove ${nickname || "this member"} from the group?`, [
-      { text: "Cancel", style: "cancel" },
-      {
-        text: "Remove",
-        style: "destructive",
-        onPress: async () => {
-          const success = await removeGroupMember(conversationId, targetUserId);
-          if (success) await refresh();
+    Alert.alert(
+      t("group.removeMemberTitle"),
+      t("group.removeMemberMessage", {
+        name: nickname || t("group.removeMemberFallbackName"),
+      }),
+      [
+        { text: t("common.cancel"), style: "cancel" },
+        {
+          text: t("common.remove"),
+          style: "destructive",
+          onPress: async () => {
+            const success = await removeGroupMember(conversationId, targetUserId);
+            if (success) await refresh();
+          },
         },
-      },
-    ]);
+      ]
+    );
   };
 
   const handleLeaveGroup = () => {
-    Alert.alert("Leave Group", "Are you sure you want to leave this group?", [
-      { text: "Cancel", style: "cancel" },
+    Alert.alert(t("group.leaveGroupTitle"), t("group.leaveGroupMessage"), [
+      { text: t("common.cancel"), style: "cancel" },
       {
-        text: "Leave",
+        text: t("group.leaveButton"),
         style: "destructive",
         onPress: async () => {
           if (!myUserId) return;
@@ -103,7 +111,7 @@ const GroupSettingsScreen = () => {
       <RemoveFriendHeader />
       <ScrollView className="m-6">
         <Text className="text-btc100 font-funnel-semi-bold text-2xl mb-4">
-          Group Settings
+          {t("group.settingsTitle")}
         </Text>
 
         {canManage ? (
@@ -112,7 +120,7 @@ const GroupSettingsScreen = () => {
               value={nameDraft}
               onChangeText={(text) => setNameDraft(text.slice(0, MAX_NAME_LENGTH))}
               onBlur={handleRename}
-              placeholder="Group name"
+              placeholder={t("group.namePlaceholder")}
               placeholderTextColor="#7a7a8c"
               editable={!isRenaming}
               className="text-btc100 font-funnel-regular text-xl border-b-hairline border-btc100 pb-2 flex-1"
@@ -121,12 +129,12 @@ const GroupSettingsScreen = () => {
           </View>
         ) : (
           <Text className="text-btc100 font-funnel-semi-bold text-xl mb-6">
-            {selectedConversation.name || "Group chat"}
+            {selectedConversation.name || t("conversation.groupFallbackTitle")}
           </Text>
         )}
 
         <Text className="text-btc200 font-funnel-regular text-lg mb-2">
-          Members ({members.length})
+          {t("group.membersLabel", { count: members.length })}
         </Text>
         {members.map((member) => (
           <View
@@ -138,13 +146,13 @@ const GroupSettingsScreen = () => {
                 className="text-btc100 font-funnel-regular text-xl flex-shrink"
                 numberOfLines={1}
               >
-                {member.nickname || "Unknown"}
+                {member.nickname || t("common.unknown")}
               </Text>
               <Text
                 className="font-funnel-regular text-sm ml-2"
                 style={{ color: roleBadgeColor(member.role) }}
               >
-                {member.role}
+                {member.role === "owner" ? t("group.roleOwner") : t("group.roleMember")}
               </Text>
             </View>
             {canManage && member.userId !== myUserId && (
@@ -165,11 +173,11 @@ const GroupSettingsScreen = () => {
                 selectedIds={selectedNewMemberIds}
                 onChange={setSelectedNewMemberIds}
                 excludeIds={members.map((m) => m.userId)}
-                emptyMessage="All your friends are already in this group."
+                emptyMessage={t("group.allFriendsInGroup")}
               />
               <View className="flex-row mt-4 gap-2">
                 <CustomButton
-                  title="Cancel"
+                  title={t("common.cancel")}
                   handlePress={() => {
                     setShowAddMembers(false);
                     setSelectedNewMemberIds([]);
@@ -178,7 +186,7 @@ const GroupSettingsScreen = () => {
                   textStyles="text-xl"
                 />
                 <CustomButton
-                  title="Add"
+                  title={t("common.add")}
                   handlePress={handleAddMembers}
                   disabled={selectedNewMemberIds.length === 0}
                   isLoading={isAdding}
@@ -194,7 +202,7 @@ const GroupSettingsScreen = () => {
             >
               <MaterialCommunityIcons name="account-plus" size={22} color="#75E6DA" />
               <Text className="text-btc100 font-funnel-semi-bold text-lg ml-2">
-                Add Members
+                {t("group.addMembersButton")}
               </Text>
             </TouchableOpacity>
           )}
@@ -202,7 +210,7 @@ const GroupSettingsScreen = () => {
 
         <View className="mt-8 mb-4">
           <CustomButton
-            title="Leave Group"
+            title={t("group.leaveGroupTitle")}
             handlePress={handleLeaveGroup}
             containerStyles="w-full bg-red-700"
           />

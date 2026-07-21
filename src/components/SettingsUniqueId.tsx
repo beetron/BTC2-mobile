@@ -5,6 +5,7 @@ import { useAuth } from "@/src/context/AuthContext";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useFocusEffect } from "expo-router";
 import profileValidator from "@/src/utils/profileValidator";
+import { useTranslation } from "@/src/hooks/useTranslation";
 
 const SettingsUniqueId = () => {
   const { authState } = useAuth();
@@ -12,6 +13,7 @@ const SettingsUniqueId = () => {
   const [uniqueId, setUniqueId] = useState(currentUniqueId || "");
   const { updateUniqueId, isLoading } = useUpdateUniqueId();
   const { checkLengthUsername, checkAlphanumeric } = profileValidator();
+  const { t } = useTranslation();
 
   // Reset current unique ID when switching tabs
   useFocusEffect(
@@ -35,7 +37,7 @@ const SettingsUniqueId = () => {
   return (
     <View className="flex-grow justify-center mt-4 ml-4 max-w-[80%]">
       <Text className="font-funnel-regular text-btc100 text-l">
-        Unique ID (signup & friend requests)
+        {t("settings.uniqueId.label")}
       </Text>
       <TextInput
         value={uniqueId}

@@ -18,6 +18,7 @@ import axiosClient, {
   setAuthStateUpdater,
 } from "@/src/utils/axiosClient";
 import { useNetwork } from "@/src/context/NetworkContext";
+import { useTranslation } from "@/src/hooks/useTranslation";
 
 interface AuthUser {
   _id: string;
@@ -64,6 +65,7 @@ export const AuthProvider = ({ children }: any) => {
 
   const router = useRouter();
   const { isConnected } = useNetwork();
+  const { t } = useTranslation();
 
   // Register auth state updater with axiosClient
   useEffect(() => {
@@ -174,10 +176,7 @@ export const AuthProvider = ({ children }: any) => {
   ) => {
     try {
       if (!isConnected) {
-        Alert.alert(
-          "No Internet Connection",
-          "Please check your connection and try again"
-        );
+        Alert.alert(t("errors.noInternetTitle"), t("errors.noInternetGeneric"));
         throw new Error("No internet connection");
       }
 
@@ -191,8 +190,8 @@ export const AuthProvider = ({ children }: any) => {
     } catch (e: any) {
       if (e.networkError === "TIMEOUT") {
         Alert.alert(
-          "Connection Timeout",
-          "Request took too long. Please try again"
+          t("errors.connectionTimeoutTitle"),
+          t("errors.connectionTimeoutMessage")
         );
         throw new Error("Request timeout");
       } else if (e.networkError === "NO_INTERNET") {
@@ -207,10 +206,7 @@ export const AuthProvider = ({ children }: any) => {
   const login = async (username: string, password: string) => {
     try {
       if (!isConnected) {
-        Alert.alert(
-          "No Internet Connection",
-          "Please check your connection and try again"
-        );
+        Alert.alert(t("errors.noInternetTitle"), t("errors.noInternetGeneric"));
         throw new Error("No internet connection");
       }
 
@@ -258,8 +254,8 @@ export const AuthProvider = ({ children }: any) => {
     } catch (e: any) {
       if (e.networkError === "TIMEOUT") {
         Alert.alert(
-          "Connection Timeout",
-          "Request took too long. Please try again"
+          t("errors.connectionTimeoutTitle"),
+          t("errors.connectionTimeoutMessage")
         );
         throw new Error("Request timeout");
       } else if (e.networkError === "NO_INTERNET") {

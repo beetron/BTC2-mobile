@@ -6,12 +6,14 @@ import { useNetwork } from "@/src/context/NetworkContext";
 import conversationStore, {
   SelectedConversation,
 } from "../zustand/conversationStore";
+import { useTranslation } from "./useTranslation";
 
 const useGetConversationDetail = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const { getProfileImage } = useGetProfileImage();
   const { isConnected } = useNetwork();
   const { setSelectedConversation } = conversationStore();
+  const { t } = useTranslation();
 
   const getConversationDetail = useCallback(
     async (conversationId: string): Promise<boolean> => {
@@ -21,10 +23,7 @@ const useGetConversationDetail = () => {
         setIsLoading(true);
 
         if (!isConnected) {
-          Alert.alert(
-            "No Internet Connection",
-            "Please check your connection to open this chat"
-          );
+          Alert.alert(t("errors.noInternetTitle"), t("errors.noInternetOpenChat"));
           return false;
         }
 
@@ -74,8 +73,8 @@ const useGetConversationDetail = () => {
       } catch (error: any) {
         if (error.networkError === "TIMEOUT") {
           Alert.alert(
-            "Connection Timeout",
-            "Request took too long. Please try again"
+            t("errors.connectionTimeoutTitle"),
+            t("errors.connectionTimeoutMessage")
           );
         } else if (error.networkError === "NO_INTERNET") {
           // Already alerted above
@@ -90,7 +89,7 @@ const useGetConversationDetail = () => {
         setIsLoading(false);
       }
     },
-    [isConnected, getProfileImage, setSelectedConversation]
+    [isConnected, getProfileImage, setSelectedConversation, t]
   );
 
   return { getConversationDetail, isLoading };

@@ -10,6 +10,7 @@ import {
 import { Image, ImageSource } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
 import MessageImageModal from "./MessageImageModal";
+import { useTranslation } from "../hooks/useTranslation";
 
 interface MessageImageGalleryProps {
   imageFilenames: string[];
@@ -32,6 +33,7 @@ const MessageImageGallery: React.FC<MessageImageGalleryProps> = ({
     return initialLoading;
   });
   const [errors, setErrors] = useState<{ [key: number]: boolean }>({});
+  const { t } = useTranslation();
 
   const screenWidth = Dimensions.get("window").width;
   const imageSize = screenWidth * 0.4;
@@ -68,7 +70,7 @@ const MessageImageGallery: React.FC<MessageImageGalleryProps> = ({
         // Trigger native share menu on long press
         Share.share({
           url: (item.uri as string) || "",
-          title: "Share Image",
+          title: t("media.shareImageTitle"),
         }).catch((err) => console.log("Share error:", err));
       }}
       style={{

@@ -4,21 +4,20 @@ import { SplashScreen, Stack } from "expo-router";
 import { AuthProvider } from "@/src/context/AuthContext";
 import { AppStateProvider } from "@/src/context/AppStateContext";
 import { NetworkProvider } from "@/src/context/NetworkContext";
+import { LocaleProvider, useLocale } from "@/src/context/LocaleContext";
+import { getFontMap } from "@/src/constants/fonts";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import "../../global.css";
 
 SplashScreen.preventAutoHideAsync();
 
-const RootLayout = () => {
-  // Load custom fonts
-  const [fontsLoaded, fontsError] = useFonts({
-    "funnel-bold": require("../assets/fonts/FunnelDisplay-Bold.ttf"),
-    "funnel-extra-bold": require("../assets/fonts/FunnelDisplay-ExtraBold.ttf"),
-    "funnel-light": require("../assets/fonts/FunnelDisplay-Light.ttf"),
-    "funnel-medium": require("../assets/fonts/FunnelDisplay-Medium.ttf"),
-    "funnel-regular": require("../assets/fonts/FunnelDisplay-Regular.ttf"),
-    "funnel-semi-bold": require("../assets/fonts/FunnelDisplay-SemiBold.ttf"),
-  });
+// Loads whichever physical font files back the "funnel-*" family names for
+// the current locale (see src/constants/fonts.ts) -- keeps the splash
+// screen up until they're ready, same gating this project already used
+// before locale support existed.
+const FontGate = ({ children }: { children: React.ReactNode }) => {
+  const { locale } = useLocale();
+  const [fontsLoaded, fontsError] = useFonts(getFontMap(locale));
 
   useEffect(() => {
     if (fontsError) throw fontsError;
@@ -30,25 +29,33 @@ const RootLayout = () => {
 
   if (!fontsLoaded && !fontsError) return null;
 
+  return <>{children}</>;
+};
+
+const RootLayout = () => {
   return (
-    <NetworkProvider>
-      <AuthProvider>
-        <AppStateProvider>
-          <KeyboardProvider>
-            <Stack
-              screenOptions={{
-                headerShown: false,
-              }}
-            >
-              <Stack.Screen name="members" />
-              <Stack.Screen name="guests" />
-              <Stack.Screen name="index" />
-              <Stack.Screen name="screens" />
-            </Stack>
-          </KeyboardProvider>
-        </AppStateProvider>
-      </AuthProvider>
-    </NetworkProvider>
+    <LocaleProvider>
+      <FontGate>
+        <NetworkProvider>
+          <AuthProvider>
+            <AppStateProvider>
+              <KeyboardProvider>
+                <Stack
+                  screenOptions={{
+                    headerShown: false,
+                  }}
+                >
+                  <Stack.Screen name="members" />
+                  <Stack.Screen name="guests" />
+                  <Stack.Screen name="index" />
+                  <Stack.Screen name="screens" />
+                </Stack>
+              </KeyboardProvider>
+            </AppStateProvider>
+          </AuthProvider>
+        </NetworkProvider>
+      </FontGate>
+    </LocaleProvider>
   );
 };
 

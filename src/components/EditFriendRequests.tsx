@@ -8,6 +8,7 @@ import { images } from "../constants/images";
 import useAcceptFriend from "@/src/hooks/useAcceptFriend";
 import useRejectFriend from "@/src/hooks/useRejectFriend";
 import { useAppStateListener } from "@/src/context/AppStateContext";
+import { useTranslation } from "../hooks/useTranslation";
 
 interface Friend {
   _id: string;
@@ -24,6 +25,7 @@ const EditFriendRequests = () => {
     useGetFriendRequests();
   const { acceptFriend, isLoading: acceptIsLoading } = useAcceptFriend();
   const { rejectFriend, isLoading: rejectIsLoading } = useRejectFriend();
+  const { t } = useTranslation();
 
   useAppStateListener(() => {
     getFriendRequests();
@@ -61,7 +63,7 @@ const EditFriendRequests = () => {
     <View className="bg-btc500">
       <View className="items-start">
         <Text className="text-btc100 font-funnel-regular text-2xl">
-          Pending Friend Requests
+          {t("friends.requests.title")}
         </Text>
       </View>
       <View className="mt-2 flex-col">
@@ -74,7 +76,7 @@ const EditFriendRequests = () => {
             {!friendRequests || friendRequests.length === 0 ? (
               <View className="mt-2 flex-1 items-center justify-center">
                 <Text className="text-btc100 font-funnel-regular text-2xl">
-                  You have no pending friend requests
+                  {t("friends.requests.empty")}
                 </Text>
               </View>
             ) : (

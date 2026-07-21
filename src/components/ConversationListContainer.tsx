@@ -12,6 +12,7 @@ import conversationStore from "../zustand/conversationStore";
 import useFcmToken from "../hooks/useFcmToken";
 import useSetBadgeCount from "../hooks/useSetBadgeCount";
 import useSocketListener from "../hooks/useSocketListener";
+import { useTranslation } from "../hooks/useTranslation";
 
 type ListRow =
   | { kind: "direct"; key: string; friend: any }
@@ -19,6 +20,7 @@ type ListRow =
 
 const ConversationListContainer = () => {
   const router = useRouter();
+  const { t } = useTranslation();
   const { setMessages, setSelectedConversation } = conversationStore();
   const { myFriends, isLoading, getMyFriends } = useGetMyFriends();
   const { groupConversations, getGroupConversations } =
@@ -109,13 +111,13 @@ const ConversationListContainer = () => {
         >
           <MaterialCommunityIcons name="account-group" size={22} color="#75E6DA" />
           <Text className="text-btc100 font-funnel-semi-bold text-lg ml-2">
-            New Group
+            {t("home.newGroupButton")}
           </Text>
         </TouchableOpacity>
 
         {rows.length === 0 ? (
           <Text className="font-funnel-regular text-btc100 text-xl text-center mt-14">
-            Add a friend to start chatting!
+            {t("home.emptyFriends")}
           </Text>
         ) : (
           rows.map((row) =>

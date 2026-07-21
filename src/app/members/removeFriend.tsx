@@ -9,6 +9,7 @@ import { images } from "../../constants/images";
 import useGetMyFriends from "@/src/hooks/useGetMyFriends";
 import useRemoveFriend from "@/src/hooks/useRemoveFriend";
 import RemoveFriendHeader from "../../components/RemoveFriendHeader";
+import { useTranslation } from "../../hooks/useTranslation";
 
 interface Friend {
   _id: string;
@@ -24,6 +25,7 @@ const RemoveFriendScreen = () => {
   const { myFriends, getMyFriends, isLoading } = useGetMyFriends();
   const { removeFriend, isLoading: removeIsLoading } = useRemoveFriend();
   const { blockUser, isLoading: blockIsLoading } = useBlockUser();
+  const { t } = useTranslation();
 
   // Refresh list after removing a friend
   useEffect(() => {
@@ -59,8 +61,7 @@ const RemoveFriendScreen = () => {
             className="m-2"
           />
           <Text className="text-btc100 font-funnel-regular text-xl">
-            Removing a friend will remove yourself from their friend list.{"\n"}
-            Blocking a friend will make you completely unreachable.
+            {t("friends.removeScreen.notice")}
           </Text>
         </View>
         {isLoading ? (
@@ -72,7 +73,7 @@ const RemoveFriendScreen = () => {
             <View className="mt-2 flex-col items-start w-full">
               {!myFriends || myFriends.length === 0 ? (
                 <Text className="text-btc100 font-funnel-regular text-2xl mt-4">
-                  You have no friends to remove
+                  {t("friends.removeScreen.empty")}
                 </Text>
               ) : (
                 myFriends.map((friend: Friend) => (
@@ -107,14 +108,14 @@ const RemoveFriendScreen = () => {
                       style={{ width: 180, marginLeft: 8 }}
                     >
                       <CustomButton
-                        title="Remove"
+                        title={t("common.remove")}
                         handlePress={() => handleOnPressRemove(friend.uniqueId)}
                         containerStyles="px-4 py-2 mr-2 bg-yellow-700"
                         textStyles="text-base"
                       />
 
                       <CustomButton
-                        title="Block"
+                        title={t("common.block")}
                         handlePress={() => handleOnPressBlock(friend._id)}
                         containerStyles="px-4 py-2 bg-red-700"
                         textStyles="text-base"

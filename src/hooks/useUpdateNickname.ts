@@ -4,11 +4,13 @@ import { useAuth } from "@/src/context/AuthContext";
 import * as SecureStore from "expo-secure-store";
 import axiosClient from "@/src/utils/axiosClient";
 import { useNetwork } from "@/src/context/NetworkContext";
+import { useTranslation } from "@/src/hooks/useTranslation";
 
 const useUpdateNickname = () => {
   const { authState, setAuthState } = useAuth();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { isConnected } = useNetwork();
+  const { t } = useTranslation();
   const USER_KEY = "user";
 
   const updateNickname = async (newNickname: string) => {
@@ -18,10 +20,7 @@ const useUpdateNickname = () => {
       setIsLoading(true);
 
       if (!isConnected) {
-        Alert.alert(
-          "No Internet Connection",
-          "Please check your connection and try again"
-        );
+        Alert.alert(t("errors.noInternetTitle"), t("errors.noInternetGeneric"));
         return false;
       }
 
@@ -55,13 +54,13 @@ const useUpdateNickname = () => {
 
       if (error.networkError === "TIMEOUT") {
         Alert.alert(
-          "Connection Timeout",
-          "Request took too long. Please try again"
+          t("errors.connectionTimeoutTitle"),
+          t("errors.connectionTimeoutMessage")
         );
       } else if (error.networkError === "NO_INTERNET") {
         // Already alerted in pre-flight check
       } else {
-        Alert.alert("Error", "Failed to update nickname");
+        Alert.alert(t("common.error"), t("settings.nickname.updateFailedError"));
       }
       return false;
     } finally {

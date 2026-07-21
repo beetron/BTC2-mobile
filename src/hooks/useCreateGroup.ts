@@ -2,10 +2,12 @@ import { Alert } from "react-native";
 import axiosClient from "../utils/axiosClient";
 import { useState } from "react";
 import { useNetwork } from "@/src/context/NetworkContext";
+import { useTranslation } from "@/src/hooks/useTranslation";
 
 const useCreateGroup = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { isConnected } = useNetwork();
+  const { t } = useTranslation();
 
   // POST /conversations/group returns a raw (unpopulated) conversation doc
   // -- only its _id is needed since the conversation screen always
@@ -19,10 +21,7 @@ const useCreateGroup = () => {
       setIsLoading(true);
 
       if (!isConnected) {
-        Alert.alert(
-          "No Internet Connection",
-          "Please check your connection and try again"
-        );
+        Alert.alert(t("errors.noInternetTitle"), t("errors.noInternetGeneric"));
         return null;
       }
 
@@ -35,15 +34,15 @@ const useCreateGroup = () => {
     } catch (error: any) {
       if (error.networkError === "TIMEOUT") {
         Alert.alert(
-          "Connection Timeout",
-          "Request took too long. Please try again"
+          t("errors.connectionTimeoutTitle"),
+          t("errors.connectionTimeoutMessage")
         );
       } else if (error.networkError === "NO_INTERNET") {
         // already alerted above
       } else if (error.response?.data?.error) {
-        Alert.alert("Error", error.response.data.error);
+        Alert.alert(t("common.error"), error.response.data.error);
       } else {
-        Alert.alert("Error", "Failed to create group");
+        Alert.alert(t("common.error"), t("group.createFailed"));
       }
       console.error("Error in useCreateGroup:", error);
       return null;

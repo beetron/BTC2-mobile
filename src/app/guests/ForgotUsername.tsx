@@ -15,6 +15,7 @@ import CustomButton from "../../components/CustomButton";
 import CustomInput from "../../components/CustomInput";
 import { useForgotUsername } from "../../hooks/useForgotUsername";
 import profileValidator from "../../utils/profileValidator";
+import { useTranslation } from "../../hooks/useTranslation";
 
 interface FormData {
   email: string;
@@ -28,10 +29,14 @@ const ForgotUsername = () => {
   const router = useRouter();
   const { forgotUsername, isLoading } = useForgotUsername();
   const { checkEmailRegex } = profileValidator();
+  const { t } = useTranslation();
 
   const onSubmit = async () => {
     if (formData.email === "") {
-      Alert.alert("Validation Error", "Please enter your email address");
+      Alert.alert(
+        t("auth.forgotUsername.validationErrorTitle"),
+        t("auth.forgotUsername.validationErrorMessage")
+      );
       return;
     }
 
@@ -43,14 +48,14 @@ const ForgotUsername = () => {
     const result = await forgotUsername(formData);
 
     if (result.success && result.message) {
-      Alert.alert("Success", result.message, [
+      Alert.alert(t("common.success"), result.message, [
         {
-          text: "OK",
+          text: t("common.ok"),
           onPress: () => router.push("./Login"),
         },
       ]);
     } else if (result.error) {
-      Alert.alert("Error", result.error);
+      Alert.alert(t("common.error"), result.error);
     }
   };
 
@@ -75,12 +80,12 @@ const ForgotUsername = () => {
 
             {/* Subtitle */}
             <Text className="text-btc100 text-center mb-6 px-4">
-              Enter your email address and we&apos;ll send you your username
+              {t("auth.forgotUsername.subtitle")}
             </Text>
 
             {/* Email input */}
             <CustomInput
-              title="Email"
+              title={t("auth.forgotUsername.emailLabel")}
               value={formData.email}
               onChangeText={(e) => setFormData({ ...formData, email: e })}
               containerStyles="w-3/5"
@@ -91,7 +96,7 @@ const ForgotUsername = () => {
 
             {/* Submit button */}
             <CustomButton
-              title="Send Username"
+              title={t("auth.forgotUsername.sendButton")}
               isLoading={isLoading}
               textStyles="font-funnel-regular"
               containerStyles="w-3/5 top-5"
@@ -104,7 +109,7 @@ const ForgotUsername = () => {
               className="top-8"
             >
               <Text className="text-lg font-funnel-regular color-btc200 p-2">
-                Back to Login
+                {t("auth.forgotUsername.backToLogin")}
               </Text>
             </TouchableOpacity>
 
@@ -114,7 +119,7 @@ const ForgotUsername = () => {
               className="top-10"
             >
               <Text className="text-lg font-funnel-regular color-btc200 p-2">
-                Forgot Password?
+                {t("auth.forgotUsername.forgotPasswordLink")}
               </Text>
             </TouchableOpacity>
           </View>

@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import * as ImagePicker from "expo-image-picker";
 import { Alert } from "react-native";
+import { useTranslation } from "./useTranslation";
 
 const MAX_FILES = 10;
 const MAX_TOTAL_SIZE = 49 * 1024 * 1024; // 49MB in bytes
@@ -13,16 +14,15 @@ interface AttachedImage {
 }
 
 export const useAttachImages = () => {
+  const { t } = useTranslation();
+
   const attachImages = useCallback(async (): Promise<AttachedImage[]> => {
     try {
       // Request permissions
       const { status } =
         await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== "granted") {
-        Alert.alert(
-          "Permission Denied",
-          "Photo library access is required to attach images."
-        );
+        Alert.alert(t("media.permissionDeniedTitle"), t("media.attachPermissionMessage"));
         return [];
       }
 
@@ -47,8 +47,8 @@ export const useAttachImages = () => {
       // Validate file count
       if (selectedAssets.length > MAX_FILES) {
         Alert.alert(
-          "Too Many Files",
-          `Maximum ${MAX_FILES} files allowed per upload.`
+          t("media.tooManyFilesTitle"),
+          t("media.tooManyFilesMessage", { max: MAX_FILES })
         );
         return [];
       }
@@ -66,8 +66,10 @@ export const useAttachImages = () => {
 
         if (totalSize > MAX_TOTAL_SIZE) {
           Alert.alert(
-            "File Size Exceeded",
-            `Total file size cannot exceed 49MB. Current selection: ${(totalSize / (1024 * 1024)).toFixed(2)}MB`
+            t("media.fileSizeExceededTitle"),
+            t("media.fileSizeExceededMessage", {
+              size: (totalSize / (1024 * 1024)).toFixed(2),
+            })
           );
           return [];
         }
@@ -87,10 +89,10 @@ export const useAttachImages = () => {
       return attachedImages;
     } catch (error) {
       console.error("Error attaching images:", error);
-      Alert.alert("Error", "Failed to attach images.");
+      Alert.alert(t("common.error"), t("media.attachFailed"));
       return [];
     }
-  }, []);
+  }, [t]);
 
   return { attachImages };
 };

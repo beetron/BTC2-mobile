@@ -1,0 +1,274 @@
+{
+  "common": {
+    "ok": "OK",
+    "cancel": "キャンセル",
+    "save": "保存",
+    "error": "エラー",
+    "success": "成功",
+    "loading": "読み込み中...",
+    "remove": "削除",
+    "block": "ブロック",
+    "delete": "削除",
+    "add": "追加",
+    "create": "作成",
+    "unknown": "不明"
+  },
+  "tabs": {
+    "home": "ホーム",
+    "editFriends": "友達を編集",
+    "settings": "設定",
+    "logout": "ログアウト",
+    "logoutConfirmTitle": "ログアウトしますか?"
+  },
+  "home": {
+    "newGroupButton": "新しいグループ",
+    "emptyFriends": "友達を追加してチャットを始めましょう!",
+    "groupFallbackName": "グループチャット",
+    "memberCount": "{{count}}人のメンバー"
+  },
+  "conversation": {
+    "chatFallbackTitle": "チャット",
+    "groupFallbackTitle": "グループチャット",
+    "memberCountSubtitle": "{{count}}人のメンバー",
+    "syncing": "同期中…",
+    "noMessagesWith": "{{name}}とのメッセージはまだありません",
+    "yourFriendFallback": "友達",
+    "inputPlaceholder": "メッセージを入力...",
+    "sendMessageFailed": "メッセージの送信に失敗しました",
+    "actionMenu": {
+      "menuTitle": "操作",
+      "deleteMessages": "メッセージを削除",
+      "reportUser": "ユーザーを報告",
+      "blockUser": "ユーザーをブロック",
+      "groupSettings": "グループ設定",
+      "noMessagesToDelete": "削除するメッセージがありません",
+      "deleteConfirmMessage": "メッセージを削除しますか?",
+      "noMessageSelectedTitle": "メッセージが選択されていません",
+      "noMessageSelectedMessage": "報告するメッセージを選択してください。",
+      "reportReasonMessage": "報告する理由を選択してください",
+      "reasonInappropriate": "不適切なコンテンツ",
+      "reasonHarassment": "嫌がらせ",
+      "reasonSpam": "スパム",
+      "reasonOther": "その他",
+      "confirmReportTitle": "報告の確認",
+      "confirmReportMessage": "「{{reason}}」としてこのユーザーを報告してもよろしいですか?",
+      "reportButton": "報告",
+      "reportSubmittedTitle": "報告を送信しました",
+      "reportSubmittedMessage": "ご報告ありがとうございます。",
+      "unableToIdentifyReport": "報告するユーザーを特定できません。",
+      "unableToIdentifyBlock": "ブロックするユーザーを特定できません。",
+      "blockConfirmTitle": "ユーザーをブロック",
+      "blockConfirmMessage": "ユーザーをブロックすると、友達リストから削除され、会話も削除されます。続けますか?"
+    }
+  },
+  "media": {
+    "shareImageTitle": "画像を共有",
+    "failedToLoad": "画像の読み込みに失敗しました",
+    "permissionDeniedTitle": "権限がありません",
+    "permissionDeniedMessage": "画像を保存するには写真へのアクセス権限が必要です。",
+    "imageUriUnavailable": "画像のURLが利用できません",
+    "savedSuccess": "画像を写真に保存しました!",
+    "saveFailed": "画像の保存に失敗しました",
+    "noImagesToSave": "保存する画像がありません",
+    "noValidImageUris": "有効な画像URLがありません",
+    "savedAllSuccess": "{{total}}枚中{{saved}}枚の画像を写真に保存しました!",
+    "saveAllFailed": "画像の保存に失敗しました",
+    "savingLabel": "保存中...",
+    "saveButton": "保存",
+    "saveAllButton": "すべて保存",
+    "attachPermissionMessage": "画像を添付するには写真へのアクセス権限が必要です。",
+    "tooManyFilesTitle": "ファイル数が多すぎます",
+    "tooManyFilesMessage": "1回のアップロードで選択できるのは最大{{max}}ファイルです。",
+    "fileSizeExceededTitle": "ファイルサイズの上限を超えています",
+    "fileSizeExceededMessage": "合計ファイルサイズは49MBを超えることはできません。現在の選択: {{size}}MB",
+    "attachFailed": "画像の添付に失敗しました。"
+  },
+  "fcm": {
+    "tokenGenerationFailed": "FCMトークンの生成に失敗しました",
+    "manageFailed": "FCMトークンの管理に失敗しました"
+  },
+  "friends": {
+    "addFriend": {
+      "title": "友達を追加",
+      "placeholder": "固有ID",
+      "missingIdTitle": "固有IDが入力されていません"
+    },
+    "blockedRow": "ブロックしたユーザー",
+    "removeRow": "友達を削除/ブロック",
+    "requests": {
+      "title": "保留中の友達リクエスト",
+      "empty": "保留中の友達リクエストはありません"
+    },
+    "blockedScreen": {
+      "notice": "ここでユーザーのブロックを解除できます。\nブロックを解除すると、再度フレンドリクエストを送信できるようになります。",
+      "empty": "ブロックしたユーザーはいません"
+    },
+    "removeScreen": {
+      "notice": "友達を削除すると、相手の友達リストからも削除されます。\nブロックすると、完全に連絡が取れなくなります。",
+      "empty": "削除できる友達がいません"
+    },
+    "acceptedSuccess": "友達リクエストを承認しました",
+    "requestSentSuccess": "友達リクエストを送信しました",
+    "addFriendGenericError": "友達の追加中にエラーが発生しました。",
+    "rejectedSuccess": "友達リクエストを拒否しました",
+    "removedSuccess": "友達を削除しました",
+    "unblockedSuccess": "ユーザーのブロックを解除しました",
+    "blockedSuccess": "ユーザーをブロックしました"
+  },
+  "group": {
+    "createTitle": "新しいグループ",
+    "namePlaceholder": "グループ名",
+    "addFriendsLabel": "友達を追加",
+    "settingsTitle": "グループ設定",
+    "membersLabel": "メンバー ({{count}})",
+    "roleOwner": "オーナー",
+    "roleMember": "メンバー",
+    "removeMemberTitle": "メンバーを削除",
+    "removeMemberMessage": "{{name}}をグループから削除しますか?",
+    "removeMemberFallbackName": "このメンバー",
+    "leaveGroupTitle": "グループを退出",
+    "leaveGroupMessage": "本当にこのグループを退出しますか?",
+    "leaveButton": "退出",
+    "addMembersButton": "メンバーを追加",
+    "allFriendsInGroup": "友達は全員このグループに参加済みです。",
+    "friendSelectDefaultEmpty": "まず友達を追加してグループを作成しましょう。",
+    "createFailed": "グループの作成に失敗しました",
+    "addMembersFailed": "メンバーの追加に失敗しました",
+    "removeMemberFailed": "メンバーの削除に失敗しました",
+    "updateFailed": "グループの更新に失敗しました"
+  },
+  "eula": {
+    "welcomeTitle": "bTChatty2へようこそ",
+    "intro": "アプリをご利用いただく前に、利用規約(EULA)をご確認の上ご同意ください。",
+    "viewButton": "利用規約を表示",
+    "agreeNotice": "「同意する」をクリックすると、利用規約を読んで同意したことになります。",
+    "agreeButton": "同意する",
+    "notViewedNotice": "同意する前に、上のリンクから利用規約をご確認ください",
+    "viewErrorMessage": "利用規約を開けませんでした。インターネット接続をご確認ください。",
+    "mustReviewTitle": "利用規約をご確認ください",
+    "mustReviewMessage": "同意する前に利用規約をご確認いただく必要があります。",
+    "saveErrorMessage": "同意内容を保存できませんでした。もう一度お試しください。"
+  },
+  "auth": {
+    "fillAllFieldsTitle": "すべての項目を入力してください",
+    "login": {
+      "usernameLabel": "ユーザー名",
+      "passwordLabel": "パスワード",
+      "forgotPasswordLink": "パスワードをお忘れですか?",
+      "loginButton": "ログイン",
+      "needAccount": "アカウントをお持ちでないですか?",
+      "signUpHere": "こちらから登録",
+      "failedTitle": "ログインに失敗しました"
+    },
+    "signup": {
+      "emailLabel": "メールアドレス",
+      "usernameLabel": "ユーザー名",
+      "passwordLabel": "パスワード",
+      "confirmPasswordLabel": "パスワード(確認)",
+      "friendIdLabel": "友達のID",
+      "signupButton": "登録",
+      "alreadyHaveAccount": "すでにアカウントをお持ちですか?",
+      "loginHere": "こちらからログイン",
+      "passwordsMismatch": "パスワードが一致しません",
+      "successTitle": "登録が完了しました",
+      "successMessage": "新しいアカウントでログインしています...",
+      "continueButton": "続ける",
+      "failedTitle": "登録に失敗しました"
+    },
+    "forgotPassword": {
+      "subtitle": "パスワードのリセットには、一致するユーザー名とメールアドレスが必要です。",
+      "usernameLabel": "ユーザー名",
+      "emailLabel": "メールアドレス",
+      "resetButton": "パスワードをリセット",
+      "backToLogin": "ログインに戻る",
+      "forgotUsernameLink": "ユーザー名をお忘れですか?",
+      "validationErrorTitle": "入力エラー",
+      "validationErrorMessage": "すべての項目を入力してください"
+    },
+    "forgotUsername": {
+      "subtitle": "メールアドレスを入力すると、ユーザー名をお送りします",
+      "emailLabel": "メールアドレス",
+      "sendButton": "ユーザー名を送信",
+      "backToLogin": "ログインに戻る",
+      "forgotPasswordLink": "パスワードをお忘れですか?",
+      "validationErrorTitle": "入力エラー",
+      "validationErrorMessage": "メールアドレスを入力してください"
+    }
+  },
+  "settings": {
+    "languageRow": "言語",
+    "language": {
+      "title": "言語",
+      "english": "English",
+      "japanese": "日本語",
+      "restartTitle": "再起動が必要です",
+      "restartMessage": "今すぐ再起動して新しい言語を適用するか、後で再起動することもできます。",
+      "restartNowButton": "今すぐ再起動",
+      "laterButton": "後で",
+      "pendingChangeWarning": "この変更はアプリを再起動すると反映されます。"
+    },
+    "nickname": {
+      "label": "表示名",
+      "updatedSuccess": "ニックネームを更新しました",
+      "updateError": "ニックネームの更新に失敗しました",
+      "updateFailedError": "ニックネームの更新に失敗しました"
+    },
+    "uniqueId": {
+      "label": "固有ID(登録・友達リクエスト用)",
+      "updatedFallback": "固有IDを更新しました",
+      "badRequest": "リクエストが不正です"
+    },
+    "username": {
+      "label": "現在のユーザー名"
+    },
+    "email": {
+      "title": "メールアドレスを更新",
+      "currentLabel": "現在のメールアドレス",
+      "currentPasswordLabel": "現在のパスワード",
+      "newLabel": "メールアドレス",
+      "updatedFallback": "メールアドレスを更新しました"
+    },
+    "password": {
+      "title": "パスワードを変更",
+      "currentLabel": "現在のパスワード",
+      "newLabel": "パスワード",
+      "confirmLabel": "パスワード(確認)",
+      "changedSuccess": "パスワードを変更しました"
+    },
+    "profileImage": {
+      "updateFailed": "プロフィール画像の更新に失敗しました"
+    },
+    "deleteAccount": {
+      "buttonLabel": "アカウントを削除",
+      "deletingLabel": "削除中...",
+      "confirmTitle": "アカウントを削除",
+      "confirmMessage": "本当にアカウントを削除しますか?この操作は取り消せません。",
+      "userIdNotFoundError": "アカウントを削除できません。ユーザーIDが見つかりません。",
+      "deletedTitle": "アカウントを削除しました",
+      "deletedMessage": "アカウントの削除が完了しました。"
+    },
+    "changeIcon": {
+      "rowLabel": "アプリのアイコンを変更",
+      "resetButton": "デフォルトアイコンに戻す"
+    },
+    "legal": {
+      "privacyPolicy": "プライバシーポリシー",
+      "eula": "利用規約"
+    }
+  },
+  "errors": {
+    "noInternetTitle": "インターネット接続がありません",
+    "noInternetGeneric": "接続を確認してもう一度お試しください",
+    "noInternetLoadFriends": "友達リストを読み込むには接続を確認してください",
+    "noInternetLoadGroups": "グループを読み込むには接続を確認してください",
+    "noInternetOpenChat": "このチャットを開くには接続を確認してください",
+    "connectionTimeoutTitle": "接続タイムアウト",
+    "connectionTimeoutMessage": "リクエストに時間がかかりすぎました。もう一度お試しください",
+    "generic": "予期しないエラーが発生しました",
+    "noInternetLoadBlocked": "ブロックしたユーザーを読み込むには接続を確認してください",
+    "noInternetLoadRequests": "友達リクエストを読み込むには接続を確認してください",
+    "noInternetDeleteMessages": "メッセージを削除するには接続を確認してください",
+    "noInternetReportUsers": "ユーザーを報告するには接続を確認してください",
+    "noInternetSendMessages": "メッセージを送信するには接続を確認してください"
+  }
+}

@@ -11,6 +11,7 @@ import SettingsNickname from "./SettingsNickname";
 import SettingsUniqueId from "./SettingsUniqueId";
 import SettingsPassword from "./SettingsPassword";
 import SettingsIcon from "./SettingsIcon";
+import SettingsLanguage from "./SettingsLanguage";
 import SettingsUsername from "./SettingsUsername";
 import SettingsEmail from "./SettingsEmail";
 import SettingsDeleteAccount from "./SettingsDeleteAccount";
@@ -45,6 +46,8 @@ const SettingsContainer = () => {
           <SettingsEmail />
           <Border />
           <SettingsIcon />
+          <Border />
+          <SettingsLanguage />
           <Border />
           <SettingsDeleteAccount />
           <LegalNotices />

@@ -119,6 +119,22 @@ module.exports = {
           "funnel-medium": ["./src/assets/fonts/FunnelDisplay-Medium.ttf"],
           "funnel-regular": ["./src/assets/fonts/FunnelDisplay-Regular.ttf"],
           "funnel-semi-bold": ["./src/assets/fonts/FunnelDisplay-SemiBold.ttf"],
+          // Registered under distinct native keys (not reused "funnel-*"
+          // keys) since this plugin config is a static, non-locale-aware
+          // manifest -- the actual per-locale "funnel-*" aliasing happens
+          // in JS via getFontMap()/useFonts() in src/app/_layout.tsx.
+          "noto-sans-jp-bold": ["./src/assets/fonts/NotoSansJP-Bold.ttf"],
+          "noto-sans-jp-extra-bold": [
+            "./src/assets/fonts/NotoSansJP-ExtraBold.ttf",
+          ],
+          "noto-sans-jp-light": ["./src/assets/fonts/NotoSansJP-Light.ttf"],
+          "noto-sans-jp-medium": ["./src/assets/fonts/NotoSansJP-Medium.ttf"],
+          "noto-sans-jp-regular": [
+            "./src/assets/fonts/NotoSansJP-Regular.ttf",
+          ],
+          "noto-sans-jp-semi-bold": [
+            "./src/assets/fonts/NotoSansJP-SemiBold.ttf",
+          ],
         },
       ],
       [
@@ -137,6 +153,7 @@ module.exports = {
       "expo-secure-store",
       "expo-image",
       "expo-web-browser",
+      "expo-localization",
     ],
     experiments: {
       typedRoutes: true,

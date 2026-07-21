@@ -13,6 +13,7 @@ import profileValidator from "@/src/utils/profileValidator";
 import useUpdateEmail from "@/src/hooks/useUpdateEmail";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { useAuth } from "@/src/context/AuthContext";
+import { useTranslation } from "@/src/hooks/useTranslation";
 
 const SettingsEmail = () => {
   const { authState, setAuthState } = useAuth();
@@ -22,6 +23,7 @@ const SettingsEmail = () => {
   const [email, setEmail] = useState<string>("");
   const { updateEmail, isLoading } = useUpdateEmail();
   const { checkEmailRegex } = profileValidator();
+  const { t } = useTranslation();
 
   // Clear fields when switching tabs
   useFocusEffect(
@@ -54,12 +56,12 @@ const SettingsEmail = () => {
     <View className="justify-center" style={{ paddingTop: 30 }}>
       <View className="justify-center items-start">
         <Text className="font-funnel-regular text-btc100 text-2xl">
-          Update Email
+          {t("settings.email.title")}
         </Text>
       </View>
       <View className="flex-grow justify-center max-w-[80%] mt-4">
         <Text className="font-funnel-regular text-btc100 text-l opacity-[80%]">
-          Current Email
+          {t("settings.email.currentLabel")}
         </Text>
         <Text
           style={{
@@ -73,7 +75,7 @@ const SettingsEmail = () => {
       </View>
       <View className="flex items-start pt-4">
         <Text className="font-funnel-regular text-btc100 text-l">
-          Current Password
+          {t("settings.email.currentPasswordLabel")}
         </Text>
         <MaterialIcons
           name="save-as"
@@ -110,7 +112,7 @@ const SettingsEmail = () => {
         </TouchableOpacity>
       </View>
       <View className="flex items-start pt-4">
-        <Text className="font-funnel-regular text-btc100 text-l">Email</Text>
+        <Text className="font-funnel-regular text-btc100 text-l">{t("settings.email.newLabel")}</Text>
       </View>
       <View className="mb-8">
         <TextInput

@@ -3,12 +3,16 @@ import HeaderBackButton from "./HeaderBackButton";
 // Replaced header icons with an overflow menu
 import conversationStore from "../zustand/conversationStore";
 import ConversationActionMenu from "./ConversationActionMenu";
+import { useTranslation } from "../hooks/useTranslation";
 
 const ConversationHeader = () => {
   const { selectedConversation } = conversationStore();
+  const { t } = useTranslation();
   const title =
     selectedConversation?.name ||
-    (selectedConversation?.type === "group" ? "Group chat" : "Chat");
+    (selectedConversation?.type === "group"
+      ? t("conversation.groupFallbackTitle")
+      : t("conversation.chatFallbackTitle"));
 
   return (
     <View className="flex-1 max-h-28 border-b-hairline border-btc100 bg-[#1f1f2e]">
@@ -26,7 +30,9 @@ const ConversationHeader = () => {
               </Text>
               {selectedConversation.type === "group" && (
                 <Text className="text-sm font-funnel-regular text-btc200">
-                  {selectedConversation.members.length} members
+                  {t("conversation.memberCountSubtitle", {
+                    count: selectedConversation.members.length,
+                  })}
                 </Text>
               )}
             </View>

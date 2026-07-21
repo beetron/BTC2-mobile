@@ -7,29 +7,25 @@ import CustomButton from "../../components/CustomButton";
 import { useRouter } from "expo-router";
 import * as Linking from "expo-linking";
 import * as SecureStore from "expo-secure-store";
+import { useTranslation } from "../../hooks/useTranslation";
 
 const Eula = () => {
   const [hasViewedEula, setHasViewedEula] = useState(false);
   const router = useRouter();
+  const { t } = useTranslation();
 
   const handleViewEula = async () => {
     try {
       await Linking.openURL("https://beetron.github.io/BTC2-mobile/eula.html");
       setHasViewedEula(true);
     } catch (error) {
-      Alert.alert(
-        "Error",
-        "Unable to open EULA. Please check your internet connection."
-      );
+      Alert.alert(t("common.error"), t("eula.viewErrorMessage"));
     }
   };
 
   const handleAgree = async () => {
     if (!hasViewedEula) {
-      Alert.alert(
-        "Please Review EULA",
-        "You must view the End User License Agreement before agreeing."
-      );
+      Alert.alert(t("eula.mustReviewTitle"), t("eula.mustReviewMessage"));
       return;
     }
 
@@ -37,7 +33,7 @@ const Eula = () => {
       await SecureStore.setItemAsync("eulaAccepted", "true");
       router.replace("./Login");
     } catch (error) {
-      Alert.alert("Error", "Unable to save your agreement. Please try again.");
+      Alert.alert(t("common.error"), t("eula.saveErrorMessage"));
     }
   };
 
@@ -56,27 +52,25 @@ const Eula = () => {
 
         <View className="w-4/5 items-center mt-8">
           <Text className="text-2xl font-funnel-medium text-btc100 text-center mb-6">
-            Welcome to bTChatty2
+            {t("eula.welcomeTitle")}
           </Text>
 
           <Text className="text-lg font-funnel-regular text-btc200 text-center mb-8 leading-6">
-            Before you can use the app, please review and accept our End User
-            License Agreement.
+            {t("eula.intro")}
           </Text>
 
           <TouchableOpacity onPress={handleViewEula} className="mb-8">
             <Text className="text-xl font-funnel-medium text-btc200 underline text-center">
-              View End User License Agreement
+              {t("eula.viewButton")}
             </Text>
           </TouchableOpacity>
 
           <Text className="text-base font-funnel-regular text-btc300 text-center mb-8 leading-5">
-            By clicking &quot;Agree&quot;, you confirm that you have read and agree to the
-            terms and conditions.
+            {t("eula.agreeNotice")}
           </Text>
 
           <CustomButton
-            title="I Agree"
+            title={t("eula.agreeButton")}
             isLoading={false}
             textStyles="font-funnel-regular"
             containerStyles="w-3/5"
@@ -86,7 +80,7 @@ const Eula = () => {
 
           {!hasViewedEula && (
             <Text className="text-sm font-funnel-regular text-btc300 text-center mt-4 leading-4">
-              Please click the link above to view the EULA before agreeing
+              {t("eula.notViewedNotice")}
             </Text>
           )}
         </View>

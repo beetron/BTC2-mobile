@@ -5,11 +5,13 @@ import { useAuth } from "@/src/context/AuthContext";
 import conversationStore from "@/src/zustand/conversationStore";
 import { removeMessagesCache } from "@/src/utils/messageCache";
 import { useNetwork } from "@/src/context/NetworkContext";
+import { useTranslation } from "@/src/hooks/useTranslation";
 
 const useDeleteMessages = () => {
   const [isLoading, setisLoading] = useState(false);
   const { isConnected } = useNetwork();
   const { authState } = useAuth();
+  const { t } = useTranslation();
   const { selectedConversation, setMessages, setLatestMessageId } =
     conversationStore();
 
@@ -20,10 +22,7 @@ const useDeleteMessages = () => {
       if (!messageId) return false;
 
       if (!isConnected) {
-        Alert.alert(
-          "No Internet Connection",
-          "Please check your connection to delete messages"
-        );
+        Alert.alert(t("errors.noInternetTitle"), t("errors.noInternetDeleteMessages"));
         return false;
       }
 
@@ -57,14 +56,14 @@ const useDeleteMessages = () => {
     } catch (error: any) {
       if (error.networkError === "TIMEOUT") {
         Alert.alert(
-          "Connection Timeout",
-          "Request took too long. Please try again"
+          t("errors.connectionTimeoutTitle"),
+          t("errors.connectionTimeoutMessage")
         );
       } else if (error.networkError === "NO_INTERNET") {
         // Already alerted in pre-flight check
       } else if (error.data && error.data.error) {
         console.error("Error deleting message:", error.data.message);
-        Alert.alert("Error", error.data.message);
+        Alert.alert(t("common.error"), error.data.message);
       }
       return false;
     } finally {

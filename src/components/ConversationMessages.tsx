@@ -19,9 +19,11 @@ import { images } from "../constants/images";
 import useSetBadgeCount from "../hooks/useSetBadgeCount";
 import MessageImageGallery from "./MessageImageGallery";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { useTranslation } from "../hooks/useTranslation";
 
 const ConversationMessages = () => {
   const { authState } = useAuth();
+  const { t } = useTranslation();
   const { isLoading, isSyncing, isLoadingMore, hasMore, getMessages, loadMore } =
     useGetMessages();
   const { messages, selectedConversation } = conversationStore();
@@ -59,10 +61,15 @@ const ConversationMessages = () => {
   });
 
   if (isLoading && messages.length === 0) {
+    // flex-1 here matters: without it this placeholder is only as tall as
+    // its own content, so ConversationInput (its sibling below, inside the
+    // same flex column) isn't pushed to the bottom during this first
+    // frame -- it briefly renders near the top, then jumps down once the
+    // real (flex-1) FlatList swaps in below.
     return (
-      <View className="justify-center items-center mt-14">
+      <View className="flex-1 justify-center items-center mt-14">
         <Text className="font-funnel-regular text-btc100 text-2xl">
-          Loading...
+          {t("common.loading")}
         </Text>
       </View>
     );
@@ -75,7 +82,7 @@ const ConversationMessages = () => {
         <View className="flex-row items-center justify-center py-1 bg-btc400">
           <ActivityIndicator size="small" color="#75E6DA" />
           <Text className="font-funnel-regular text-btc100 text-xs ml-2">
-            Syncing…
+            {t("conversation.syncing")}
           </Text>
         </View>
       )}
@@ -110,8 +117,9 @@ const ConversationMessages = () => {
         ListEmptyComponent={
           <View className="justify-center items-center mt-64">
             <Text className="font-funnel-regular text-btc100 text-2xl">
-              You have no messages with{" "}
-              {selectedConversation?.name ?? "your friend"}
+              {t("conversation.noMessagesWith", {
+                name: selectedConversation?.name ?? t("conversation.yourFriendFallback"),
+              })}
             </Text>
           </View>
         }
@@ -142,7 +150,7 @@ const ConversationMessages = () => {
                 <View className="items-start mb-5 mr-auto max-w-[80%]">
                   {isGroup && (
                     <Text className="font-funnel-regular text-btc200 text-xs ml-2 mb-1">
-                      {sender?.nickname || "Unknown"}
+                      {sender?.nickname || t("common.unknown")}
                     </Text>
                   )}
                   <View className="flex-row bg-btc400 rounded-e-2xl pl-2 p-4">

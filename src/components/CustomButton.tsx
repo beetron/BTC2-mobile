@@ -1,5 +1,6 @@
 import { Text, TouchableOpacity } from "react-native";
 import React from "react";
+import { useTranslation } from "../hooks/useTranslation";
 
 interface CustomButtonProps {
   title: string;
@@ -19,6 +20,7 @@ const CustomButton: React.FC<CustomButtonProps> = ({
   disabled,
 }) => {
   const isDisabled = isLoading || disabled;
+  const { t } = useTranslation();
 
   return (
     <TouchableOpacity
@@ -33,7 +35,7 @@ const CustomButton: React.FC<CustomButtonProps> = ({
       <Text
         className={`text-3xl ${isDisabled ? "text-btc300" : "text-btc100"} ${textStyles}`}
       >
-        {isLoading ? "Loading..." : title}
+        {isLoading ? t("common.loading") : title}
       </Text>
     </TouchableOpacity>
   );

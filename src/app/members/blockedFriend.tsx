@@ -6,6 +6,7 @@ import { images } from "../../constants/images";
 import useGetBlockedFriends from "@/src/hooks/useGetBlockedFriends";
 import useUnblockUser from "@/src/hooks/useUnblockUser";
 import RemoveFriendHeader from "../../components/RemoveFriendHeader";
+import { useTranslation } from "../../hooks/useTranslation";
 
 interface Friend {
   _id: string;
@@ -26,6 +27,7 @@ const BlockedFriend = () => {
   }, [shouldRender]);
 
   const { unblockUser } = useUnblockUser();
+  const { t } = useTranslation();
 
   const handleOnPress = async (friendId: string) => {
     try {
@@ -50,8 +52,7 @@ const BlockedFriend = () => {
             className="m-2"
           />
           <Text className="text-btc100 font-funnel-regular text-xl">
-            You could unblock users here. {"\n"}Unblocking enables sending
-            friend requests again.
+            {t("friends.blockedScreen.notice")}
           </Text>
         </View>
 
@@ -64,7 +65,7 @@ const BlockedFriend = () => {
             <View className="mt-2 flex-col items-start w-full">
               {!blockedFriends || blockedFriends.length === 0 ? (
                 <Text className="text-btc100 font-funnel-regular text-2xl mt-4">
-                  You have no blocked users
+                  {t("friends.blockedScreen.empty")}
                 </Text>
               ) : (
                 blockedFriends.map((friend: Friend) => (

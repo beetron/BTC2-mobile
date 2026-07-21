@@ -3,6 +3,7 @@ import React from "react";
 import { useRouter } from "expo-router";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { GroupConversationSummary } from "../hooks/useGetGroupConversations";
+import { useTranslation } from "../hooks/useTranslation";
 
 // Sibling to ConversationListItem.tsx rather than a merged/branching
 // component -- groups have no avatar image (skipped for v1) and no lazy
@@ -13,6 +14,7 @@ const GroupConversationListItem = ({
   group: GroupConversationSummary;
 }) => {
   const router = useRouter();
+  const { t } = useTranslation();
 
   const handleOnPress = () => {
     router.push(`/members/conversation?conversationId=${group.conversationId}`);
@@ -28,10 +30,10 @@ const GroupConversationListItem = ({
             </View>
             <View className="flex-shrink">
               <Text className="text-btc100 text-xl font-funnel-semi-bold" numberOfLines={1}>
-                {group.name || "Group chat"}
+                {group.name || t("home.groupFallbackName")}
               </Text>
               <Text className="text-btc200 text-sm font-funnel-regular">
-                {group.memberCount} members
+                {t("home.memberCount", { count: group.memberCount })}
               </Text>
             </View>
           </View>
