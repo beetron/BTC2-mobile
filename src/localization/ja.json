@@ -140,14 +140,15 @@
   "eula": {
     "welcomeTitle": "bTChatty2へようこそ",
     "intro": "アプリをご利用いただく前に、利用規約(EULA)をご確認の上ご同意ください。",
-    "viewButton": "利用規約を表示",
     "agreeNotice": "「同意する」をクリックすると、利用規約を読んで同意したことになります。",
     "agreeButton": "同意する",
-    "notViewedNotice": "同意する前に、上のリンクから利用規約をご確認ください",
-    "viewErrorMessage": "利用規約を開けませんでした。インターネット接続をご確認ください。",
-    "mustReviewTitle": "利用規約をご確認ください",
-    "mustReviewMessage": "同意する前に利用規約をご確認いただく必要があります。",
+    "scrollHint": "続けるには一番下までスクロールしてください",
     "saveErrorMessage": "同意内容を保存できませんでした。もう一度お試しください。"
+  },
+  "legalDocument": {
+    "offlineMessage": "この文書を表示するには、インターネット接続をご確認ください。",
+    "loadErrorMessage": "文書を読み込めませんでした。",
+    "retryButton": "再試行"
   },
   "auth": {
     "fillAllFieldsTitle": "すべての項目を入力してください",

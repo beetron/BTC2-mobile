@@ -2,9 +2,24 @@ import React from "react";
 import { Image, StyleSheet } from "react-native";
 import { images } from "../constants/images";
 
-const Logo = () => {
+interface LogoProps {
+  size?: number;
+}
+
+const Logo = ({ size = 200 }: LogoProps) => {
   const imageLogo = images.btc2LogoLogin;
-  return <Image source={imageLogo} style={styles.image} resizeMode="contain" />;
+  const isDefaultSize = size === 200;
+  return (
+    <Image
+      source={imageLogo}
+      style={[
+        styles.image,
+        { width: size, height: size },
+        !isDefaultSize && styles.inlineImage,
+      ]}
+      resizeMode="contain"
+    />
+  );
 };
 
 const styles = StyleSheet.create({
@@ -13,6 +28,10 @@ const styles = StyleSheet.create({
     height: 200,
     margin: 10,
     bottom: 50,
+  },
+  inlineImage: {
+    margin: 0,
+    bottom: 0,
   },
 });
 

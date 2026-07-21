@@ -4,7 +4,7 @@ module.exports = {
   expo: {
     name: IS_DEV_VARIANT ? "bTC2 Dev" : "bTC2",
     slug: "btc2",
-    version: "1.1.0",
+    version: "1.2.0",
     orientation: "portrait",
     icon: "",
     scheme: "myapp",
@@ -129,9 +129,7 @@ module.exports = {
           ],
           "noto-sans-jp-light": ["./src/assets/fonts/NotoSansJP-Light.ttf"],
           "noto-sans-jp-medium": ["./src/assets/fonts/NotoSansJP-Medium.ttf"],
-          "noto-sans-jp-regular": [
-            "./src/assets/fonts/NotoSansJP-Regular.ttf",
-          ],
+          "noto-sans-jp-regular": ["./src/assets/fonts/NotoSansJP-Regular.ttf"],
           "noto-sans-jp-semi-bold": [
             "./src/assets/fonts/NotoSansJP-SemiBold.ttf",
           ],

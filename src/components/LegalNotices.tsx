@@ -1,14 +1,29 @@
-import { View, TouchableOpacity, Text, Linking } from "react-native";
+import { View, TouchableOpacity, Text } from "react-native";
+import { useRouter } from "expo-router";
 import { useTranslation } from "../hooks/useTranslation";
 
 const LegalNotices = () => {
   const { t } = useTranslation();
+  const router = useRouter();
+
   const openPrivacyPolicy = () => {
-    Linking.openURL("https://beetron.github.io/BTC2-mobile/#privacy-policy");
+    router.push({
+      pathname: "../legalDocument",
+      params: {
+        url: "https://beetron.github.io/BTC2-mobile/#privacy-policy",
+        titleKey: "settings.legal.privacyPolicy",
+      },
+    });
   };
 
   const openEULA = () => {
-    Linking.openURL("https://beetron.github.io/BTC2-mobile/eula.html");
+    router.push({
+      pathname: "../legalDocument",
+      params: {
+        url: "https://beetron.github.io/BTC2-mobile/eula.html",
+        titleKey: "settings.legal.eula",
+      },
+    });
   };
 
   return (

@@ -140,14 +140,15 @@
   "eula": {
     "welcomeTitle": "Welcome to bTChatty2",
     "intro": "Before you can use the app, please review and accept our End User License Agreement.",
-    "viewButton": "View End User License Agreement",
     "agreeNotice": "By clicking \"Agree\", you confirm that you have read and agree to the terms and conditions.",
     "agreeButton": "I Agree",
-    "notViewedNotice": "Please click the link above to view the EULA before agreeing",
-    "viewErrorMessage": "Unable to open EULA. Please check your internet connection.",
-    "mustReviewTitle": "Please Review EULA",
-    "mustReviewMessage": "You must view the End User License Agreement before agreeing.",
+    "scrollHint": "Scroll to the bottom to continue",
     "saveErrorMessage": "Unable to save your agreement. Please try again."
+  },
+  "legalDocument": {
+    "offlineMessage": "Please check your internet connection to view this document.",
+    "loadErrorMessage": "Unable to load this document.",
+    "retryButton": "Retry"
   },
   "auth": {
     "fillAllFieldsTitle": "Please fill in all fields",

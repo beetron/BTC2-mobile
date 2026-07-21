@@ -48,6 +48,13 @@ const Login = () => {
 
     checkEulaAcceptance();
   }, [router]);
+
+  const handleResetEula = async () => {
+    await SecureStore.deleteItemAsync("eulaAccepted");
+    Alert.alert("Dev", "eulaAccepted cleared. Reopening EULA screen.");
+    router.replace("./Eula");
+  };
+
   const onSubmit = async () => {
     if (formData.username === "" || formData.password === "") {
       Alert.alert(t("auth.fillAllFieldsTitle"));
@@ -87,7 +94,17 @@ const Login = () => {
               marginTop: 40,
             }}
           >
-            <Logo />
+            {__DEV__ ? (
+              <TouchableOpacity
+                onLongPress={handleResetEula}
+                delayLongPress={800}
+                activeOpacity={1}
+              >
+                <Logo />
+              </TouchableOpacity>
+            ) : (
+              <Logo />
+            )}
             {/* Username input */}
             <CustomInput
               title={t("auth.login.usernameLabel")}
