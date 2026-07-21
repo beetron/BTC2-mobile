@@ -47,7 +47,7 @@ const ConversationListItem = ({ friend }: { friend: FriendProps }) => {
 
   return (
     <TouchableOpacity onPress={handleOnPress} disabled={isOpening}>
-      <View className="flex-1 bg-btc500 m-2" style={{ opacity: isOpening ? 0.5 : 1 }}>
+      <View className="bg-btc500 m-2" style={{ opacity: isOpening ? 0.5 : 1 }}>
         <View className="flex-row items-center justify-between w-full">
           <View className="flex-row items-center w-3/4">
             <View className="mr-6">

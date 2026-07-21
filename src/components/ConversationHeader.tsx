@@ -16,13 +16,20 @@ const ConversationHeader = () => {
         <View className="flex-row items-center flex-1 min-w-0">
           <HeaderBackButton routerOption="replaceHome" />
           {selectedConversation && (
-            <Text
-              className="text-2xl font-funnel-regular text-btc100 ml-2 flex-1"
-              numberOfLines={1}
-              ellipsizeMode="tail"
-            >
-              {title}
-            </Text>
+            <View className="ml-2 flex-1 min-w-0">
+              <Text
+                className="text-2xl font-funnel-regular text-btc100"
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
+                {title}
+              </Text>
+              {selectedConversation.type === "group" && (
+                <Text className="text-sm font-funnel-regular text-btc200">
+                  {selectedConversation.members.length} members
+                </Text>
+              )}
+            </View>
           )}
         </View>
         <ConversationActionMenu />

@@ -2,10 +2,13 @@ import { create } from "zustand";
 
 export interface ConversationMember {
   userId: string;
-  role: "owner" | "admin" | "member";
+  role: "owner" | "member";
   joinedAt: string;
   nickname: string | null;
   profileImage: string | null;
+  // Resolved at fetch time (useGetConversationDetail), same pattern as
+  // SelectedConversation.avatarData -- used for per-sender group bubbles.
+  profileImageData?: string | null;
   uniqueId: string | null;
 }
 

@@ -122,19 +122,33 @@ const ConversationMessages = () => {
           // the shape a group thread (multiple possible senders) needs.
           const isMine = message.senderId === myUserId;
 
+          // Direct chats: the "other" avatar is always the conversation
+          // partner's, already resolved on selectedConversation. Group
+          // chats: resolve per-sender since there are multiple possible
+          // "other" senders.
+          const isGroup = selectedConversation?.type === "group";
+          const sender = isGroup
+            ? selectedConversation?.members.find(
+                (m) => m.userId === message.senderId
+              )
+            : null;
+          const otherAvatarData = isGroup
+            ? sender?.profileImageData
+            : selectedConversation?.avatarData;
+
           return (
             <View>
               {!isMine ? (
                 <View className="items-start mb-5 mr-auto max-w-[80%]">
+                  {isGroup && (
+                    <Text className="font-funnel-regular text-btc200 text-xs ml-2 mb-1">
+                      {sender?.nickname || "Unknown"}
+                    </Text>
+                  )}
                   <View className="flex-row bg-btc400 rounded-e-2xl pl-2 p-4">
-                    {/* Phase 1 (direct chats only): the "other" avatar is
-                        always the conversation partner's, already resolved
-                        on selectedConversation. Phase 2 (group) will need
-                        per-sender resolution across selectedConversation.members
-                        instead. */}
-                    {selectedConversation?.avatarData ? (
+                    {otherAvatarData ? (
                       <Image
-                        source={{ uri: selectedConversation.avatarData }}
+                        source={{ uri: otherAvatarData }}
                         style={{ width: 50, height: 50, borderRadius: 50 }}
                         className="bg-btc100"
                       />

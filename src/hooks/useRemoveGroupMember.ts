@@ -1,0 +1,55 @@
+import { Alert } from "react-native";
+import axiosClient from "../utils/axiosClient";
+import { useState } from "react";
+import { useNetwork } from "@/src/context/NetworkContext";
+
+// Used both for "owner removes someone else" and "leave group" (self as
+// userId) -- the backend applies the same role rules either way: no role
+// check when userId === the actor's own id.
+const useRemoveGroupMember = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const { isConnected } = useNetwork();
+
+  const removeGroupMember = async (
+    conversationId: string,
+    userId: string
+  ): Promise<boolean> => {
+    try {
+      setIsLoading(true);
+
+      if (!isConnected) {
+        Alert.alert(
+          "No Internet Connection",
+          "Please check your connection and try again"
+        );
+        return false;
+      }
+
+      await axiosClient.delete(
+        `/conversations/${conversationId}/members/${userId}`
+      );
+      return true;
+    } catch (error: any) {
+      if (error.networkError === "TIMEOUT") {
+        Alert.alert(
+          "Connection Timeout",
+          "Request took too long. Please try again"
+        );
+      } else if (error.networkError === "NO_INTERNET") {
+        // already alerted above
+      } else if (error.response?.data?.error) {
+        Alert.alert("Error", error.response.data.error);
+      } else {
+        Alert.alert("Error", "Failed to remove member");
+      }
+      console.error("Error in useRemoveGroupMember:", error);
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return { removeGroupMember, isLoading };
+};
+
+export default useRemoveGroupMember;

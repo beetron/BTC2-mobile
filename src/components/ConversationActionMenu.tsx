@@ -7,10 +7,11 @@ import useBlockUser from "@/src/hooks/useBlockUser";
 import conversationStore from "@/src/zustand/conversationStore";
 import { useRouter } from "expo-router";
 
-// Direct-only for now: delete-history/report/block all assume a single
-// "other" party (selectedConversation.partnerId). Phase 2 (group chat) will
-// need this to branch on selectedConversation.type -- group threads get
-// member-management actions instead of report/block.
+// Direct chats: Delete Messages / Report User / Block User (report/block
+// need selectedConversation.partnerId, which is null for groups).
+// Group chats: Delete Messages / Group Settings -- member management
+// (add/remove/rename/leave) lives in the groupSettings screen instead of
+// being duplicated in this menu.
 const ConversationActionMenu = () => {
   const { deleteMessages } = useDeleteMessages();
   const { reportUser } = useReportUser();
@@ -130,6 +131,15 @@ const ConversationActionMenu = () => {
   };
 
   const handleMenu = () => {
+    if (selectedConversation?.type === "group") {
+      Alert.alert("Actions", undefined, [
+        { text: "Delete Messages", onPress: handleDelete },
+        { text: "Group Settings", onPress: () => router.push("/members/groupSettings") },
+        { text: "Cancel", style: "cancel" },
+      ]);
+      return;
+    }
+
     Alert.alert("Actions", undefined, [
       { text: "Delete Messages", onPress: handleDelete },
       { text: "Report User", onPress: handleReport },

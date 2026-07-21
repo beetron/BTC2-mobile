@@ -40,6 +40,25 @@ const useGetConversationDetail = () => {
           }
         }
 
+        // Group threads need a per-sender avatar for message bubbles (no
+        // single "partner" to fall back on) -- resolve each member's
+        // profile image once here, same pattern as avatarData above.
+        let members = detail.members || [];
+        if (detail.type === "group" && members.length > 0) {
+          members = await Promise.all(
+            members.map(async (member: any) => {
+              if (!member.profileImage) return member;
+              try {
+                const profileImageData = await getProfileImage(member.profileImage);
+                return { ...member, profileImageData };
+              } catch (imageError) {
+                console.error("Error loading member avatar:", imageError);
+                return member;
+              }
+            })
+          );
+        }
+
         const selected: SelectedConversation = {
           conversationId: detail.conversationId,
           type: detail.type,
@@ -47,7 +66,7 @@ const useGetConversationDetail = () => {
           avatar: detail.avatar,
           avatarData,
           partnerId: detail.partnerId,
-          members: detail.members || [],
+          members,
         };
 
         setSelectedConversation(selected);

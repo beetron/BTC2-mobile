@@ -23,6 +23,8 @@ const TabLayout = () => {
         <Stack.Screen name="removeFriend" />
         <Stack.Screen name="blockedFriend" />
         <Stack.Screen name="settingsChangeIcon" />
+        <Stack.Screen name="createGroup" />
+        <Stack.Screen name="groupSettings" />
       </Stack>
     </SocketProvider>
   );
