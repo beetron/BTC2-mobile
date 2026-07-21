@@ -1,9 +1,9 @@
 import axios from "axios";
 import * as SecureStore from "expo-secure-store";
 import { API_URL } from "@/src/constants/api";
-import { checkTokenExpiry } from "./checkTokenExpiry";
 
 export const JWT_KEY = "jwt";
+export const REFRESH_KEY = "refreshToken";
 export const USER_KEY = "user";
 let isLoggingOut = false;
 
@@ -31,20 +31,32 @@ export const handleLogout = async () => {
   console.log("Starting logout process");
 
   try {
+    const refreshToken = await SecureStore.getItemAsync(REFRESH_KEY);
+
     // Clear headers and storage
     delete axiosClient.defaults.headers.common["Authorization"];
 
     await Promise.all([
       SecureStore.deleteItemAsync(JWT_KEY),
+      SecureStore.deleteItemAsync(REFRESH_KEY),
       SecureStore.deleteItemAsync(USER_KEY),
     ]);
 
     console.log("Logged out - tokens cleared");
 
+    // Best-effort server-side revocation; failure is fine since local state
+    // is already cleared.
+    if (refreshToken) {
+      axiosClient
+        .post("/auth/logout", { refreshToken })
+        .catch(() => {});
+    }
+
     // Immediately update auth state if updater is available
     if (authStateUpdater) {
       authStateUpdater({
         token: null,
+        refreshToken: null,
         authenticated: false,
         user: null,
       });
@@ -58,7 +70,61 @@ export const handleLogout = async () => {
   }
 };
 
-// Request interceptor - check token expiry before making calls
+// Requests to these endpoints must never trigger a refresh-and-retry -- a
+// 401 from /auth/refresh IS the "refresh failed" signal, not something to
+// recover from by refreshing again.
+const AUTH_FLOW_PATHS = ["/auth/refresh", "/auth/login", "/auth/signup"];
+
+// Dedupes concurrent refresh attempts -- if several requests 401 around the
+// same moment, they all await the same in-flight refresh instead of each
+// firing their own /auth/refresh call.
+let refreshPromise: Promise<boolean> | null = null;
+
+// Exchange the stored refresh token for a new access + refresh pair
+// (rotating it in the process). Returns true if a valid access token is
+// available afterward. Used by both the axios interceptor below and the
+// socket's connect_error handler.
+export const attemptTokenRefresh = (): Promise<boolean> => {
+  if (refreshPromise) return refreshPromise;
+
+  refreshPromise = (async () => {
+    try {
+      const storedRefreshToken = await SecureStore.getItemAsync(REFRESH_KEY);
+      if (!storedRefreshToken) return false;
+
+      // Bare axios call (not axiosClient) so this request never passes
+      // through the response interceptor below and can't recursively
+      // trigger another refresh attempt.
+      const response = await axios.post(`${API_URL}/auth/refresh`, {
+        refreshToken: storedRefreshToken,
+      });
+
+      const { token, refreshToken } = response.data;
+      await SecureStore.setItemAsync(JWT_KEY, token);
+      await SecureStore.setItemAsync(REFRESH_KEY, refreshToken);
+      axiosClient.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
+      if (authStateUpdater) {
+        authStateUpdater((prev: any) => ({
+          ...prev,
+          token,
+          refreshToken,
+        }));
+      }
+
+      return true;
+    } catch (error) {
+      console.error("Token refresh failed:", error);
+      return false;
+    }
+  })().finally(() => {
+    refreshPromise = null;
+  });
+
+  return refreshPromise;
+};
+
+// Request interceptor - attach the current auth header
 axiosClient.interceptors.request.use(
   async (config) => {
     if (isLoggingOut) {
@@ -69,24 +135,7 @@ axiosClient.interceptors.request.use(
 
     try {
       const token = await SecureStore.getItemAsync(JWT_KEY);
-      console.log("Token found:", !!token);
-
       if (token) {
-        console.log("Checking token expiry...");
-        const isTokenValid = checkTokenExpiry(token);
-        console.log("Token is valid:", isTokenValid);
-
-        if (!isTokenValid) {
-          console.log("Token expired during request - initiating logout");
-
-          // Clear tokens immediately
-          await SecureStore.deleteItemAsync(JWT_KEY);
-          await SecureStore.deleteItemAsync(USER_KEY);
-          delete axiosClient.defaults.headers.common["Authorization"];
-
-          await handleLogout();
-          return Promise.reject(new Error("Token expired"));
-        }
         config.headers.Authorization = `Bearer ${token}`;
       }
     } catch (error) {
@@ -99,17 +148,29 @@ axiosClient.interceptors.request.use(
   }
 );
 
-// Response interceptor - handle 401 errors and network errors
+// Response interceptor - silently refresh-and-retry on 401, log out only if
+// refresh itself fails
 axiosClient.interceptors.response.use(
   (response) => response,
   async (error) => {
-    if (
-      error.response?.status === 401 &&
-      !isLoggingOut &&
-      !error.config._retry
-    ) {
-      error.config._retry = true;
-      console.log("401 Unauthorized - initiating logout");
+    const status = error.response?.status;
+    const config = error.config;
+    const isAuthFlowRequest = AUTH_FLOW_PATHS.some((path) =>
+      config?.url?.includes(path)
+    );
+
+    if (status === 401 && config && !config._retry && !isAuthFlowRequest && !isLoggingOut) {
+      config._retry = true;
+      const refreshed = await attemptTokenRefresh();
+      if (refreshed) {
+        const token = await SecureStore.getItemAsync(JWT_KEY);
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`;
+        }
+        return axiosClient.request(config);
+      }
+
+      console.log("401 Unauthorized and refresh failed - initiating logout");
       await handleLogout();
     }
 

@@ -32,6 +32,8 @@ const ConversationInput = () => {
   const handleAttachImages = async () => {
     const images = await attachImages();
     if (images.length > 0) {
+      // useSendImages bumps the store's refreshSignal on success, which
+      // triggers ConversationMessages' useGetMessages instance to refetch.
       await sendImages(images);
     }
   };

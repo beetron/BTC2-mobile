@@ -4,25 +4,28 @@ import { MaterialIcons } from "@expo/vector-icons";
 import useDeleteMessages from "@/src/hooks/useDeleteMessages";
 import useReportUser from "@/src/hooks/useReportUser";
 import useBlockUser from "@/src/hooks/useBlockUser";
-import friendStore from "@/src/zustand/friendStore";
+import conversationStore from "@/src/zustand/conversationStore";
 import { useRouter } from "expo-router";
 
+// Direct-only for now: delete-history/report/block all assume a single
+// "other" party (selectedConversation.partnerId). Phase 2 (group chat) will
+// need this to branch on selectedConversation.type -- group threads get
+// member-management actions instead of report/block.
 const ConversationActionMenu = () => {
   const { deleteMessages } = useDeleteMessages();
   const { reportUser } = useReportUser();
   const { blockUser } = useBlockUser();
   const {
-    messageId,
-    selectedFriend,
-    setMessageId,
-    setShouldRender,
-    setSelectedFriend,
+    latestMessageId,
+    selectedConversation,
+    setLatestMessageId,
+    setSelectedConversation,
     setMessages,
-  } = friendStore();
+  } = conversationStore();
   const router = useRouter();
 
   const handleDelete = () => {
-    if (!messageId) {
+    if (!latestMessageId) {
       Alert.alert("No messages to delete");
       return;
     }
@@ -32,11 +35,9 @@ const ConversationActionMenu = () => {
       {
         text: "OK",
         onPress: async () => {
-          const success = await deleteMessages(messageId);
+          const success = await deleteMessages(latestMessageId);
           if (success) {
-            // Toggle global state so messages refresh (done by caller)
-            setShouldRender();
-            setMessageId(null);
+            setLatestMessageId(null);
           }
         },
       },
@@ -44,12 +45,12 @@ const ConversationActionMenu = () => {
   };
 
   const handleReport = () => {
-    if (!messageId) {
+    if (!latestMessageId) {
       Alert.alert("No messages selected", "Please select a message to report.");
       return;
     }
 
-    if (!selectedFriend) {
+    if (!selectedConversation?.partnerId) {
       Alert.alert("Error", "Unable to identify user to report.");
       return;
     }
@@ -81,13 +82,13 @@ const ConversationActionMenu = () => {
           text: "Report",
           style: "destructive",
           onPress: async () => {
-            if (!selectedFriend?._id) {
+            if (!selectedConversation?.partnerId) {
               Alert.alert("Error", "Unable to identify user to report.");
               return;
             }
             const success = await reportUser({
               reason,
-              friendId: selectedFriend._id,
+              friendId: selectedConversation.partnerId,
             });
             if (success) {
               Alert.alert("Report Submitted", "Thank you for your report.");
@@ -100,7 +101,7 @@ const ConversationActionMenu = () => {
   };
 
   const handleBlock = () => {
-    if (!selectedFriend) {
+    if (!selectedConversation?.partnerId) {
       Alert.alert("Error", "Unable to identify user to block.");
       return;
     }
@@ -114,13 +115,12 @@ const ConversationActionMenu = () => {
           text: "Block",
           style: "destructive",
           onPress: async () => {
-            const success = await blockUser(selectedFriend._id);
+            const success = await blockUser(selectedConversation.partnerId!);
             if (success) {
               // Clear conversation state and go back to friends list
               setMessages([]);
-              setSelectedFriend(null);
-              setShouldRender();
-              // Replace current route with members index to show FriendContainer
+              setSelectedConversation(null);
+              // Replace current route with members index to show the conversation list
               router.replace("/members");
             }
           },
@@ -135,7 +135,7 @@ const ConversationActionMenu = () => {
       { text: "Report User", onPress: handleReport },
       { text: "Block User", onPress: handleBlock },
       // Blank spacer row for visual separation before Cancel
-      { text: "\u00a0", onPress: () => {} },
+      { text: " ", onPress: () => {} },
       { text: "Cancel", style: "cancel" },
     ]);
   };

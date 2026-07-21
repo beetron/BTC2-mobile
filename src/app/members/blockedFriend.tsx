@@ -5,7 +5,6 @@ import { Image } from "expo-image";
 import { images } from "../../constants/images";
 import useGetBlockedFriends from "@/src/hooks/useGetBlockedFriends";
 import useUnblockUser from "@/src/hooks/useUnblockUser";
-import friendStore from "@/src/zustand/friendStore";
 import RemoveFriendHeader from "../../components/RemoveFriendHeader";
 
 interface Friend {

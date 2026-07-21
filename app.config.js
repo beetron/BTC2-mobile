@@ -36,6 +36,19 @@ module.exports = {
         UIBackgroundModes: ["remote-notification"],
         NSPhotoLibraryUsageDescription:
           "This app accesses your photo library to allow you to select and upload images for your profile picture, and to attach photos from your library to send in chat messages.",
+        // Dev-variant only: the local BTC2-API run on a dev machine's LAN IP
+        // has no TLS (nginx-terminated HTTPS is production-only), so ATS
+        // needs an exception to allow plain HTTP to private-network
+        // addresses. NSAllowsLocalNetworking is scoped to local/private IPs
+        // and .local domains only -- it does not relax ATS for arbitrary
+        // internet hosts, and never applies to the production build.
+        ...(IS_DEV_VARIANT
+          ? {
+              NSAppTransportSecurity: {
+                NSAllowsLocalNetworking: true,
+              },
+            }
+          : {}),
       },
       supportsTablet: true,
       bundleIdentifier: IS_DEV_VARIANT

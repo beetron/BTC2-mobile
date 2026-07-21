@@ -1,10 +1,10 @@
-import { View, Text, TouchableOpacity, Alert } from "react-native";
-import React from "react";
+import { View, Text, TouchableOpacity, ActivityIndicator, Alert } from "react-native";
+import React, { useState } from "react";
 import { useRouter } from "expo-router";
-import friendStore from "../zustand/friendStore";
 import { Image } from "expo-image";
 import { images } from "../constants/images";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import axiosClient from "../utils/axiosClient";
 
 interface FriendProps {
   _id: string;
@@ -15,21 +15,39 @@ interface FriendProps {
   updatedAt: string;
 }
 
-const Friend = ({ friend }: { friend: FriendProps }) => {
+// Every friend is shown here regardless of whether a conversation with them
+// exists yet -- tapping lazily finds-or-creates the direct conversation
+// (POST /conversations/direct is idempotent) before navigating, so there's
+// no separate "start a new chat" step for the common case.
+const ConversationListItem = ({ friend }: { friend: FriendProps }) => {
   const placeholderProfileImage = images.placeholderProfileImage;
   const { nickname, unreadCount } = friend;
-  const { setSelectedFriend } = friendStore();
+  const [isOpening, setIsOpening] = useState(false);
   const router = useRouter();
 
-  // setSelectedFriend via Zustand before push
-  const handleOnPress = () => {
-    setSelectedFriend(friend);
-    router.replace("/members/conversation");
+  const handleOnPress = async () => {
+    if (isOpening) return;
+    try {
+      setIsOpening(true);
+      const res = await axiosClient.post("/conversations/direct", {
+        userId: friend._id,
+      });
+      router.push(
+        `/members/conversation?conversationId=${res.data.conversationId}`
+      );
+    } catch (error: any) {
+      Alert.alert(
+        "Error",
+        error.response?.data?.error || "Failed to open chat"
+      );
+    } finally {
+      setIsOpening(false);
+    }
   };
 
   return (
-    <TouchableOpacity onPress={handleOnPress}>
-      <View className="flex-1 bg-btc500 m-2">
+    <TouchableOpacity onPress={handleOnPress} disabled={isOpening}>
+      <View className="flex-1 bg-btc500 m-2" style={{ opacity: isOpening ? 0.5 : 1 }}>
         <View className="flex-row items-center justify-between w-full">
           <View className="flex-row items-center w-3/4">
             <View className="mr-6">
@@ -51,7 +69,9 @@ const Friend = ({ friend }: { friend: FriendProps }) => {
               {nickname}
             </Text>
           </View>
-          {unreadCount !== 0 ? (
+          {isOpening ? (
+            <ActivityIndicator size="small" color="#75E6DA" />
+          ) : unreadCount !== 0 ? (
             <View className="flex-row items-start justify-center w-1/4">
               <MaterialCommunityIcons
                 name="message-alert-outline"
@@ -69,4 +89,4 @@ const Friend = ({ friend }: { friend: FriendProps }) => {
   );
 };
 
-export default Friend;
+export default ConversationListItem;
