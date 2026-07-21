@@ -58,6 +58,10 @@
       "unableToIdentifyBlock": "Unable to identify user to block.",
       "blockConfirmTitle": "Block User",
       "blockConfirmMessage": "Blocking a user will remove them from your friend list and delete conversations. Continue?"
+    },
+    "linkPreview": {
+      "loading": "Loading preview…",
+      "unavailable": "Preview unavailable"
     }
   },
   "media": {

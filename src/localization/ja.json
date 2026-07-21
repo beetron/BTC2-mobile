@@ -58,6 +58,10 @@
       "unableToIdentifyBlock": "ブロックするユーザーを特定できません。",
       "blockConfirmTitle": "ユーザーをブロック",
       "blockConfirmMessage": "ユーザーをブロックすると、友達リストから削除され、会話も削除されます。続けますか?"
+    },
+    "linkPreview": {
+      "loading": "プレビューを読み込み中…",
+      "unavailable": "プレビューを利用できません"
     }
   },
   "media": {

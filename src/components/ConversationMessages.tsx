@@ -18,8 +18,10 @@ import Autolink from "react-native-autolink";
 import { images } from "../constants/images";
 import useSetBadgeCount from "../hooks/useSetBadgeCount";
 import MessageImageGallery from "./MessageImageGallery";
+import LinkPreviewCard from "./LinkPreviewCard";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useTranslation } from "../hooks/useTranslation";
+import { extractFirstUrl } from "../utils/extractFirstUrl";
 
 const ConversationMessages = () => {
   const { authState } = useAuth();
@@ -144,6 +146,8 @@ const ConversationMessages = () => {
             ? sender?.profileImageData
             : selectedConversation?.avatarData;
 
+          const firstUrl = extractFirstUrl(message.message);
+
           return (
             <View>
               {!isMine ? (
@@ -182,6 +186,7 @@ const ConversationMessages = () => {
                           )}
                         />
                       )}
+                      {firstUrl && <LinkPreviewCard url={firstUrl} />}
                     </View>
                   </View>
                   <Text className="font-funnel-regular text-btc100 text-sm ml-2">
@@ -205,6 +210,7 @@ const ConversationMessages = () => {
                         )}
                       />
                     )}
+                    {firstUrl && <LinkPreviewCard url={firstUrl} />}
                   </View>
                   <Text className="font-funnel-regular text-btc100 text-sm mr-2">
                     {formatDate(message.createdAt)}
