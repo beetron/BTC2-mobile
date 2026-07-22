@@ -26,17 +26,17 @@ const ConversationListContainer = () => {
   const { groupConversations, getGroupConversations } =
     useGetGroupConversations();
   const { manageFcmToken } = useFcmToken();
-  const { setBadgeCount } = useSetBadgeCount();
+  const { setBadgeCountFromFriends } = useSetBadgeCount();
 
-  // Run Effect when screen is back in focus
+  // Run Effect when screen is back in focus. getMyFriends/getGroupConversations
+  // aren't called here -- useGetMyFriends/useGetGroupConversations already
+  // fetch on focus internally, so calling them again here would fire every
+  // request twice.
   useFocusEffect(
     useCallback(() => {
       setMessages([]);
       setSelectedConversation(null);
-      getMyFriends();
-      getGroupConversations();
-      setBadgeCount();
-    }, [getMyFriends, getGroupConversations, setBadgeCount])
+    }, [])
   );
 
   // Handle FCM token registration or renewal
@@ -47,18 +47,26 @@ const ConversationListContainer = () => {
   useAppStateListener(() => {
     getMyFriends();
     getGroupConversations();
-    setBadgeCount();
     manageFcmToken();
     console.log("App state changed, refreshing friend list and FCM token");
   });
 
+  // Badge count is derived from myFriends (already has unreadCount per
+  // friend) whenever it changes, instead of setBadgeCount making its own
+  // redundant /users/friendlist call on top of the one useGetMyFriends
+  // already just made.
+  useEffect(() => {
+    setBadgeCountFromFriends(myFriends);
+  }, [myFriends, setBadgeCountFromFriends]);
+
   // Refresh unread counts / ordering on any conversation activity -- any of
   // these can change what /users/friendlist or /conversations reports.
+  // Badge count isn't called here -- the useEffect above already reacts to
+  // myFriends changing, whatever the trigger.
   const refreshList = useCallback(() => {
     getMyFriends();
     getGroupConversations();
-    setBadgeCount();
-  }, [getMyFriends, getGroupConversations, setBadgeCount]);
+  }, [getMyFriends, getGroupConversations]);
 
   useSocketListener("conversation:message", refreshList);
   useSocketListener("conversation:updated", refreshList);

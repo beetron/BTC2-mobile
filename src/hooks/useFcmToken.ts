@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { getMessaging, getToken } from "@react-native-firebase/messaging";
 import * as Notifications from "expo-notifications";
 import * as SecureStore from "expo-secure-store";
@@ -26,6 +26,10 @@ export default function useFcmToken() {
   const { authState } = useAuth();
   const { isConnected } = useNetwork();
   const { t } = useTranslation();
+  // Guards against overlapping registration attempts -- manageFcmToken runs
+  // on mount and again on every app-foreground event, so a slow backend
+  // response to a previous call shouldn't get a second one stacked on top.
+  const isManagingRef = useRef(false);
 
   // Get mobile device info
   const getDeviceInfo = async () => {
@@ -137,6 +141,11 @@ export default function useFcmToken() {
       return;
     }
 
+    if (isManagingRef.current) {
+      return;
+    }
+    isManagingRef.current = true;
+
     try {
       // First check notification permission status
       // Permission status needs re-checking when app is re-installed
@@ -175,6 +184,8 @@ export default function useFcmToken() {
     } catch (error) {
       console.error("Error managing FCM token: ", error);
       Alert.alert(t("fcm.manageFailed"));
+    } finally {
+      isManagingRef.current = false;
     }
   }, [authState?.authenticated, generateNewFcmToken, registerFcmToken, t]);
 

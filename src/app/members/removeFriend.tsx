@@ -1,5 +1,4 @@
 import { View, Text, ActivityIndicator } from "react-native";
-import { useState, useEffect } from "react";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import CustomButton from "../../components/CustomButton";
 import useBlockUser from "@/src/hooks/useBlockUser";
@@ -21,23 +20,20 @@ interface Friend {
 
 const RemoveFriendScreen = () => {
   const placeholderProfileImage = images.placeholderProfileImage;
-  const [shouldRender, setShouldRender] = useState(false);
+  // useGetMyFriends already fetches on focus internally -- the initial load
+  // comes from that, so we only need to call getMyFriends() here to refresh
+  // after a mutation (remove/block) while staying on this screen.
   const { myFriends, getMyFriends, isLoading } = useGetMyFriends();
   const { removeFriend, isLoading: removeIsLoading } = useRemoveFriend();
   const { blockUser, isLoading: blockIsLoading } = useBlockUser();
   const { t } = useTranslation();
-
-  // Refresh list after removing a friend
-  useEffect(() => {
-    getMyFriends();
-  }, [shouldRender]);
 
   // Handle onPress remove
   const handleOnPressRemove = async (friendId: string) => {
     const success = await removeFriend(friendId);
     if (success) {
       console.log("Friend removed successfully");
-      setShouldRender((prev) => !prev);
+      getMyFriends();
     }
   };
 
@@ -45,7 +41,7 @@ const RemoveFriendScreen = () => {
   const handleOnPressBlock = async (friendId: string) => {
     const success = await blockUser(friendId);
     if (success) {
-      setShouldRender((prev) => !prev);
+      getMyFriends();
     }
   };
 

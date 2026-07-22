@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import axiosClient from "../utils/axiosClient";
 import { useFocusEffect } from "expo-router";
 import { Alert } from "react-native";
@@ -23,8 +23,14 @@ const useGetGroupConversations = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { isConnected } = useNetwork();
   const { t } = useTranslation();
+  // Guards against overlapping requests -- rapidly switching tabs re-fires
+  // the focus effect below before a previous /conversations call has
+  // resolved, otherwise stacking more of the same request on every switch.
+  const isFetchingRef = useRef(false);
 
   const getGroupConversations = useCallback(async () => {
+    if (isFetchingRef.current) return;
+    isFetchingRef.current = true;
     try {
       setIsLoading(true);
 
@@ -52,6 +58,7 @@ const useGetGroupConversations = () => {
       }
     } finally {
       setIsLoading(false);
+      isFetchingRef.current = false;
     }
   }, [isConnected, t]);
 

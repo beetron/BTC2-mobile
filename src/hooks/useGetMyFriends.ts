@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import axiosClient from "../utils/axiosClient";
 import { useRouter, useFocusEffect } from "expo-router";
 import { Alert } from "react-native";
@@ -23,8 +23,15 @@ const useGetMyFriends = () => {
   const { getProfileImage } = useGetProfileImage();
   const { isConnected } = useNetwork();
   const { t } = useTranslation();
+  // Guards against overlapping requests -- rapidly switching tabs re-fires
+  // the focus effect below before a previous /users/friendlist call (plus
+  // its per-friend image fetches) has resolved, otherwise stacking more of
+  // the same request on every switch instead of reusing the one in flight.
+  const isFetchingRef = useRef(false);
 
   const getMyFriends = useCallback(async () => {
+    if (isFetchingRef.current) return;
+    isFetchingRef.current = true;
     try {
       setIsLoading(true);
 
@@ -35,14 +42,10 @@ const useGetMyFriends = () => {
       }
 
       const res = await axiosClient.get("/users/friendlist");
-      // console.log("API response data:", res.data);
 
       // Call getProfileImage hook for each friend's profile image
       const friendsWithImages = await Promise.all(
         res.data.map(async (friend: Friend, index: number) => {
-          // console.log(`Processing friend ${index}:`, friend);
-          // console.log("friend.profileImage: ", friend.profileImage);
-
           let imageData = null;
           if (friend.profileImage) {
             try {
@@ -74,12 +77,12 @@ const useGetMyFriends = () => {
       }
     } finally {
       setIsLoading(false);
+      isFetchingRef.current = false;
     }
   }, [isConnected, t]);
 
   useFocusEffect(
     useCallback(() => {
-      console.log("useGetMyFriends" + new Date());
       getMyFriends();
     }, [getMyFriends])
   );
