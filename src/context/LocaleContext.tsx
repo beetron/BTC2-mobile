@@ -8,11 +8,10 @@ const SUPPORTED_LOCALES: Locale[] = ["en", "ja"];
 
 interface LocaleContextType {
   locale: Locale;
-  // Persists the choice for next launch only -- deliberately does not
-  // update the live `locale` value, so strings and fonts (which can only
-  // be reloaded at boot, see src/app/_layout.tsx) always change together
-  // and consistently, rather than strings switching languages instantly
-  // while still rendering in the wrong script's font until restart.
+  // Updates the live locale immediately and persists the choice for next
+  // launch. Both locales' fonts are preloaded at boot (see
+  // src/app/_layout.tsx + src/constants/fonts.ts), so strings and fonts
+  // switch together instantly -- no restart needed.
   setLocale: (locale: Locale) => Promise<void>;
 }
 
@@ -44,6 +43,7 @@ export const LocaleProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const setLocale = async (newLocale: Locale) => {
+    setLocaleState(newLocale);
     await SecureStore.setItemAsync(LOCALE_KEY, newLocale);
   };
 

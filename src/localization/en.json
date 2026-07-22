@@ -142,11 +142,7 @@
   },
   "eula": {
     "welcomeTitle": "Welcome to bTChatty2",
-    "intro": "Before you can use the app, please review and accept our End User License Agreement.",
-    "agreeNotice": "By clicking \"Agree\", you confirm that you have read and agree to the terms and conditions.",
-    "agreeButton": "I Agree",
-    "scrollHint": "Scroll to the bottom to continue",
-    "saveErrorMessage": "Unable to save your agreement. Please try again."
+    "intro": "Before you can use the app, please review our End User License Agreement."
   },
   "legalDocument": {
     "offlineMessage": "Please check your internet connection to view this document.",
@@ -177,7 +173,10 @@
       "successTitle": "Signup Successful",
       "successMessage": "Logging in with your new account...",
       "continueButton": "Continue",
-      "failedTitle": "Signup failed"
+      "failedTitle": "Signup failed",
+      "eulaPrefix": "By signing up, you agree to our ",
+      "eulaLink": "EULA",
+      "eulaSuffix": "."
     },
     "forgotPassword": {
       "subtitle": "Matching username and email required for password reset.",
@@ -210,12 +209,7 @@
     "language": {
       "title": "Language",
       "english": "English",
-      "japanese": "日本語",
-      "restartTitle": "Restart Required",
-      "restartMessage": "Restart now to apply the new language, or continue using the app and restart later.",
-      "restartNowButton": "Restart Now",
-      "laterButton": "Later",
-      "pendingChangeWarning": "This change will take effect after restarting the app."
+      "japanese": "日本語"
     },
     "nickname": {
       "label": "Display Name",

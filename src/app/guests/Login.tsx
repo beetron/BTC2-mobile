@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   View,
   Text,
@@ -15,7 +15,6 @@ import CustomButton from "../../components/CustomButton";
 import CustomInput from "../../components/CustomInput";
 import { useRouter } from "expo-router";
 import { KeyboardAvoidingView } from "react-native-keyboard-controller";
-import * as SecureStore from "expo-secure-store";
 import { useTranslation } from "../../hooks/useTranslation";
 
 interface FormData {
@@ -31,29 +30,10 @@ const Login = () => {
 
   const { onLogin } = useAuth();
   const router = useRouter();
-  const { t } = useTranslation();
-
-  useEffect(() => {
-    const checkEulaAcceptance = async () => {
-      try {
-        const eulaAccepted = await SecureStore.getItemAsync("eulaAccepted");
-        if (!eulaAccepted || eulaAccepted !== "true") {
-          router.replace("./Eula");
-        }
-      } catch (error) {
-        // If SecureStore fails, show EULA for safety
-        router.replace("./Eula");
-      }
-    };
-
-    checkEulaAcceptance();
-  }, [router]);
-
-  const handleResetEula = async () => {
-    await SecureStore.deleteItemAsync("eulaAccepted");
-    Alert.alert("Dev", "eulaAccepted cleared. Reopening EULA screen.");
-    router.replace("./Eula");
-  };
+  const { t, locale } = useTranslation();
+  // Noto Sans JP renders visibly larger than Funnel Display at the same
+  // nominal size, so Japanese uses one step down here.
+  const linkTextSize = locale === "ja" ? "text-base" : "text-lg";
 
   const onSubmit = async () => {
     if (formData.username === "" || formData.password === "") {
@@ -94,17 +74,7 @@ const Login = () => {
               marginTop: 40,
             }}
           >
-            {__DEV__ ? (
-              <TouchableOpacity
-                onLongPress={handleResetEula}
-                delayLongPress={800}
-                activeOpacity={1}
-              >
-                <Logo />
-              </TouchableOpacity>
-            ) : (
-              <Logo />
-            )}
+            <Logo />
             {/* Username input */}
             <CustomInput
               title={t("auth.login.usernameLabel")}
@@ -128,7 +98,7 @@ const Login = () => {
             {/* Forgot Password link */}
             <View className="w-3/5 justify-end flex-row mt-4">
               <TouchableOpacity onPress={() => router.push("./ForgotPassword")}>
-                <Text className="text-lg font-funnel-regular color-btc200">
+                <Text className={`${linkTextSize} font-funnel-regular color-btc200`}>
                   {t("auth.login.forgotPasswordLink")}
                 </Text>
               </TouchableOpacity>
@@ -144,14 +114,14 @@ const Login = () => {
             />
             {/* Signup */}
             <View className="justify-center items-center pt-8 flex-row mt-4">
-              <Text className="text-lg font-funnel-regular color-btc300 right-2">
+              <Text className={`${linkTextSize} font-funnel-regular color-btc300 right-2`}>
                 {t("auth.login.needAccount")}
               </Text>
               <TouchableOpacity
                 style={{ padding: 8, backgroundColor: "transparent" }}
                 onPress={() => router.push("/guests/Signup")}
               >
-                <Text className="text-lg font-funnel-regular color-btc200">
+                <Text className={`${linkTextSize} font-funnel-regular color-btc200`}>
                   {t("auth.login.signUpHere")}
                 </Text>
               </TouchableOpacity>

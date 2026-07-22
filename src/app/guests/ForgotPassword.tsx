@@ -31,7 +31,10 @@ const ForgotPassword = () => {
   const router = useRouter();
   const { forgotPassword, isLoading } = useForgotPassword();
   const { checkEmailRegex } = profileValidator();
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
+  // Noto Sans JP renders visibly larger than Funnel Display at the same
+  // nominal size, so Japanese uses one step down here.
+  const linkTextSize = locale === "ja" ? "text-base" : "text-lg";
 
   const onSubmit = async () => {
     if (formData.username === "" || formData.email === "") {
@@ -120,7 +123,7 @@ const ForgotPassword = () => {
               onPress={() => router.push("./Login")}
               className="top-8"
             >
-              <Text className="text-lg font-funnel-regular color-btc200 p-2">
+              <Text className={`${linkTextSize} font-funnel-regular color-btc200 p-2`}>
                 {t("auth.forgotPassword.backToLogin")}
               </Text>
             </TouchableOpacity>
@@ -130,7 +133,7 @@ const ForgotPassword = () => {
               onPress={() => router.push("./ForgotUsername")}
               className="top-10"
             >
-              <Text className="text-lg font-funnel-regular color-btc200 p-2">
+              <Text className={`${linkTextSize} font-funnel-regular color-btc200 p-2`}>
                 {t("auth.forgotPassword.forgotUsernameLink")}
               </Text>
             </TouchableOpacity>

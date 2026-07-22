@@ -48,7 +48,10 @@ const Signup = () => {
 
   const { onSignup, onLogin } = useAuth();
   const router = useRouter();
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
+  // Noto Sans JP renders visibly larger than Funnel Display at the same
+  // nominal size, so Japanese uses one step down here.
+  const linkTextSize = locale === "ja" ? "text-base" : "text-lg";
 
   const onSubmit = async () => {
     // Check if any fields are empty
@@ -185,16 +188,34 @@ const Signup = () => {
               containerStyles="w-3/5 top-5"
               handlePress={onSubmit}
             />
+
+            {/* EULA disclaimer -- extra top margin clears the signup button's
+                visual "top-5" offset above (that offset shifts the button
+                down without pushing this sibling in layout flow) */}
+            <View className="flex-row flex-wrap justify-center items-baseline px-8 mt-10">
+              <Text className="text-sm font-funnel-regular color-btc300">
+                {t("auth.signup.eulaPrefix")}
+              </Text>
+              <TouchableOpacity onPress={() => router.push("./Eula")}>
+                <Text className="text-sm font-funnel-regular color-btc200 underline">
+                  {t("auth.signup.eulaLink")}
+                </Text>
+              </TouchableOpacity>
+              <Text className="text-sm font-funnel-regular color-btc300">
+                {t("auth.signup.eulaSuffix")}
+              </Text>
+            </View>
+
             {/* Link to Login screen */}
             <View className="justify-center items-center pt-8 flex-row mt-4">
-              <Text className="text-lg font-funnel-regular color-btc300 right-2">
+              <Text className={`${linkTextSize} font-funnel-regular color-btc300 right-2`}>
                 {t("auth.signup.alreadyHaveAccount")}
               </Text>
               <TouchableOpacity
                 style={{ padding: 8, backgroundColor: "transparent" }}
                 onPress={() => router.push("/guests/Login")}
               >
-                <Text className="text-lg font-funnel-regular color-btc200">
+                <Text className={`${linkTextSize} font-funnel-regular color-btc200`}>
                   {t("auth.signup.loginHere")}
                 </Text>
               </TouchableOpacity>

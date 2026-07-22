@@ -29,7 +29,10 @@ const CustomButton: React.FC<CustomButtonProps> = ({
   variant = "primary",
 }) => {
   const isDisabled = isLoading || disabled;
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
+  // Noto Sans JP renders visibly larger than Funnel Display at the same
+  // nominal size, so Japanese uses one step down here.
+  const textSize = locale === "ja" ? "text-2xl" : "text-3xl";
 
   return (
     <TouchableOpacity
@@ -42,7 +45,7 @@ const CustomButton: React.FC<CustomButtonProps> = ({
       }}
     >
       <Text
-        className={`text-3xl ${textStyles}`}
+        className={`${textSize} ${textStyles}`}
         style={{ color: isDisabled ? colors.btc300 : colors.btc100 }}
       >
         {isLoading ? t("common.loading") : title}

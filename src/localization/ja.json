@@ -142,11 +142,7 @@
   },
   "eula": {
     "welcomeTitle": "bTChatty2へようこそ",
-    "intro": "アプリをご利用いただく前に、利用規約(EULA)をご確認の上ご同意ください。",
-    "agreeNotice": "「同意する」をクリックすると、利用規約を読んで同意したことになります。",
-    "agreeButton": "同意する",
-    "scrollHint": "続けるには一番下までスクロールしてください",
-    "saveErrorMessage": "同意内容を保存できませんでした。もう一度お試しください。"
+    "intro": "アプリをご利用いただく前に、利用規約(EULA)をご確認ください。"
   },
   "legalDocument": {
     "offlineMessage": "この文書を表示するには、インターネット接続をご確認ください。",
@@ -177,7 +173,10 @@
       "successTitle": "登録が完了しました",
       "successMessage": "新しいアカウントでログインしています...",
       "continueButton": "続ける",
-      "failedTitle": "登録に失敗しました"
+      "failedTitle": "登録に失敗しました",
+      "eulaPrefix": "登録することで、",
+      "eulaLink": "EULA",
+      "eulaSuffix": "に同意したものとみなされます。"
     },
     "forgotPassword": {
       "subtitle": "パスワードのリセットには、一致するユーザー名とメールアドレスが必要です。",
@@ -210,12 +209,7 @@
     "language": {
       "title": "言語",
       "english": "English",
-      "japanese": "日本語",
-      "restartTitle": "再起動が必要です",
-      "restartMessage": "今すぐ再起動して新しい言語を適用するか、後で再起動することもできます。",
-      "restartNowButton": "今すぐ再起動",
-      "laterButton": "後で",
-      "pendingChangeWarning": "この変更はアプリを再起動すると反映されます。"
+      "japanese": "日本語"
     },
     "nickname": {
       "label": "表示名",

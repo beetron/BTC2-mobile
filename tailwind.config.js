@@ -24,13 +24,16 @@ module.exports = {
         card: "#34344A",
       },
     },
+    // Each resolves through a CSS var (set per-locale in FontVarsProvider,
+    // src/app/_layout.tsx) to the actual registered family name, so
+    // switching locale swaps every font-funnel-* usage live.
     fontFamily: {
-      "funnel-bold": ["funnel-bold"],
-      "funnel-extra-bold": ["funnel-extra-bold"],
-      "funnel-light": ["funnel-light"],
-      "funnel-medium": ["funnel-medium"],
-      "funnel-regular": ["funnel-regular"],
-      "funnel-semi-bold": ["funnel-semi-bold"],
+      "funnel-bold": ["var(--font-funnel-bold)"],
+      "funnel-extra-bold": ["var(--font-funnel-extra-bold)"],
+      "funnel-light": ["var(--font-funnel-light)"],
+      "funnel-medium": ["var(--font-funnel-medium)"],
+      "funnel-regular": ["var(--font-funnel-regular)"],
+      "funnel-semi-bold": ["var(--font-funnel-semi-bold)"],
     },
   },
   plugins: [],
