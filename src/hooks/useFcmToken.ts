@@ -10,6 +10,15 @@ import { useNetwork } from "@/src/context/NetworkContext";
 import { useTranslation } from "@/src/hooks/useTranslation";
 
 const FCM_TOKEN = "fcm_token";
+const DEVICE_ID = "device_id";
+
+function generateUuidV4(): string {
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === "x" ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+}
 
 export default function useFcmToken() {
   const [fcmToken, setFcmToken] = useState<string | null>(null);
@@ -27,6 +36,19 @@ export default function useFcmToken() {
     const deviceModel = Device.modelName || "Unknown Model";
 
     return `${deviceManufacturer}:${deviceModel}`;
+  };
+
+  // Stable per-install identifier so the backend can replace this device's
+  // FCM token instead of accumulating a duplicate when it rotates (e.g.
+  // after a cache clear). Persisted in SecureStore, same as fcm_token.
+  const getOrCreateDeviceId = async () => {
+    const existing = await SecureStore.getItemAsync(DEVICE_ID);
+    if (existing) {
+      return existing;
+    }
+    const newDeviceId = generateUuidV4();
+    await SecureStore.setItemAsync(DEVICE_ID, newDeviceId);
+    return newDeviceId;
   };
   /////////////////////////////////////////////
   // Register or Renew FCM token with backend
@@ -47,10 +69,12 @@ export default function useFcmToken() {
       try {
         setIsRegistering(true);
         const deviceInfo = await getDeviceInfo();
+        const deviceId = await getOrCreateDeviceId();
 
         const response = await axiosClient.put("/users/fcm/register", {
           token,
           device: deviceInfo,
+          deviceId,
         });
 
         if (response.status === 200) {
