@@ -40,7 +40,7 @@ module.exports = {
         // has no TLS (nginx-terminated HTTPS is production-only), so ATS
         // needs an exception to allow plain HTTP to private-network
         // addresses. NSAllowsLocalNetworking is scoped to local/private IPs
-        // and .local domains only -- it does not relax ATS for arbitrary
+        // and .local domains only. It does not relax ATS for arbitrary
         // internet hosts, and never applies to the production build.
         ...(IS_DEV_VARIANT
           ? {
