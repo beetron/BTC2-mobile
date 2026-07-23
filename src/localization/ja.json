@@ -94,7 +94,17 @@
     "addFriend": {
       "title": "友達を追加",
       "placeholder": "固有ID",
-      "missingIdTitle": "固有IDが入力されていません"
+      "missingIdTitle": "固有IDが入力されていません",
+      "scanQrButton": "QRコードをスキャン",
+      "myQrLabel": "あなたのQRコード"
+    },
+    "scanQr": {
+      "title": "QRコードをスキャン",
+      "instructions": "友達のQRコードにカメラを向けてください",
+      "permissionMessage": "QRコードをスキャンするにはカメラへのアクセスが必要です。",
+      "permissionButton": "カメラへのアクセスを許可",
+      "invalidQrTitle": "無効なQRコード",
+      "invalidQrMessage": "有効なbTC2の友達コードではないようです。"
     },
     "blockedRow": "ブロックしたユーザー",
     "removeRow": "友達を削除/ブロック",
@@ -256,6 +266,7 @@
     },
     "changeIcon": {
       "rowLabel": "アプリのアイコンを変更",
+      "subtitle": "ホーム画面のアイコンを選んでください",
       "resetButton": "デフォルトアイコンに戻す"
     },
     "legal": {

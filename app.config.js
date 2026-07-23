@@ -4,7 +4,7 @@ module.exports = {
   expo: {
     name: IS_DEV_VARIANT ? "bTC2 Dev" : "bTC2",
     slug: "btc2",
-    version: "1.2.0",
+    version: "1.2.1",
     orientation: "portrait",
     icon: "",
     scheme: "myapp",
@@ -106,7 +106,27 @@ module.exports = {
           },
         },
       ],
-      "expo-image-picker",
+      [
+        "expo-image-picker",
+        {
+          // Only launchImageLibraryAsync is used (no in-picker camera
+          // capture) -- without this, the plugin still requests
+          // NSMicrophoneUsageDescription/RECORD_AUDIO by default for a
+          // permission the app never touches.
+          microphonePermission: false,
+        },
+      ],
+      [
+        "expo-camera",
+        {
+          cameraPermission:
+            "This app uses the camera to scan a friend's QR code to add them.",
+          // The app never records audio -- without this, the plugin still
+          // adds NSMicrophoneUsageDescription with its own generic default
+          // text for a permission we never request at runtime.
+          microphonePermission: false,
+        },
+      ],
       "expo-router",
       [
         "expo-font",
@@ -148,7 +168,26 @@ module.exports = {
           },
         },
       ],
-      "expo-secure-store",
+      [
+        "expo-secure-store",
+        {
+          // Nothing stored here (auth tokens, locale) is saved with
+          // requireAuthentication -- without this, the plugin still adds
+          // NSFaceIDUsageDescription with generic text for a capability
+          // the app never triggers.
+          faceIDPermission: false,
+        },
+      ],
+      [
+        "expo-media-library",
+        {
+          // Not explicitly listed before -- autolinking still applied the
+          // plugin's own generic default text for NSPhotoLibraryAddUsageDescription
+          // (used by the "save image from chat" feature).
+          savePhotosPermission:
+            "This app saves images from chat messages to your photo library when you choose to save them.",
+        },
+      ],
       "expo-image",
       "expo-web-browser",
       "expo-localization",

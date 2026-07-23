@@ -1,15 +1,17 @@
 import { View, Text, TextInput, Alert, Keyboard } from "react-native";
 import { useState, useCallback } from "react";
 import useAddFriend from "@/src/hooks/useAddFriend";
-import { useFocusEffect } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import { useTranslation } from "../hooks/useTranslation";
 import { colors } from "../constants/colors";
 import CustomButton from "./CustomButton";
+import UserQrCode from "./UserQrCode";
 
 const EditAddFriend = () => {
   const [friendUniqueId, setFriendUniqueId] = useState("");
   const { addFriend, loading } = useAddFriend();
   const { t } = useTranslation();
+  const router = useRouter();
 
   // Reset text input when switching tabs
   useFocusEffect(
@@ -58,6 +60,13 @@ const EditAddFriend = () => {
         disabled={!friendUniqueId.trim()}
         containerStyles="mt-4"
       />
+      <CustomButton
+        title={t("friends.addFriend.scanQrButton")}
+        handlePress={() => router.push("/members/scanFriendQr")}
+        variant="secondary"
+        containerStyles="mt-6"
+      />
+      <UserQrCode />
     </View>
   );
 };

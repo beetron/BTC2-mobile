@@ -1,5 +1,5 @@
 import { View, Text, Keyboard, TouchableWithoutFeedback } from "react-native";
-import { KeyboardAvoidingView } from "react-native-keyboard-controller";
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import RemoveFriendHeader from "../../components/RemoveFriendHeader";
 import EditAddFriend from "../../components/EditAddFriend";
 import { useTranslation } from "../../hooks/useTranslation";
@@ -10,7 +10,11 @@ const AddFriendScreen = () => {
   return (
     <View className="flex-1 bg-btc500">
       <RemoveFriendHeader />
-      <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
+      <KeyboardAwareScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{ flexGrow: 1 }}
+        bottomOffset={100}
+      >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View className="flex-1 m-6">
             <Text className="text-btc100 font-funnel-semi-bold text-2xl mb-4">
@@ -19,7 +23,7 @@ const AddFriendScreen = () => {
             <EditAddFriend />
           </View>
         </TouchableWithoutFeedback>
-      </KeyboardAvoidingView>
+      </KeyboardAwareScrollView>
     </View>
   );
 };

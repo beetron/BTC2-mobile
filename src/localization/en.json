@@ -94,7 +94,17 @@
     "addFriend": {
       "title": "Add Friend",
       "placeholder": "Unique ID",
-      "missingIdTitle": "Missing Unique ID"
+      "missingIdTitle": "Missing Unique ID",
+      "scanQrButton": "Scan QR",
+      "myQrLabel": "Your QR Code"
+    },
+    "scanQr": {
+      "title": "Scan QR Code",
+      "instructions": "Point your camera at a friend's QR code",
+      "permissionMessage": "Camera access is needed to scan QR codes.",
+      "permissionButton": "Grant Camera Access",
+      "invalidQrTitle": "Invalid QR Code",
+      "invalidQrMessage": "This doesn't look like a valid bTC2 friend code."
     },
     "blockedRow": "Blocked Users",
     "removeRow": "Remove / Block Friend",
@@ -256,6 +266,7 @@
     },
     "changeIcon": {
       "rowLabel": "Change App Icon",
+      "subtitle": "Choose an icon for your home screen",
       "resetButton": "Reset to Default Icon"
     },
     "legal": {
