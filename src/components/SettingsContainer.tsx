@@ -10,6 +10,7 @@ import SettingsUsername from "./SettingsUsername";
 import SettingsEmailRow from "./SettingsEmailRow";
 import SettingsDeleteAccount from "./SettingsDeleteAccount";
 import LegalNotices from "./LegalNotices";
+import SettingsVersion from "./SettingsVersion";
 import SettingsSection from "./SettingsSection";
 import { useTranslation } from "../hooks/useTranslation";
 
@@ -43,6 +44,10 @@ const SettingsContainer = () => {
 
         <SettingsSection title={t("settings.sections.legal")}>
           <LegalNotices />
+        </SettingsSection>
+
+        <SettingsSection title={t("settings.sections.version")}>
+          <SettingsVersion />
         </SettingsSection>
 
         <SettingsSection title={t("settings.sections.dangerZone")} variant="danger">

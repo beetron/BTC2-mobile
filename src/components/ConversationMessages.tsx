@@ -31,6 +31,12 @@ const ConversationMessages = () => {
   const { messages, selectedConversation } = conversationStore();
   const flatListRef = useRef<FlatList<any> | null>(null);
   const [showScrollToLatest, setShowScrollToLatest] = useState(false);
+  // Bumped to force-remount the FlatList when jumping to the latest message.
+  // scrollToOffset/scrollToIndex on an inverted FlatList have proven
+  // unreliable here (both silently no-op on long histories) -- a remount
+  // sidesteps the native scrollTo path entirely, since a freshly mounted
+  // inverted list always starts at offset 0 (the newest message).
+  const [listResetKey, setListResetKey] = useState(0);
   const { getMessageImageSource } = useGetMessageImages();
   // Using getMyFriends-derived unread total to update BadgeCount (temporary solution)
   const { setBadgeCount } = useSetBadgeCount();
@@ -90,6 +96,7 @@ const ConversationMessages = () => {
       )}
 
       <FlatList
+        key={listResetKey}
         className="flex-1"
         ref={flatListRef}
         data={messages}
@@ -228,24 +235,11 @@ const ConversationMessages = () => {
           <TouchableOpacity
             className="rounded-full bg-btc300 p-2 shadow-lg"
             onPress={() => {
-              // Scroll to newest: with inverted FlatList, offset 0 is newest
-              try {
-                flatListRef.current?.scrollToOffset({
-                  offset: 0,
-                  animated: true,
-                });
-              } catch (err) {
-                // fallback to scrollToIndex
-                try {
-                  flatListRef.current?.scrollToIndex({
-                    index: 0,
-                    animated: true,
-                  });
-                } catch (err2) {
-                  console.warn("Scrolling to latest failed:", err2);
-                }
-              }
               setShowScrollToLatest(false);
+              // Remount instead of scrollToOffset/scrollToIndex -- both are
+              // unreliable on this inverted FlatList (see note above). A
+              // fresh mount always renders starting at the newest message.
+              setListResetKey((k) => k + 1);
             }}
           >
             <MaterialCommunityIcons

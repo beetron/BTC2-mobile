@@ -203,6 +203,7 @@
       "account": "Account",
       "preferences": "Preferences",
       "legal": "Legal",
+      "version": "Version",
       "dangerZone": "Danger zone"
     },
     "languageRow": "Language",
