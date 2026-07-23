@@ -4,7 +4,7 @@ module.exports = {
   expo: {
     name: IS_DEV_VARIANT ? "bTC2 Dev" : "bTC2",
     slug: "btc2",
-    version: "1.2.1",
+    version: "1.2.2",
     orientation: "portrait",
     icon: "",
     scheme: "myapp",
