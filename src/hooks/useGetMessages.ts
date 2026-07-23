@@ -1,8 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import axiosClient from "../utils/axiosClient";
-import FriendStore from "../zustand/friendStore";
+import conversationStore from "../zustand/conversationStore";
 import { useAuth } from "../context/AuthContext";
-import { Alert } from "react-native";
 import { useNetwork } from "@/src/context/NetworkContext";
 import {
   loadMessagesFromCache,
@@ -14,24 +13,31 @@ const useGetMessages = () => {
   const { authState } = useAuth();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isSyncing, setIsSyncing] = useState<boolean>(false); // separate state for syncing while showing cached
-  const { selectedFriend, messages, setMessages, shouldRender, setMessageId } =
-    FriendStore();
+  const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
+  const {
+    selectedConversation,
+    messages,
+    setMessages,
+    appendOlderMessages,
+    nextCursor,
+    setNextCursor,
+    setLatestMessageId,
+    refreshSignal,
+  } = conversationStore();
   const { isConnected } = useNetwork();
 
   const getMessages = useCallback(async () => {
-    if (!selectedFriend || !authState?.user) return;
+    if (!selectedConversation || !authState?.user) return;
 
     const userId = authState.user._id;
-    const friendId = selectedFriend._id;
+    const conversationId = selectedConversation.conversationId;
 
     // Load cache first and display immediately
     try {
-      const cached = await loadMessagesFromCache(userId, friendId);
+      const cached = await loadMessagesFromCache(userId, conversationId);
       if (cached && cached.messages && cached.messages.length > 0) {
         setMessages(cached.messages as any);
-        // Set the most recent message ID for useDeleteMessages hook
-        const mostRecentMessageId = cached.messages[0];
-        setMessageId(mostRecentMessageId._id);
+        setLatestMessageId(cached.messages[0]._id);
         // Don't fully stop loading yet; we'll keep syncing state true while fetching fresh
       } else {
         // No cache, show loading state
@@ -42,7 +48,7 @@ const useGetMessages = () => {
       setIsLoading(true);
     }
 
-    // Fetch fresh messages in background
+    // Fetch fresh first page in background
     try {
       setIsSyncing(true);
 
@@ -52,21 +58,20 @@ const useGetMessages = () => {
         return;
       }
 
-      const res = await axiosClient.get(`/messages/get/${friendId}`);
+      const res = await axiosClient.get(
+        `/conversations/${conversationId}/messages`
+      );
       if (res.status === 200) {
-        const freshMessages = res.data;
-        // Replace messages with fresh data
+        const freshMessages = res.data.messages;
         setMessages(freshMessages as any);
+        setNextCursor(res.data.nextCursor);
 
-        // Save to cache for next time
-        await saveMessagesToCache(userId, friendId, freshMessages);
+        await saveMessagesToCache(userId, conversationId, freshMessages);
 
-        // Set the most recent message ID for useDeleteMessages hook
         if (freshMessages.length > 0) {
-          const mostRecentMessageId = freshMessages[0];
-          setMessageId(mostRecentMessageId._id);
+          setLatestMessageId(freshMessages[0]._id);
         } else {
-          setMessageId(null);
+          setLatestMessageId(null);
         }
       } else {
         console.warn("Failed to get fresh messages, status:", res.status);
@@ -74,10 +79,8 @@ const useGetMessages = () => {
     } catch (error: any) {
       // Network error: keep cache displayed
       if (error.networkError === "TIMEOUT") {
-        // Timeout after showing cache is okay; don't alert, just stop syncing
         console.warn("Message fetch timeout; using cache");
       } else if (error.networkError === "NO_INTERNET") {
-        // Offline; cache already shown above
         console.log("Offline; showing cached messages");
       } else {
         console.log(
@@ -89,13 +92,77 @@ const useGetMessages = () => {
       setIsLoading(false);
       setIsSyncing(false);
     }
-  }, [authState?.user, selectedFriend, isConnected, setMessages, setMessageId]);
+  }, [
+    authState?.user,
+    selectedConversation,
+    isConnected,
+    setMessages,
+    setNextCursor,
+    setLatestMessageId,
+  ]);
+
+  const loadMore = useCallback(async () => {
+    if (!selectedConversation || !nextCursor || isLoadingMore) return;
+
+    const userId = authState?.user?._id;
+    const conversationId = selectedConversation.conversationId;
+
+    try {
+      setIsLoadingMore(true);
+
+      if (!isConnected) return;
+
+      const res = await axiosClient.get(
+        `/conversations/${conversationId}/messages`,
+        { params: { cursor: nextCursor } }
+      );
+
+      if (res.status === 200) {
+        const olderMessages: Message[] = res.data.messages;
+        appendOlderMessages(olderMessages as any);
+        setNextCursor(res.data.nextCursor);
+
+        if (userId) {
+          await saveMessagesToCache(
+            userId,
+            conversationId,
+            [...messages, ...olderMessages]
+          );
+        }
+      }
+    } catch (error: any) {
+      console.log(
+        "Error loading more messages:",
+        error.response?.data?.error || error.message
+      );
+    } finally {
+      setIsLoadingMore(false);
+    }
+  }, [
+    selectedConversation,
+    nextCursor,
+    isLoadingMore,
+    isConnected,
+    authState?.user?._id,
+    messages,
+    appendOlderMessages,
+    setNextCursor,
+  ]);
 
   useEffect(() => {
     getMessages();
-  }, [shouldRender, getMessages]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedConversation?.conversationId, refreshSignal]);
 
-  return { getMessages, messages, isLoading, isSyncing };
+  return {
+    getMessages,
+    loadMore,
+    messages,
+    isLoading,
+    isSyncing,
+    isLoadingMore,
+    hasMore: !!nextCursor,
+  };
 };
 
 export default useGetMessages;

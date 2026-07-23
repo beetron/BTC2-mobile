@@ -1,6 +1,7 @@
-import Entypo from "@expo/vector-icons/Entypo";
-import { View } from "react-native";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
+import { colors } from "../constants/colors";
 
 interface HeaderBackButtonProps {
   routerOption: string;
@@ -18,9 +19,16 @@ const HeaderBackButton = ({ routerOption }: HeaderBackButtonProps) => {
     }
   };
   return (
-    <View>
-      <Entypo name="back" size={36} color="white" onPress={handleOnPress} />
-    </View>
+    <TouchableOpacity
+      onPress={handleOnPress}
+      hitSlop={{ top: 12, bottom: 12, left: 12, right: 28 }}
+    >
+      <MaterialCommunityIcons
+        name="chevron-left"
+        size={40}
+        color={colors.btc100}
+      />
+    </TouchableOpacity>
   );
 };
 

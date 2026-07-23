@@ -1,8 +1,10 @@
+const IS_DEV_VARIANT = process.env.APP_VARIANT === "development";
+
 module.exports = {
   expo: {
-    name: "bTC2",
+    name: IS_DEV_VARIANT ? "bTC2 Dev" : "bTC2",
     slug: "btc2",
-    version: "1.1.0",
+    version: "1.2.2",
     orientation: "portrait",
     icon: "",
     scheme: "myapp",
@@ -10,24 +12,48 @@ module.exports = {
     newArchEnabled: true,
     ios: {
       useFrameworks: "static",
-      googleServicesFile: process.env.GOOGLESERVICE_INFO_PLIST,
-      // googleServicesFile: "./prebuild/GoogleService-Info.plist",
-      icon: {
-        // Default IOS icon
-        dark: "./src/assets/icons/ios-dark.png",
-        light: "./src/assets/icons/ios-light.png",
-        tinted: "./src/assets/icons/ios-tinted.png",
-      },
+      googleServicesFile: IS_DEV_VARIANT
+        ? "./prebuild/dev-GoogleService-Info.plist"
+        : process.env.EXPO_PUBLIC_ENV === "development"
+          ? "./prebuild/GoogleService-Info.plist"
+          : process.env.GOOGLESERVICE_INFO_PLIST,
+      icon: IS_DEV_VARIANT
+        ? {
+            dark: "./src/assets/icons/ios-icon1.png",
+            light: "./src/assets/icons/ios-icon1.png",
+            tinted: "./src/assets/icons/ios-icon1.png",
+          }
+        : {
+            // Default IOS icon
+            dark: "./src/assets/icons/ios-dark.png",
+            light: "./src/assets/icons/ios-light.png",
+            tinted: "./src/assets/icons/ios-tinted.png",
+          },
       entitlements: {
-        "aps-environment": "development",
+        "aps-environment": IS_DEV_VARIANT ? "development" : "production",
       },
       infoPlist: {
         UIBackgroundModes: ["remote-notification"],
         NSPhotoLibraryUsageDescription:
           "This app accesses your photo library to allow you to select and upload images for your profile picture, and to attach photos from your library to send in chat messages.",
+        // Dev-variant only: the local BTC2-API run on a dev machine's LAN IP
+        // has no TLS (nginx-terminated HTTPS is production-only), so ATS
+        // needs an exception to allow plain HTTP to private-network
+        // addresses. NSAllowsLocalNetworking is scoped to local/private IPs
+        // and .local domains only. It does not relax ATS for arbitrary
+        // internet hosts, and never applies to the production build.
+        ...(IS_DEV_VARIANT
+          ? {
+              NSAppTransportSecurity: {
+                NSAllowsLocalNetworking: true,
+              },
+            }
+          : {}),
       },
       supportsTablet: true,
-      bundleIdentifier: "com.beetron.btc2",
+      bundleIdentifier: IS_DEV_VARIANT
+        ? "com.beetron.btc2.dev"
+        : "com.beetron.btc2",
       config: {
         usesNonExemptEncryption: false,
       },
@@ -37,7 +63,7 @@ module.exports = {
         foregroundImage: "",
         backgroundColor: "#ffffff",
       },
-      package: "com.beetron.btc2",
+      package: IS_DEV_VARIANT ? "com.beetron.btc2.dev" : "com.beetron.btc2",
     },
     web: {
       bundler: "metro",
@@ -73,13 +99,34 @@ module.exports = {
         {
           ios: {
             useFrameworks: "static",
+            forceStaticLinking: ["RNFBApp", "RNFBMessaging"],
             podfileProperties: {
               "use_modular_headers!": true,
             },
           },
         },
       ],
-      "expo-image-picker",
+      [
+        "expo-image-picker",
+        {
+          // Only launchImageLibraryAsync is used (no in-picker camera
+          // capture) -- without this, the plugin still requests
+          // NSMicrophoneUsageDescription/RECORD_AUDIO by default for a
+          // permission the app never touches.
+          microphonePermission: false,
+        },
+      ],
+      [
+        "expo-camera",
+        {
+          cameraPermission:
+            "This app uses the camera to scan a friend's QR code to add them.",
+          // The app never records audio -- without this, the plugin still
+          // adds NSMicrophoneUsageDescription with its own generic default
+          // text for a permission we never request at runtime.
+          microphonePermission: false,
+        },
+      ],
       "expo-router",
       [
         "expo-font",
@@ -92,6 +139,20 @@ module.exports = {
           "funnel-medium": ["./src/assets/fonts/FunnelDisplay-Medium.ttf"],
           "funnel-regular": ["./src/assets/fonts/FunnelDisplay-Regular.ttf"],
           "funnel-semi-bold": ["./src/assets/fonts/FunnelDisplay-SemiBold.ttf"],
+          // Registered under distinct native keys (not reused "funnel-*"
+          // keys) since this plugin config is a static, non-locale-aware
+          // manifest -- the actual per-locale "funnel-*" aliasing happens
+          // in JS via getFontMap()/useFonts() in src/app/_layout.tsx.
+          "noto-sans-jp-bold": ["./src/assets/fonts/NotoSansJP-Bold.ttf"],
+          "noto-sans-jp-extra-bold": [
+            "./src/assets/fonts/NotoSansJP-ExtraBold.ttf",
+          ],
+          "noto-sans-jp-light": ["./src/assets/fonts/NotoSansJP-Light.ttf"],
+          "noto-sans-jp-medium": ["./src/assets/fonts/NotoSansJP-Medium.ttf"],
+          "noto-sans-jp-regular": ["./src/assets/fonts/NotoSansJP-Regular.ttf"],
+          "noto-sans-jp-semi-bold": [
+            "./src/assets/fonts/NotoSansJP-SemiBold.ttf",
+          ],
         },
       ],
       [
@@ -107,7 +168,29 @@ module.exports = {
           },
         },
       ],
-      "expo-secure-store",
+      [
+        "expo-secure-store",
+        {
+          // Nothing stored here (auth tokens, locale) is saved with
+          // requireAuthentication -- without this, the plugin still adds
+          // NSFaceIDUsageDescription with generic text for a capability
+          // the app never triggers.
+          faceIDPermission: false,
+        },
+      ],
+      [
+        "expo-media-library",
+        {
+          // Not explicitly listed before -- autolinking still applied the
+          // plugin's own generic default text for NSPhotoLibraryAddUsageDescription
+          // (used by the "save image from chat" feature).
+          savePhotosPermission:
+            "This app saves images from chat messages to your photo library when you choose to save them.",
+        },
+      ],
+      "expo-image",
+      "expo-web-browser",
+      "expo-localization",
     ],
     experiments: {
       typedRoutes: true,

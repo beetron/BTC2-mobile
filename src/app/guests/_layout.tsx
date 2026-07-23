@@ -3,7 +3,7 @@ import { Redirect, Stack } from "expo-router";
 import { useAuth } from "../../context/AuthContext";
 import { useLocalSearchParams } from "expo-router";
 
-const _layout = () => {
+const GuestsLayout = () => {
   const { authState } = useAuth();
   const params = useLocalSearchParams();
 
@@ -25,8 +25,9 @@ const _layout = () => {
       <Stack.Screen name="Signup" options={{ headerShown: false }} />
       <Stack.Screen name="ForgotPassword" options={{ headerShown: false }} />
       <Stack.Screen name="ForgotUsername" options={{ headerShown: false }} />
+      <Stack.Screen name="Eula" options={{ headerShown: false }} />
     </Stack>
   );
 };
 
-export default _layout;
+export default GuestsLayout;

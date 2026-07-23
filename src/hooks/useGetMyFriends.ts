@@ -1,9 +1,10 @@
-import { useEffect, useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import axiosClient from "../utils/axiosClient";
 import { useRouter, useFocusEffect } from "expo-router";
 import { Alert } from "react-native";
 import useGetProfileImage from "./useGetProfileImage";
 import { useNetwork } from "@/src/context/NetworkContext";
+import { useTranslation } from "./useTranslation";
 
 interface Friend {
   _id: string;
@@ -21,29 +22,30 @@ const useGetMyFriends = () => {
   const router = useRouter();
   const { getProfileImage } = useGetProfileImage();
   const { isConnected } = useNetwork();
+  const { t } = useTranslation();
+  // Guards against overlapping requests -- rapidly switching tabs re-fires
+  // the focus effect below before a previous /users/friendlist call (plus
+  // its per-friend image fetches) has resolved, otherwise stacking more of
+  // the same request on every switch instead of reusing the one in flight.
+  const isFetchingRef = useRef(false);
 
   const getMyFriends = useCallback(async () => {
+    if (isFetchingRef.current) return;
+    isFetchingRef.current = true;
     try {
       setIsLoading(true);
 
       if (!isConnected) {
-        Alert.alert(
-          "No Internet Connection",
-          "Please check your connection to load friends"
-        );
+        Alert.alert(t("errors.noInternetTitle"), t("errors.noInternetLoadFriends"));
         setIsLoading(false);
         return;
       }
 
       const res = await axiosClient.get("/users/friendlist");
-      // console.log("API response data:", res.data);
 
       // Call getProfileImage hook for each friend's profile image
       const friendsWithImages = await Promise.all(
         res.data.map(async (friend: Friend, index: number) => {
-          // console.log(`Processing friend ${index}:`, friend);
-          // console.log("friend.profileImage: ", friend.profileImage);
-
           let imageData = null;
           if (friend.profileImage) {
             try {
@@ -65,25 +67,22 @@ const useGetMyFriends = () => {
     } catch (error: any) {
       if (error.networkError === "TIMEOUT") {
         Alert.alert(
-          "Connection Timeout",
-          "Request took too long. Please try again"
+          t("errors.connectionTimeoutTitle"),
+          t("errors.connectionTimeoutMessage")
         );
       } else if (error.networkError === "NO_INTERNET") {
-        Alert.alert(
-          "No Internet Connection",
-          "Please check your connection and try again"
-        );
+        Alert.alert(t("errors.noInternetTitle"), t("errors.noInternetGeneric"));
       } else if (error.message !== "Unauthorized") {
         console.log("Error: ", error.response?.data?.error || error.message);
       }
     } finally {
       setIsLoading(false);
+      isFetchingRef.current = false;
     }
-  }, [isConnected]);
+  }, [isConnected, t]);
 
   useFocusEffect(
     useCallback(() => {
-      console.log("useGetMyFriends" + new Date());
       getMyFriends();
     }, [getMyFriends])
   );

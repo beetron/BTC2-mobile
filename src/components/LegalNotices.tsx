@@ -1,31 +1,72 @@
-import { View, TouchableOpacity, Text, Linking } from "react-native";
+import { View, TouchableOpacity, Text } from "react-native";
+import { useRouter } from "expo-router";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { useTranslation } from "../hooks/useTranslation";
+import { colors } from "../constants/colors";
 
 const LegalNotices = () => {
+  const { t } = useTranslation();
+  const router = useRouter();
+
   const openPrivacyPolicy = () => {
-    Linking.openURL("https://beetron.github.io/BTC2-mobile/#privacy-policy");
+    router.push({
+      pathname: "../legalDocument",
+      params: {
+        url: "https://beetron.github.io/BTC2-mobile/#privacy-policy",
+        titleKey: "settings.legal.privacyPolicy",
+      },
+    });
   };
 
   const openEULA = () => {
-    Linking.openURL("https://beetron.github.io/BTC2-mobile/eula.html");
+    router.push({
+      pathname: "../legalDocument",
+      params: {
+        url: "https://beetron.github.io/BTC2-mobile/eula.html",
+        titleKey: "settings.legal.eula",
+      },
+    });
   };
 
   return (
-    <View className="flex-row w-full">
-      <TouchableOpacity
-        className="flex-1 bg-btc400 p-4 mr-1 rounded-lg"
-        onPress={openPrivacyPolicy}
-      >
-        <Text className="text-btc100 font-funnel-regular text-center text-lg">
-          Privacy Policy
-        </Text>
+    <View>
+      <TouchableOpacity onPress={openPrivacyPolicy}>
+        <View className="flex-row justify-between items-center px-4 py-3 border-b border-btc500">
+          <View className="flex-row items-center gap-3">
+            <MaterialCommunityIcons
+              name="shield-check-outline"
+              size={20}
+              color={colors.accent}
+            />
+            <Text className="text-btc100 font-funnel-regular text-lg">
+              {t("settings.legal.privacyPolicy")}
+            </Text>
+          </View>
+          <MaterialCommunityIcons
+            name="chevron-right"
+            size={22}
+            color={colors.btc200}
+          />
+        </View>
       </TouchableOpacity>
-      <TouchableOpacity
-        className="flex-1 bg-btc400 p-4 ml-1 rounded-lg"
-        onPress={openEULA}
-      >
-        <Text className="text-btc100 font-funnel-regular text-center text-lg">
-          EULA
-        </Text>
+      <TouchableOpacity onPress={openEULA}>
+        <View className="flex-row justify-between items-center px-4 py-3">
+          <View className="flex-row items-center gap-3">
+            <MaterialCommunityIcons
+              name="file-document-outline"
+              size={20}
+              color={colors.accent}
+            />
+            <Text className="text-btc100 font-funnel-regular text-lg">
+              {t("settings.legal.eula")}
+            </Text>
+          </View>
+          <MaterialCommunityIcons
+            name="chevron-right"
+            size={22}
+            color={colors.btc200}
+          />
+        </View>
       </TouchableOpacity>
     </View>
   );

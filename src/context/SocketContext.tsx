@@ -14,7 +14,6 @@ import {
   useAppStateListener,
   useBackgroundStateListener,
 } from "./AppStateContext";
-import friendStore from "../zustand/friendStore";
 import socketService from "../services/socketService";
 
 interface SocketContextProps {
@@ -34,7 +33,6 @@ export const SocketProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const socketRef = useRef<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
-  const setShouldRender = friendStore((state) => state.setShouldRender);
   const isInitializing = useRef(false);
   const cleanupInProgress = useRef(false);
 
@@ -83,6 +81,7 @@ export const SocketProvider: FC<{ children: ReactNode }> = ({ children }) => {
     if (
       !authState?.authenticated ||
       !authState.user?._id ||
+      !authState.token ||
       isInitializing.current
     ) {
       console.log("🚀 initializeSocket early return - conditions not met");
@@ -95,7 +94,10 @@ export const SocketProvider: FC<{ children: ReactNode }> = ({ children }) => {
       cleanup();
 
       console.log("🚀 initializeSocket: calling socketService.initialize");
-      const newSocket = socketService.initialize(authState.user._id);
+      const newSocket = socketService.initialize(
+        authState.user._id,
+        authState.token
+      );
       socketService.setupEvents();
 
       setSocket(newSocket);
@@ -109,7 +111,7 @@ export const SocketProvider: FC<{ children: ReactNode }> = ({ children }) => {
     } finally {
       isInitializing.current = false;
     }
-  }, [authState?.authenticated, authState?.user?._id, cleanup]);
+  }, [authState?.authenticated, authState?.user?._id, authState?.token, cleanup]);
 
   // Reconnect socket with debounce
   const reconnect = useCallback(() => {
@@ -158,24 +160,6 @@ export const SocketProvider: FC<{ children: ReactNode }> = ({ children }) => {
       unsubConnection();
     };
   }, [authState?.authenticated]);
-
-  // Listen for new messages
-  useEffect(() => {
-    if (!authState?.authenticated) return;
-
-    console.log("Setting up newMessageSignal listener");
-    const unsubMessage = socketService.addListener("newMessageSignal", () => {
-      if (authState?.authenticated) {
-        console.log("SocketContext: Received newMessageSignal");
-        setShouldRender();
-      }
-    });
-
-    return () => {
-      console.log("Cleaning up newMessageSignal listener");
-      unsubMessage();
-    };
-  }, [authState?.authenticated, setShouldRender]);
 
   // Handle app state changes
   useAppStateListener(() => {

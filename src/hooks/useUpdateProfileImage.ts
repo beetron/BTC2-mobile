@@ -4,11 +4,13 @@ import { useAuth } from "@/src/context/AuthContext";
 import * as SecureStore from "expo-secure-store";
 import { Alert } from "react-native";
 import { useNetwork } from "@/src/context/NetworkContext";
+import { useTranslation } from "@/src/hooks/useTranslation";
 
 const useUpdateProfileImage = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { authState, setAuthState } = useAuth();
   const { isConnected } = useNetwork();
+  const { t } = useTranslation();
   const USER_KEY = "user";
 
   const updateProfileImage = async (imageData: string) => {
@@ -20,10 +22,7 @@ const useUpdateProfileImage = () => {
       }
 
       if (!isConnected) {
-        Alert.alert(
-          "No Internet Connection",
-          "Please check your connection and try again"
-        );
+        Alert.alert(t("errors.noInternetTitle"), t("errors.noInternetGeneric"));
         return false;
       }
 
@@ -79,13 +78,13 @@ const useUpdateProfileImage = () => {
 
       if (error.networkError === "TIMEOUT") {
         Alert.alert(
-          "Connection Timeout",
-          "Request took too long. Please try again"
+          t("errors.connectionTimeoutTitle"),
+          t("errors.connectionTimeoutMessage")
         );
       } else if (error.networkError === "NO_INTERNET") {
         // Already alerted in pre-flight check
       } else {
-        Alert.alert("Error", "Failed to update profile image");
+        Alert.alert(t("common.error"), t("settings.profileImage.updateFailed"));
       }
       return false;
     } finally {

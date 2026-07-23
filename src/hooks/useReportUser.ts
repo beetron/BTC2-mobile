@@ -2,6 +2,7 @@ import axiosClient from "@/src/utils/axiosClient";
 import { useState } from "react";
 import { Alert } from "react-native";
 import { useNetwork } from "@/src/context/NetworkContext";
+import { useTranslation } from "@/src/hooks/useTranslation";
 
 interface ReportUserData {
   reason: string;
@@ -11,16 +12,14 @@ interface ReportUserData {
 const useReportUser = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { isConnected } = useNetwork();
+  const { t } = useTranslation();
 
   const reportUser = async (data: ReportUserData): Promise<boolean> => {
     try {
       setIsLoading(true);
 
       if (!isConnected) {
-        Alert.alert(
-          "No Internet Connection",
-          "Please check your connection to report users"
-        );
+        Alert.alert(t("errors.noInternetTitle"), t("errors.noInternetReportUsers"));
         return false;
       }
 
@@ -37,14 +36,14 @@ const useReportUser = () => {
     } catch (error: any) {
       if (error.networkError === "TIMEOUT") {
         Alert.alert(
-          "Connection Timeout",
-          "Request took too long. Please try again"
+          t("errors.connectionTimeoutTitle"),
+          t("errors.connectionTimeoutMessage")
         );
       } else if (error.networkError === "NO_INTERNET") {
         // Already alerted in pre-flight check
       } else if (error.data && error.data.error) {
         console.error("Error reporting user:", error.data.message);
-        Alert.alert("Error", error.data.message);
+        Alert.alert(t("common.error"), error.data.message);
       }
       return false;
     } finally {

@@ -1,16 +1,17 @@
 import { useState, useCallback } from "react";
-import { Alert, Text, TextInput, View, Platform, Keyboard } from "react-native";
+import { Alert, Text, TextInput, View, Keyboard } from "react-native";
 import useUpdateNickname from "@/src/hooks/useUpdateNickname";
 import { useAuth } from "@/src/context/AuthContext";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useFocusEffect } from "expo-router";
-import { opacity } from "react-native-reanimated/lib/typescript/Colors";
+import { useTranslation } from "@/src/hooks/useTranslation";
+import CustomButton from "./CustomButton";
 
 const SettingsNickname = () => {
   const { authState } = useAuth();
   const currentNickname = authState?.user?.nickname;
   const [nickname, setNickname] = useState(currentNickname || "");
   const { updateNickname, isLoading } = useUpdateNickname();
+  const { t } = useTranslation();
 
   // Reset current nickname when switching tabs
   useFocusEffect(
@@ -23,44 +24,40 @@ const SettingsNickname = () => {
 
   // Handle onPress
   const handleOnPress = async () => {
+    Keyboard.dismiss();
     // Send to backend API
     const success = await updateNickname(nickname);
     if (success) {
-      Alert.alert("Nickname updated");
+      Alert.alert(t("settings.nickname.updatedSuccess"));
     } else {
-      Alert.alert("Error updating nickname");
+      Alert.alert(t("settings.nickname.updateError"));
     }
-    Keyboard.dismiss();
   };
 
   return (
-    <View className="flex-grow justify-center ml-4 mt-4 max-w-[80%]">
-      <Text className="font-funnel-regular text-btc100 text-l">
-        Display Name
-      </Text>
-      <TextInput
-        value={nickname}
-        maxLength={20}
-        multiline={true}
-        onChangeText={(text) => setNickname(text)}
-        style={{
-          height: 40,
-          textAlignVertical: "center",
-        }}
-        className="text-btc100 font-funnel-regular text-2xl bg-btc400 rounded px-2 max-w-[80%]"
+    <View>
+      <View className="bg-card rounded-xl p-4">
+        <TextInput
+          value={nickname}
+          maxLength={20}
+          onChangeText={(text) => setNickname(text)}
+          style={{
+            height: 44,
+            textAlignVertical: "center",
+          }}
+          className="text-btc100 font-funnel-regular text-xl bg-btc400 rounded-lg px-3"
+        />
+        <Text className="text-btc300 text-xs mt-2 text-right">
+          {nickname.length}/20
+        </Text>
+      </View>
+      <CustomButton
+        title={t("common.save")}
+        handlePress={handleOnPress}
+        isLoading={isLoading}
+        disabled={currentNickname === nickname || !nickname.trim()}
+        containerStyles="mt-4"
       />
-      <MaterialIcons
-        name="save-as"
-        size={26}
-        color="white"
-        className="absolute right-0 top-6"
-        style={{ opacity: currentNickname === nickname ? 0.5 : 1 }}
-        disabled={currentNickname === nickname || isLoading || !nickname.trim()}
-        onPress={handleOnPress}
-      />
-      <Text className="absolute top-0 right-0 text-btc100 text-l opacity-[50%]">
-        {nickname.length}/20
-      </Text>
     </View>
   );
 };

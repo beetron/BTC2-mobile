@@ -10,40 +10,35 @@ import { Alert } from "react-native";
 import * as SecureStore from "expo-secure-store";
 import { checkTokenExpiry } from "@/src/utils/checkTokenExpiry";
 import axiosClient, {
+  attemptTokenRefresh,
   handleLogout,
   JWT_KEY,
+  REFRESH_KEY,
   USER_KEY,
   setAuthStateUpdater,
 } from "@/src/utils/axiosClient";
 import { useNetwork } from "@/src/context/NetworkContext";
+import { useTranslation } from "@/src/hooks/useTranslation";
+
+interface AuthUser {
+  _id: string;
+  username: string;
+  email: string;
+  uniqueId: string;
+  nickname: string;
+  profileImage: string;
+}
+
+interface AuthState {
+  token: string | null;
+  refreshToken: string | null;
+  authenticated: boolean | null;
+  user?: AuthUser | null;
+}
 
 interface AuthProps {
-  authState?: {
-    token: string | null;
-    authenticated: boolean | null;
-    user?: {
-      _id: string;
-      username: string;
-      email: string;
-      uniqueId: string;
-      nickname: string;
-      profileImage: string;
-    } | null;
-  };
-  setAuthState?: React.Dispatch<
-    React.SetStateAction<{
-      token: string | null;
-      authenticated: boolean | null;
-      user?: {
-        _id: string;
-        username: string;
-        email: string;
-        uniqueId: string;
-        nickname: string;
-        profileImage: string;
-      } | null;
-    }>
-  >;
+  authState?: AuthState;
+  setAuthState?: React.Dispatch<React.SetStateAction<AuthState>>;
   onSignup?: (
     email: string,
     username: string,
@@ -61,25 +56,16 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }: any) => {
-  const [authState, setAuthState] = useState<{
-    token: string | null;
-    authenticated: boolean | null;
-    user?: {
-      _id: string;
-      username: string;
-      email: string;
-      uniqueId: string;
-      nickname: string;
-      profileImage: string;
-    } | null;
-  }>({
+  const [authState, setAuthState] = useState<AuthState>({
     token: null,
+    refreshToken: null,
     authenticated: false,
     user: null,
   });
 
   const router = useRouter();
   const { isConnected } = useNetwork();
+  const { t } = useTranslation();
 
   // Register auth state updater with axiosClient
   useEffect(() => {
@@ -96,6 +82,7 @@ export const AuthProvider = ({ children }: any) => {
     await handleLogout();
     setAuthState({
       token: null,
+      refreshToken: null,
       authenticated: false,
       user: null,
     });
@@ -113,41 +100,62 @@ export const AuthProvider = ({ children }: any) => {
         setAuthState((prev) => ({
           ...prev,
           token: null,
+          refreshToken: null,
           authenticated: false,
           user: null,
         }));
         return;
-      } else {
-        const isTokenValid = checkTokenExpiry(token);
-        if (!isTokenValid) {
-          console.log("Token expired during restore - logging out");
+      }
+
+      let activeToken = token;
+      const isTokenValid = checkTokenExpiry(token);
+      if (!isTokenValid) {
+        // The access token is stale, but a refresh token may still be
+        // within its 14-day window -- try a silent refresh before giving
+        // up on the session (an existing install with no refresh token
+        // yet simply falls through to a normal login).
+        console.log(
+          "Access token expired during restore - attempting silent refresh"
+        );
+        const refreshed = await attemptTokenRefresh();
+        if (!refreshed) {
+          console.log("Silent refresh failed - logging out");
           await logout();
           return;
         }
-
-        const parsedUser = userData ? JSON.parse(userData) : null;
-        setAuthState({
-          token: token,
-          authenticated: true,
-          user: parsedUser
-            ? {
-                _id: parsedUser._id,
-                username: parsedUser.username,
-                email: parsedUser.email,
-                uniqueId: parsedUser.uniqueId,
-                nickname: parsedUser.nickname,
-                profileImage: parsedUser.profileImage,
-              }
-            : null,
-        });
-
-        axiosClient.defaults.headers.common["Authorization"] =
-          `Bearer ${token}`;
+        const freshToken = await SecureStore.getItemAsync(JWT_KEY);
+        if (!freshToken) {
+          await logout();
+          return;
+        }
+        activeToken = freshToken;
       }
+
+      const currentRefreshToken = await SecureStore.getItemAsync(REFRESH_KEY);
+      const parsedUser = userData ? JSON.parse(userData) : null;
+      setAuthState({
+        token: activeToken,
+        refreshToken: currentRefreshToken,
+        authenticated: true,
+        user: parsedUser
+          ? {
+              _id: parsedUser._id,
+              username: parsedUser.username,
+              email: parsedUser.email,
+              uniqueId: parsedUser.uniqueId,
+              nickname: parsedUser.nickname,
+              profileImage: parsedUser.profileImage,
+            }
+          : null,
+      });
+
+      axiosClient.defaults.headers.common["Authorization"] =
+        `Bearer ${activeToken}`;
     } catch (error) {
       console.error("Error in restoreAuthState:", error);
       setAuthState({
         token: null,
+        refreshToken: null,
         authenticated: false,
         user: null,
       });
@@ -168,10 +176,7 @@ export const AuthProvider = ({ children }: any) => {
   ) => {
     try {
       if (!isConnected) {
-        Alert.alert(
-          "No Internet Connection",
-          "Please check your connection and try again"
-        );
+        Alert.alert(t("errors.noInternetTitle"), t("errors.noInternetGeneric"));
         throw new Error("No internet connection");
       }
 
@@ -185,8 +190,8 @@ export const AuthProvider = ({ children }: any) => {
     } catch (e: any) {
       if (e.networkError === "TIMEOUT") {
         Alert.alert(
-          "Connection Timeout",
-          "Request took too long. Please try again"
+          t("errors.connectionTimeoutTitle"),
+          t("errors.connectionTimeoutMessage")
         );
         throw new Error("Request timeout");
       } else if (e.networkError === "NO_INTERNET") {
@@ -201,10 +206,7 @@ export const AuthProvider = ({ children }: any) => {
   const login = async (username: string, password: string) => {
     try {
       if (!isConnected) {
-        Alert.alert(
-          "No Internet Connection",
-          "Please check your connection and try again"
-        );
+        Alert.alert(t("errors.noInternetTitle"), t("errors.noInternetGeneric"));
         throw new Error("No internet connection");
       }
 
@@ -216,6 +218,7 @@ export const AuthProvider = ({ children }: any) => {
       // Extract token and user data from the result
       const {
         token,
+        refreshToken,
         _id,
         email,
         uniqueId,
@@ -228,6 +231,7 @@ export const AuthProvider = ({ children }: any) => {
 
       setAuthState({
         token: token,
+        refreshToken: refreshToken,
         authenticated: true,
         user: {
           _id: _id,
@@ -243,14 +247,15 @@ export const AuthProvider = ({ children }: any) => {
       axiosClient.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
       await SecureStore.setItemAsync(JWT_KEY, token);
+      await SecureStore.setItemAsync(REFRESH_KEY, refreshToken);
       await SecureStore.setItemAsync(USER_KEY, JSON.stringify(result.data));
 
       return result;
     } catch (e: any) {
       if (e.networkError === "TIMEOUT") {
         Alert.alert(
-          "Connection Timeout",
-          "Request took too long. Please try again"
+          t("errors.connectionTimeoutTitle"),
+          t("errors.connectionTimeoutMessage")
         );
         throw new Error("Request timeout");
       } else if (e.networkError === "NO_INTERNET") {

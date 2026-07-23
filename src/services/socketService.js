@@ -1,11 +1,12 @@
 import { io } from "socket.io-client";
+import * as SecureStore from "expo-secure-store";
 import { API_URL } from "../constants/api";
+import { attemptTokenRefresh, JWT_KEY } from "../utils/axiosClient";
 
 let _socket = null;
-let _userId = null;
 const _listeners = new Map();
 
-const initialize = (userId) => {
+const initialize = (userId, token) => {
   console.log(
     "🔌 socketService.initialize called with userId:",
     userId,
@@ -14,29 +15,35 @@ const initialize = (userId) => {
   );
 
   const url = new URL(API_URL);
-  const isDevelopment = process.env.EXPO_PUBLIC_ENV === "development";
+  // Derived from API_URL itself rather than EXPO_PUBLIC_ENV -- a dev build
+  // can point at a local server (no path prefix) or the live API behind a
+  // reverse proxy (/btc-api prefix) just as easily as a prod build can, so
+  // "development" is not a reliable signal for whether a prefix is needed.
+  // Whatever prefix API_URL has (or doesn't), the socket path matches it.
+  const basePath = url.pathname.replace(/\/$/, "");
 
   // Create socket connection if it doesn't exist
   if (!_socket) {
     console.log("🔌 Creating NEW socket connection");
-    _userId = userId;
 
+    // Identity comes from the JWT in the auth payload -- no legacy userId
+    // query param, matching where the backend's SOCKET_REQUIRE_AUTH flag
+    // is headed.
     _socket = io(url.origin, {
-      path: isDevelopment ? "/socket.io" : "/btc-api/socket.io",
+      path: `${basePath}/socket.io`,
       transports: ["websocket"],
       autoConnect: true,
       reconnection: true,
       reconnectionAttempts: 5,
-      query: { userId },
+      auth: { token },
     });
     console.log(
-      `🔌 New socket connecting to ${url.origin} with path ${
-        isDevelopment ? "/socket.io" : "/btc-api/socket.io"
-      }`
+      `🔌 New socket connecting to ${url.origin} with path ${basePath}/socket.io`
     );
   } else if (!_socket.connected) {
     // Reconnect existing socket if it's disconnected
     console.log("🔌 Reconnecting EXISTING socket");
+    _socket.auth = { token };
     _socket.connect();
   } else {
     console.log("🔌 Socket already exists and connected, reusing connection");
@@ -57,7 +64,6 @@ const disconnect = () => {
   if (_socket) {
     _socket.disconnect();
     _socket = null;
-    _userId = null;
   }
 };
 
@@ -102,12 +108,49 @@ const setupEvents = () => {
     emit("connectionChange", false);
   });
 
-  // In setupEvents function
+  _socket.on("connect_error", async (error) => {
+    console.log("Socket connect_error:", error?.message);
+
+    // The server rejects the handshake with "Unauthorized" once
+    // SOCKET_REQUIRE_AUTH is enabled and the access token is missing or
+    // expired. Try a silent refresh before giving up -- on success, just
+    // update the auth payload; socket.io's own reconnection loop picks up
+    // the new token on its next automatic attempt.
+    if (error?.message === "Unauthorized") {
+      console.warn("Socket handshake unauthorized - attempting token refresh");
+      const refreshed = await attemptTokenRefresh();
+      if (refreshed && _socket) {
+        const freshToken = await SecureStore.getItemAsync(JWT_KEY);
+        _socket.auth = { token: freshToken };
+        console.log("Token refreshed - socket will retry with new token");
+      } else {
+        console.warn("Token refresh failed - giving up on socket auth");
+        emit("authFailed");
+      }
+    }
+  });
+
+  // Legacy signal, still emitted alongside conversation:message for clients
+  // sending via /messages/*
   _socket.on("newMessageSignal", () => {
     console.log(
       `⭐️ New message signal received at ${new Date().toISOString()}`
     );
     emit("newMessageSignal");
+  });
+
+  // Conversation-room broadcasts (direct + group)
+  _socket.on("conversation:message", (payload) => {
+    emit("conversation:message", payload);
+  });
+  _socket.on("conversation:updated", (payload) => {
+    emit("conversation:updated", payload);
+  });
+  _socket.on("conversation:memberAdded", (payload) => {
+    emit("conversation:memberAdded", payload);
+  });
+  _socket.on("conversation:memberRemoved", (payload) => {
+    emit("conversation:memberRemoved", payload);
   });
 };
 

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   View,
   Text,
@@ -15,7 +15,7 @@ import CustomButton from "../../components/CustomButton";
 import CustomInput from "../../components/CustomInput";
 import { useRouter } from "expo-router";
 import { KeyboardAvoidingView } from "react-native-keyboard-controller";
-import * as SecureStore from "expo-secure-store";
+import { useTranslation } from "../../hooks/useTranslation";
 
 interface FormData {
   username: string;
@@ -30,25 +30,14 @@ const Login = () => {
 
   const { onLogin } = useAuth();
   const router = useRouter();
+  const { t, locale } = useTranslation();
+  // Noto Sans JP renders visibly larger than Funnel Display at the same
+  // nominal size, so Japanese uses one step down here.
+  const linkTextSize = locale === "ja" ? "text-base" : "text-lg";
 
-  useEffect(() => {
-    const checkEulaAcceptance = async () => {
-      try {
-        const eulaAccepted = await SecureStore.getItemAsync("eulaAccepted");
-        if (!eulaAccepted || eulaAccepted !== "true") {
-          router.replace("./Eula");
-        }
-      } catch (error) {
-        // If SecureStore fails, show EULA for safety
-        router.replace("./Eula");
-      }
-    };
-
-    checkEulaAcceptance();
-  }, [router]);
   const onSubmit = async () => {
     if (formData.username === "" || formData.password === "") {
-      Alert.alert("Please fill in all fields");
+      Alert.alert(t("auth.fillAllFieldsTitle"));
     } else {
       try {
         if (onLogin) {
@@ -61,7 +50,7 @@ const Login = () => {
             !e.message.includes("internet") &&
             !e.message.includes("timeout")
           ) {
-            Alert.alert("Login failed", e.message);
+            Alert.alert(t("auth.login.failedTitle"), e.message);
           }
         }
       }
@@ -88,7 +77,7 @@ const Login = () => {
             <Logo />
             {/* Username input */}
             <CustomInput
-              title="Username"
+              title={t("auth.login.usernameLabel")}
               value={formData.username}
               onChangeText={(e) => setFormData({ ...formData, username: e })}
               containerStyles="w-3/5"
@@ -98,7 +87,7 @@ const Login = () => {
 
             {/* Password input */}
             <CustomInput
-              title="Password"
+              title={t("auth.login.passwordLabel")}
               value={formData.password}
               onChangeText={(e) => setFormData({ ...formData, password: e })}
               containerStyles="w-3/5"
@@ -109,15 +98,15 @@ const Login = () => {
             {/* Forgot Password link */}
             <View className="w-3/5 justify-end flex-row mt-4">
               <TouchableOpacity onPress={() => router.push("./ForgotPassword")}>
-                <Text className="text-lg font-funnel-regular color-btc200">
-                  Forgot Password?
+                <Text className={`${linkTextSize} font-funnel-regular color-btc200`}>
+                  {t("auth.login.forgotPasswordLink")}
                 </Text>
               </TouchableOpacity>
             </View>
 
             {/* Login button */}
             <CustomButton
-              title="Login"
+              title={t("auth.login.loginButton")}
               isLoading={false}
               textStyles="font-funnel-regular"
               containerStyles="w-3/5 top-5"
@@ -125,15 +114,15 @@ const Login = () => {
             />
             {/* Signup */}
             <View className="justify-center items-center pt-8 flex-row mt-4">
-              <Text className="text-lg font-funnel-regular color-btc300 right-2">
-                Need an account?
+              <Text className={`${linkTextSize} font-funnel-regular color-btc300 right-2`}>
+                {t("auth.login.needAccount")}
               </Text>
               <TouchableOpacity
                 style={{ padding: 8, backgroundColor: "transparent" }}
                 onPress={() => router.push("/guests/Signup")}
               >
-                <Text className="text-lg font-funnel-regular color-btc200">
-                  Sign up here
+                <Text className={`${linkTextSize} font-funnel-regular color-btc200`}>
+                  {t("auth.login.signUpHere")}
                 </Text>
               </TouchableOpacity>
             </View>

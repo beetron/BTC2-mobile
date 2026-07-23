@@ -8,8 +8,10 @@ import {
   Share,
 } from "react-native";
 import { Image, ImageSource } from "expo-image";
-import { Ionicons } from "@expo/vector-icons";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import MessageImageModal from "./MessageImageModal";
+import { useTranslation } from "../hooks/useTranslation";
+import { colors } from "../constants/colors";
 
 interface MessageImageGalleryProps {
   imageFilenames: string[];
@@ -32,6 +34,7 @@ const MessageImageGallery: React.FC<MessageImageGalleryProps> = ({
     return initialLoading;
   });
   const [errors, setErrors] = useState<{ [key: number]: boolean }>({});
+  const { t } = useTranslation();
 
   const screenWidth = Dimensions.get("window").width;
   const imageSize = screenWidth * 0.4;
@@ -68,7 +71,7 @@ const MessageImageGallery: React.FC<MessageImageGalleryProps> = ({
         // Trigger native share menu on long press
         Share.share({
           url: (item.uri as string) || "",
-          title: "Share Image",
+          title: t("media.shareImageTitle"),
         }).catch((err) => console.log("Share error:", err));
       }}
       style={{
@@ -81,7 +84,7 @@ const MessageImageGallery: React.FC<MessageImageGalleryProps> = ({
     >
       {errors[index] ? (
         <View className="flex-1 bg-btc100 rounded-2xl justify-center items-center">
-          <Ionicons name="alert-circle-outline" size={32} color="#D4F1F4" />
+          <MaterialCommunityIcons name="alert-circle-outline" size={32} color={colors.btc100} />
         </View>
       ) : (
         <>

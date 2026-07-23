@@ -10,10 +10,12 @@ import {
   Alert,
 } from "react-native";
 import { Image, ImageSource } from "expo-image";
-import { Ionicons } from "@expo/vector-icons";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import * as MediaLibrary from "expo-media-library";
-import * as FileSystem from "expo-file-system";
+import * as FileSystem from "expo-file-system/legacy";
 import { useAuth } from "@/src/context/AuthContext";
+import { useTranslation } from "@/src/hooks/useTranslation";
+import { colors } from "@/src/constants/colors";
 
 interface MessageImageModalProps {
   imageSources: ImageSource[];
@@ -27,6 +29,7 @@ const MessageImageModal: React.FC<MessageImageModalProps> = ({
   onClose,
 }) => {
   const { authState } = useAuth();
+  const { t } = useTranslation();
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   // Initialize loading state for all images
   const [loading, setLoading] = useState<{ [key: number]: boolean }>(() => {
@@ -109,23 +112,23 @@ const MessageImageModal: React.FC<MessageImageModalProps> = ({
       const granted = await requestPermissions();
       if (!granted) {
         Alert.alert(
-          "Permission Denied",
-          "Photos permission is required to save images."
+          t("media.permissionDeniedTitle"),
+          t("media.permissionDeniedMessage")
         );
         return;
       }
 
       const currentImage = imageSources[currentIndex];
       if (!currentImage.uri) {
-        Alert.alert("Error", "Image URI not available");
+        Alert.alert(t("common.error"), t("media.imageUriUnavailable"));
         return;
       }
 
       await downloadAndSaveImage(currentImage.uri as string);
-      Alert.alert("Success", "Image saved to your photos!");
+      Alert.alert(t("common.success"), t("media.savedSuccess"));
     } catch (error) {
       console.error("Save error:", error);
-      Alert.alert("Error", "Failed to save image");
+      Alert.alert(t("common.error"), t("media.saveFailed"));
     } finally {
       setIsSaving(false);
     }
@@ -137,14 +140,14 @@ const MessageImageModal: React.FC<MessageImageModalProps> = ({
       const granted = await requestPermissions();
       if (!granted) {
         Alert.alert(
-          "Permission Denied",
-          "Photos permission is required to save images."
+          t("media.permissionDeniedTitle"),
+          t("media.permissionDeniedMessage")
         );
         return;
       }
 
       if (imageSources.length === 0) {
-        Alert.alert("Error", "No images to save");
+        Alert.alert(t("common.error"), t("media.noImagesToSave"));
         return;
       }
 
@@ -153,7 +156,7 @@ const MessageImageModal: React.FC<MessageImageModalProps> = ({
         .filter((uri): uri is string => typeof uri === "string");
 
       if (uris.length === 0) {
-        Alert.alert("Error", "No valid image URIs");
+        Alert.alert(t("common.error"), t("media.noValidImageUris"));
         return;
       }
 
@@ -169,12 +172,12 @@ const MessageImageModal: React.FC<MessageImageModalProps> = ({
       }
 
       Alert.alert(
-        "Success",
-        `Successfully saved ${savedCount} of ${uris.length} images to your photos!`
+        t("common.success"),
+        t("media.savedAllSuccess", { saved: savedCount, total: uris.length })
       );
     } catch (error) {
       console.error("Save all error:", error);
-      Alert.alert("Error", "Failed to save images");
+      Alert.alert(t("common.error"), t("media.saveAllFailed"));
     } finally {
       setIsSaving(false);
     }
@@ -195,8 +198,8 @@ const MessageImageModal: React.FC<MessageImageModalProps> = ({
     >
       {errors[index] ? (
         <View className="flex-1 bg-btc100 justify-center items-center">
-          <Ionicons name="alert-circle-outline" size={64} color="#D4F1F4" />
-          <Text className="text-btc400 text-lg mt-4">Failed to load image</Text>
+          <MaterialCommunityIcons name="alert-circle-outline" size={64} color={colors.btc100} />
+          <Text className="text-btc400 text-lg mt-4">{t("media.failedToLoad")}</Text>
         </View>
       ) : (
         <>
@@ -276,7 +279,7 @@ const MessageImageModal: React.FC<MessageImageModalProps> = ({
               activeOpacity={0.6}
               hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
             >
-              <Ionicons name="close" size={32} color="#75E6DA" />
+              <MaterialCommunityIcons name="close" size={32} color={colors.btc200} />
             </TouchableOpacity>
           </View>
 
@@ -335,12 +338,12 @@ const MessageImageModal: React.FC<MessageImageModalProps> = ({
               {isSaving ? (
                 <ActivityIndicator size={32} color="#75E6DA" />
               ) : (
-                <Ionicons name="download" size={32} color="#75E6DA" />
+                <MaterialCommunityIcons name="download" size={32} color={colors.btc200} />
               )}
               <Text
                 style={{ color: "#75E6DA", fontSize: 18, fontWeight: "600" }}
               >
-                {isSaving ? "Saving..." : "Save"}
+                {isSaving ? t("media.savingLabel") : t("media.saveButton")}
               </Text>
             </TouchableOpacity>
 
@@ -363,12 +366,12 @@ const MessageImageModal: React.FC<MessageImageModalProps> = ({
                 {isSaving ? (
                   <ActivityIndicator size={32} color="#75E6DA" />
                 ) : (
-                  <Ionicons name="albums" size={32} color="#75E6DA" />
+                  <MaterialCommunityIcons name="image-multiple" size={32} color={colors.btc200} />
                 )}
                 <Text
                   style={{ color: "#75E6DA", fontSize: 18, fontWeight: "600" }}
                 >
-                  {isSaving ? "Saving..." : "Save All"}
+                  {isSaving ? t("media.savingLabel") : t("media.saveAllButton")}
                 </Text>
               </TouchableOpacity>
             )}

@@ -1,33 +1,34 @@
-import { useState } from "react";
-import { TouchableOpacity, Text, Alert, View } from "react-native";
+import { Alert } from "react-native";
 import { useAuth } from "../context/AuthContext";
 import { useDeleteAccount } from "../hooks/useDeleteAccount";
 import { useRouter } from "expo-router";
-import AntDesign from "@expo/vector-icons/AntDesign";
+import CustomButton from "./CustomButton";
+import { useTranslation } from "../hooks/useTranslation";
 
 const SettingsDeleteAccount = () => {
   const { authState, onLogout } = useAuth();
   const { deleteAccount, isLoading } = useDeleteAccount();
   const router = useRouter();
+  const { t } = useTranslation();
 
   const handleDeleteAccount = async () => {
     // Show confirmation alert
     Alert.alert(
-      "Delete Account",
-      "Are you sure you want to delete your account? This action cannot be undone.",
+      t("settings.deleteAccount.confirmTitle"),
+      t("settings.deleteAccount.confirmMessage"),
       [
         {
-          text: "Cancel",
+          text: t("common.cancel"),
           onPress: () => {},
           style: "cancel",
         },
         {
-          text: "Delete",
+          text: t("common.delete"),
           onPress: async () => {
             if (!authState?.user?._id) {
               Alert.alert(
-                "Error",
-                "Unable to delete account. User ID not found."
+                t("common.error"),
+                t("settings.deleteAccount.userIdNotFoundError")
               );
               return;
             }
@@ -36,11 +37,11 @@ const SettingsDeleteAccount = () => {
 
             if (result.success) {
               Alert.alert(
-                "Account Deleted",
-                "Your account has been deleted successfully.",
+                t("settings.deleteAccount.deletedTitle"),
+                t("settings.deleteAccount.deletedMessage"),
                 [
                   {
-                    text: "OK",
+                    text: t("common.ok"),
                     onPress: async () => {
                       // Logout to clear secure storage
                       if (onLogout) {
@@ -53,7 +54,7 @@ const SettingsDeleteAccount = () => {
                 ]
               );
             } else if (result.error) {
-              Alert.alert("Error", result.error);
+              Alert.alert(t("common.error"), result.error);
             }
           },
           style: "destructive",
@@ -63,21 +64,14 @@ const SettingsDeleteAccount = () => {
   };
 
   return (
-    <View className="py-4">
-      <TouchableOpacity
-        onPress={handleDeleteAccount}
-        disabled={isLoading}
-        className="bg-red-500 rounded-lg px-4 py-3 flex-row items-center justify-center gap-2 min-h-11"
-        style={{ opacity: isLoading ? 0.6 : 1 }}
-      >
-        {isLoading ? (
-          <AntDesign name="loading1" size={18} color="white" />
-        ) : null}
-        <Text className="text-white text-base font-funnel-regular font-semibold">
-          {isLoading ? "Deleting..." : "Delete Account"}
-        </Text>
-      </TouchableOpacity>
-    </View>
+    <CustomButton
+      title={t("settings.deleteAccount.buttonLabel")}
+      handlePress={handleDeleteAccount}
+      isLoading={isLoading}
+      variant="danger"
+      textStyles="text-lg"
+      containerStyles="min-h-[44px]"
+    />
   );
 };
 

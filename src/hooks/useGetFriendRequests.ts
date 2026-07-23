@@ -5,6 +5,8 @@ import { useAuth } from "../context/AuthContext";
 import { Alert } from "react-native";
 import useGetProfileImage from "./useGetProfileImage";
 import { useNetwork } from "@/src/context/NetworkContext";
+import { useTranslation } from "./useTranslation";
+import friendRequestsStore from "../zustand/friendRequestsStore";
 
 interface Friend {
   _id: string;
@@ -20,16 +22,15 @@ const useGetFriendRequests = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const { getProfileImage } = useGetProfileImage();
   const { isConnected } = useNetwork();
+  const { t } = useTranslation();
+  const { setPendingCount } = friendRequestsStore();
 
   const getFriendRequests = useCallback(async () => {
     try {
       setIsLoading(true);
 
       if (!isConnected) {
-        Alert.alert(
-          "No Internet Connection",
-          "Please check your connection to load friend requests"
-        );
+        Alert.alert(t("errors.noInternetTitle"), t("errors.noInternetLoadRequests"));
         setIsLoading(false);
         return;
       }
@@ -61,24 +62,22 @@ const useGetFriendRequests = () => {
         })
       );
       setFriendRequests(friendsWithImages);
+      setPendingCount(friendsWithImages.length);
     } catch (error: any) {
       if (error.networkError === "TIMEOUT") {
         Alert.alert(
-          "Connection Timeout",
-          "Request took too long. Please try again"
+          t("errors.connectionTimeoutTitle"),
+          t("errors.connectionTimeoutMessage")
         );
       } else if (error.networkError === "NO_INTERNET") {
-        Alert.alert(
-          "No Internet Connection",
-          "Please check your connection and try again"
-        );
+        Alert.alert(t("errors.noInternetTitle"), t("errors.noInternetGeneric"));
       } else {
         console.log("Error: ", error.response?.data?.error || error.message);
       }
     } finally {
       setIsLoading(false);
     }
-  }, [isConnected]);
+  }, [isConnected, t, setPendingCount]);
 
   useFocusEffect(
     useCallback(() => {

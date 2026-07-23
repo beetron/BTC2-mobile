@@ -4,11 +4,13 @@ import * as SecureStore from "expo-secure-store";
 import axiosClient from "@/src/utils/axiosClient";
 import { Alert } from "react-native";
 import { useNetwork } from "@/src/context/NetworkContext";
+import { useTranslation } from "@/src/hooks/useTranslation";
 
 const useUpdateUniqueId = () => {
   const { authState, setAuthState } = useAuth();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { isConnected } = useNetwork();
+  const { t } = useTranslation();
   const USER_KEY = "user";
 
   const updateUniqueId = async (newUniqueId: string) => {
@@ -18,10 +20,7 @@ const useUpdateUniqueId = () => {
       setIsLoading(true);
 
       if (!isConnected) {
-        Alert.alert(
-          "No Internet Connection",
-          "Please check your connection and try again"
-        );
+        Alert.alert(t("errors.noInternetTitle"), t("errors.noInternetGeneric"));
         return false;
       }
 
@@ -37,7 +36,7 @@ const useUpdateUniqueId = () => {
       );
 
       if (response.status === 200) {
-        Alert.alert(response.data.message || "Unique ID updated");
+        Alert.alert(response.data.message || t("settings.uniqueId.updatedFallback"));
         console.log("Unique ID updated via useUpdateUniqueId hook");
         if (authState?.user && setAuthState) {
           // Update the user object in authState with the new uniqueId
@@ -59,10 +58,10 @@ const useUpdateUniqueId = () => {
         }
         return false;
       } else if (response.status === 400) {
-        Alert.alert("Error", response.data.error || "Bad request");
+        Alert.alert(t("common.error"), response.data.error || t("settings.uniqueId.badRequest"));
         return false;
       } else {
-        Alert.alert("Error", "An unknown error occurred");
+        Alert.alert(t("common.error"), t("errors.generic"));
         return false;
       }
     } catch (error: any) {
@@ -70,13 +69,13 @@ const useUpdateUniqueId = () => {
 
       if (error.networkError === "TIMEOUT") {
         Alert.alert(
-          "Connection Timeout",
-          "Request took too long. Please try again"
+          t("errors.connectionTimeoutTitle"),
+          t("errors.connectionTimeoutMessage")
         );
       } else if (error.networkError === "NO_INTERNET") {
         // Already alerted in pre-flight check
       } else {
-        Alert.alert("Error", "An unknown error occurred");
+        Alert.alert(t("common.error"), t("errors.generic"));
       }
       return false;
     } finally {

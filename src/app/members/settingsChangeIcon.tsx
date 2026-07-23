@@ -4,14 +4,16 @@ import {
   getAppIconName,
   type AlternateAppIcons,
 } from "expo-alternate-app-icons";
-import { Alert, TouchableOpacity, View } from "react-native";
+import { Alert, Text, View } from "react-native";
 import IconButton from "../../components/IconButton";
+import CustomButton from "../../components/CustomButton";
 import SettingsChangeIconHeader from "../../components/SettingsChangeIconHeader";
 import { icons } from "../../constants/icons";
 import React, { useCallback, useState } from "react";
-import { Text } from "react-native";
+import { useTranslation } from "../../hooks/useTranslation";
 
 const SettingsChangeIcon = () => {
+  const { t } = useTranslation();
   const [currentIconName, setCurrentIconName] = useState<string | null>(
     getAppIconName()
   );
@@ -42,8 +44,15 @@ const SettingsChangeIcon = () => {
   return (
     <View className="flex-1 bg-btc500">
       <SettingsChangeIconHeader />
-      <View className="flex-1 bg-btc500 m-6">
-        <View className="flex-row flex-wrap justify-around gap-4 bg-btc400 rounded-xl p-4">
+      <View className="flex-1 justify-center px-6 pb-10">
+        <Text className="text-btc100 font-funnel-semi-bold text-2xl text-center mb-1">
+          {t("settings.changeIcon.rowLabel")}
+        </Text>
+        <Text className="text-btc200 font-funnel-regular text-sm text-center mb-6">
+          {t("settings.changeIcon.subtitle")}
+        </Text>
+
+        <View className="flex-row flex-wrap justify-center gap-6 bg-card rounded-2xl p-6">
           {icons.map(([name, source]) => (
             <IconButton
               key={name}
@@ -54,14 +63,13 @@ const SettingsChangeIcon = () => {
             />
           ))}
         </View>
-        <TouchableOpacity
-          className="mt-6 p-4 bg-btc400 rounded-xl w-3/4 self-center"
-          onPress={handleReset}
-        >
-          <Text className="font-funnel-regular text-center text-btc100 text-xl">
-            Reset to Default Icon
-          </Text>
-        </TouchableOpacity>
+
+        <CustomButton
+          title={t("settings.changeIcon.resetButton")}
+          handlePress={handleReset}
+          variant="secondary"
+          containerStyles="mt-8 w-3/4 self-center"
+        />
       </View>
     </View>
   );

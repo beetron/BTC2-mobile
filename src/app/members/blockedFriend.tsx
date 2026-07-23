@@ -1,12 +1,13 @@
-import { View, Text, ActivityIndicator, Alert } from "react-native";
+import { View, Text, ActivityIndicator } from "react-native";
 import { useState, useEffect } from "react";
-import AntDesign from "@expo/vector-icons/AntDesign";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { Image } from "expo-image";
 import { images } from "../../constants/images";
 import useGetBlockedFriends from "@/src/hooks/useGetBlockedFriends";
 import useUnblockUser from "@/src/hooks/useUnblockUser";
-import friendStore from "@/src/zustand/friendStore";
 import RemoveFriendHeader from "../../components/RemoveFriendHeader";
+import { useTranslation } from "../../hooks/useTranslation";
+import { colors } from "../../constants/colors";
 
 interface Friend {
   _id: string;
@@ -27,6 +28,7 @@ const BlockedFriend = () => {
   }, [shouldRender]);
 
   const { unblockUser } = useUnblockUser();
+  const { t } = useTranslation();
 
   const handleOnPress = async (friendId: string) => {
     try {
@@ -44,28 +46,27 @@ const BlockedFriend = () => {
       <RemoveFriendHeader />
       <View className="bg-btc500 m-6">
         <View className="flex-row items-start max-w-[90%]">
-          <AntDesign
-            name="exclamationcircleo"
+          <MaterialCommunityIcons
+            name="alert-circle-outline"
             size={28}
-            color="yellow"
+            color={colors.warning}
             className="m-2"
           />
           <Text className="text-btc100 font-funnel-regular text-xl">
-            You could unblock users here. {"\n"}Unblocking enables sending
-            friend requests again.
+            {t("friends.blockedScreen.notice")}
           </Text>
         </View>
 
         {isLoading ? (
           <View className="mt-2 items-center jusitfy-center">
-            <ActivityIndicator size="large" color="white" />
+            <ActivityIndicator size="large" color={colors.btc100} />
           </View>
         ) : (
           <>
             <View className="mt-2 flex-col items-start w-full">
               {!blockedFriends || blockedFriends.length === 0 ? (
                 <Text className="text-btc100 font-funnel-regular text-2xl mt-4">
-                  You have no blocked users
+                  {t("friends.blockedScreen.empty")}
                 </Text>
               ) : (
                 blockedFriends.map((friend: Friend) => (
@@ -96,10 +97,10 @@ const BlockedFriend = () => {
                       </Text>
                     </View>
                     <View className="flex-row justify-end">
-                      <AntDesign
-                        name="unlock"
+                      <MaterialCommunityIcons
+                        name="lock-open-variant-outline"
                         size={28}
-                        color="skyblue"
+                        color={colors.accent}
                         onPress={() => handleOnPress(friend._id)}
                       />
                     </View>

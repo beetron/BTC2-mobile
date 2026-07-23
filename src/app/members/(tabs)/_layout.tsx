@@ -1,26 +1,43 @@
-import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
-import Ionicons from "@expo/vector-icons/Ionicons";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { Alert } from "react-native";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { Alert, View } from "react-native";
 import { Tabs } from "expo-router";
 import { useAuth } from "../../../context/AuthContext";
-import React from "react";
+import React, { useEffect } from "react";
 import HeaderPrimary from "../../../components/HeaderPrimary";
+import TabBarBadge from "../../../components/TabBarBadge";
+import { useTranslation } from "../../../hooks/useTranslation";
+import { colors } from "../../../constants/colors";
+import { useAppStateListener } from "../../../context/AppStateContext";
+import useFriendRequestsCount from "../../../hooks/useFriendRequestsCount";
+import friendRequestsStore from "../../../zustand/friendRequestsStore";
+import unreadStore from "../../../zustand/unreadStore";
 
 const TabsLayout = () => {
   const { onLogout } = useAuth();
+  const { t } = useTranslation();
+  const { pendingCount } = friendRequestsStore();
+  const { totalUnreadCount } = unreadStore();
+  const { refreshFriendRequestsCount } = useFriendRequestsCount();
+
+  useEffect(() => {
+    refreshFriendRequestsCount();
+  }, [refreshFriendRequestsCount]);
+
+  useAppStateListener(() => {
+    refreshFriendRequestsCount();
+  });
 
   const handleLogout = () => {
     Alert.alert(
-      "Logout?",
+      t("tabs.logoutConfirmTitle"),
       "",
       [
         {
-          text: "Cancel",
+          text: t("common.cancel"),
           style: "cancel",
         },
         {
-          text: "OK",
+          text: t("common.ok"),
           onPress: async () => {
             try {
               if (onLogout) {
@@ -42,8 +59,8 @@ const TabsLayout = () => {
       <Tabs
         screenOptions={{
           headerShown: false,
-          tabBarActiveTintColor: "skyblue",
-          tabBarInactiveTintColor: "white",
+          tabBarActiveTintColor: colors.accent,
+          tabBarInactiveTintColor: colors.btc100,
           tabBarStyle: {
             backgroundColor: "#1f1f2e",
           },
@@ -56,27 +73,33 @@ const TabsLayout = () => {
         <Tabs.Screen
           name="index"
           options={{
-            title: "Home",
+            title: t("tabs.home"),
             tabBarIcon: ({ color }) => (
-              <FontAwesome5 size={24} name="user-friends" color={color} />
+              <View>
+                <MaterialCommunityIcons size={24} name="account-group" color={color} />
+                <TabBarBadge count={totalUnreadCount} />
+              </View>
             ),
           }}
         />
         <Tabs.Screen
           name="editFriends"
           options={{
-            title: "Edit Friends",
+            title: t("tabs.editFriends"),
             tabBarIcon: ({ color }) => (
-              <FontAwesome5 size={24} name="user-edit" color={color} />
+              <View>
+                <MaterialCommunityIcons size={24} name="account-edit" color={color} />
+                <TabBarBadge count={pendingCount} />
+              </View>
             ),
           }}
         />
         <Tabs.Screen
           name="settings"
           options={{
-            title: "Settings",
+            title: t("tabs.settings"),
             tabBarIcon: ({ color }) => (
-              <Ionicons name="settings-sharp" size={24} color={color} />
+              <MaterialCommunityIcons name="cog-outline" size={24} color={color} />
             ),
           }}
         />
@@ -89,9 +112,9 @@ const TabsLayout = () => {
             },
           }}
           options={{
-            title: "Logout",
+            title: t("tabs.logout"),
             tabBarIcon: ({ color }) => (
-              <MaterialIcons name="logout" size={24} color={color} />
+              <MaterialCommunityIcons name="logout" size={24} color={color} />
             ),
           }}
         />

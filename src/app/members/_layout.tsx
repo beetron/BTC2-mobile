@@ -1,7 +1,3 @@
-import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
-import Ionicons from "@expo/vector-icons/Ionicons";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { Alert } from "react-native";
 import { Redirect, router, Tabs, Stack } from "expo-router";
 import { useAuth } from "../../context/AuthContext";
 import React from "react";
@@ -23,6 +19,9 @@ const TabLayout = () => {
         <Stack.Screen name="removeFriend" />
         <Stack.Screen name="blockedFriend" />
         <Stack.Screen name="settingsChangeIcon" />
+        <Stack.Screen name="createGroup" />
+        <Stack.Screen name="groupSettings" />
+        <Stack.Screen name="settingsLanguage" />
       </Stack>
     </SocketProvider>
   );

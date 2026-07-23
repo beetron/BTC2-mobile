@@ -2,7 +2,7 @@ import { useAuth } from "../context/AuthContext";
 import { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
 
-const index = () => {
+const Index = () => {
   const { authState } = useAuth();
   const router = useRouter();
   const [hasMounted, setHasMounted] = useState(false);
@@ -23,4 +23,4 @@ const index = () => {
   return null;
 };
 
-export default index;
+export default Index;

@@ -1,20 +1,28 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
-import AntDesign from "@expo/vector-icons/AntDesign";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { useTranslation } from "../hooks/useTranslation";
+import { colors } from "../constants/colors";
 
 const SettingsIcon = () => {
   const router = useRouter();
+  const { t } = useTranslation();
   return (
-    <View className="w-full bg-btc500 p-4">
-      <TouchableOpacity onPress={() => router.push("../settingsChangeIcon")}>
-        <View className="flex-row justify-between items-center py-2">
-          <Text className="text-btc100 font-funnel-regular text-2xl">
-            Change App Icon
+    <TouchableOpacity onPress={() => router.push("../settingsChangeIcon")}>
+      <View className="flex-row justify-between items-center px-4 py-3">
+        <View className="flex-row items-center gap-3">
+          <MaterialCommunityIcons name="apps" size={20} color={colors.accent} />
+          <Text className="text-btc100 font-funnel-regular text-lg">
+            {t("settings.changeIcon.rowLabel")}
           </Text>
-          <AntDesign name="arrowright" size={28} color="white" />
         </View>
-      </TouchableOpacity>
-    </View>
+        <MaterialCommunityIcons
+          name="chevron-right"
+          size={22}
+          color={colors.btc200}
+        />
+      </View>
+    </TouchableOpacity>
   );
 };
 

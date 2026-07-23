@@ -1,12 +1,17 @@
-import { View, Text, TextInput, Platform, Alert, Keyboard } from "react-native";
+import { View, Text, TextInput, Alert, Keyboard } from "react-native";
 import { useState, useCallback } from "react";
 import useAddFriend from "@/src/hooks/useAddFriend";
-import AntDesign from "@expo/vector-icons/AntDesign";
-import { useFocusEffect } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
+import { useTranslation } from "../hooks/useTranslation";
+import { colors } from "../constants/colors";
+import CustomButton from "./CustomButton";
+import UserQrCode from "./UserQrCode";
 
 const EditAddFriend = () => {
   const [friendUniqueId, setFriendUniqueId] = useState("");
   const { addFriend, loading } = useAddFriend();
+  const { t } = useTranslation();
+  const router = useRouter();
 
   // Reset text input when switching tabs
   useFocusEffect(
@@ -18,51 +23,50 @@ const EditAddFriend = () => {
   // Handle onPress
   const handleOnPress = async () => {
     if (!friendUniqueId) {
-      Alert.alert("Missing Unique ID");
+      Alert.alert(t("friends.addFriend.missingIdTitle"));
       return;
     }
+    Keyboard.dismiss();
     const success = await addFriend(friendUniqueId);
     if (success) {
       setFriendUniqueId("");
-      Keyboard.dismiss();
     }
   };
 
   return (
-    <View className="bg-btc500">
-      <View className="flex-row items-center">
-        <Text className="text-btc100 font-funnel-regular text-2xl items-start">
-          Add Friend
-        </Text>
-      </View>
-      <View className="mt-2">
+    <View>
+      <View className="bg-card rounded-xl p-4">
         <TextInput
           value={friendUniqueId}
-          placeholder="Unique ID"
-          placeholderTextColor="grey"
+          placeholder={t("friends.addFriend.placeholder")}
+          placeholderTextColor={colors.btc300}
           autoCapitalize="none"
           maxLength={20}
-          multiline={true}
           onChangeText={(text) => setFriendUniqueId(text)}
           style={{
-            height: 40,
-            paddingBottom: 0,
-            paddingTop: Platform.OS === "ios" ? 14 : 0,
+            height: 44,
+            textAlignVertical: "center",
           }}
-          className="text-btc100 font-funnel-regular text-2xl border-b border-btc300 max-w-[80%]"
+          className="text-btc100 font-funnel-regular text-xl bg-btc400 rounded-lg px-3"
         />
-        <Text className="absolute top-0 right-16 text-btc100 text-l opacity-[50%]">
+        <Text className="text-btc300 text-xs mt-2 text-right">
           {friendUniqueId.length}/20
         </Text>
-        <AntDesign
-          name="adduser"
-          size={34}
-          color="white"
-          className="absolute right-0 top-2"
-          disabled={loading}
-          onPress={handleOnPress}
-        />
       </View>
+      <CustomButton
+        title={t("common.add")}
+        handlePress={handleOnPress}
+        isLoading={loading}
+        disabled={!friendUniqueId.trim()}
+        containerStyles="mt-4"
+      />
+      <CustomButton
+        title={t("friends.addFriend.scanQrButton")}
+        handlePress={() => router.push("/members/scanFriendQr")}
+        variant="secondary"
+        containerStyles="mt-6"
+      />
+      <UserQrCode />
     </View>
   );
 };

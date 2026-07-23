@@ -2,10 +2,12 @@ import axiosClient from "@/src/utils/axiosClient";
 import { useState } from "react";
 import { Alert } from "react-native";
 import { useNetwork } from "@/src/context/NetworkContext";
+import { useTranslation } from "@/src/hooks/useTranslation";
 
 const useUpdateEmail = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { isConnected } = useNetwork();
+  const { t } = useTranslation();
 
   const updateEmail = async (
     email: string,
@@ -18,10 +20,7 @@ const useUpdateEmail = () => {
 
       // Check network connection before making request
       if (!isConnected) {
-        Alert.alert(
-          "No Internet Connection",
-          "Please check your connection and try again"
-        );
+        Alert.alert(t("errors.noInternetTitle"), t("errors.noInternetGeneric"));
         return false;
       }
 
@@ -32,7 +31,7 @@ const useUpdateEmail = () => {
       });
 
       if (response.status === 200) {
-        Alert.alert(response.data.message || "Email updated");
+        Alert.alert(response.data.message || t("settings.email.updatedFallback"));
         console.log("Email updated via useUpdateEmail hook");
         return true;
       }
@@ -43,21 +42,21 @@ const useUpdateEmail = () => {
       // Handle network errors tagged by axios interceptor
       if (error.networkError === "TIMEOUT") {
         Alert.alert(
-          "Connection Timeout",
-          "Request took too long. Please try again"
+          t("errors.connectionTimeoutTitle"),
+          t("errors.connectionTimeoutMessage")
         );
       } else if (error.networkError === "NO_INTERNET") {
         // Already alerted in pre-flight check
       } else if (error.response && error.response.data) {
         if (error.response.data.error) {
-          Alert.alert("Error", error.response.data.error);
+          Alert.alert(t("common.error"), error.response.data.error);
         } else if (error.response.data.message) {
           Alert.alert(error.response.data.message);
         } else {
-          Alert.alert("Error", "An unknown error occurred");
+          Alert.alert(t("common.error"), t("errors.generic"));
         }
       } else {
-        Alert.alert("Error", "An unknown error occurred");
+        Alert.alert(t("common.error"), t("errors.generic"));
       }
       return false;
     } finally {

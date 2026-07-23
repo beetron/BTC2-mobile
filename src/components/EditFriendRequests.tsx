@@ -1,13 +1,15 @@
 import { View, Text, ActivityIndicator } from "react-native";
 import { useState, useCallback, useEffect } from "react";
 import useGetFriendRequests from "@/src/hooks/useGetFriendRequests";
-import AntDesign from "@expo/vector-icons/AntDesign";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useFocusEffect } from "expo-router";
 import { Image } from "expo-image";
 import { images } from "../constants/images";
 import useAcceptFriend from "@/src/hooks/useAcceptFriend";
 import useRejectFriend from "@/src/hooks/useRejectFriend";
 import { useAppStateListener } from "@/src/context/AppStateContext";
+import { useTranslation } from "../hooks/useTranslation";
+import { colors } from "../constants/colors";
 
 interface Friend {
   _id: string;
@@ -24,6 +26,7 @@ const EditFriendRequests = () => {
     useGetFriendRequests();
   const { acceptFriend, isLoading: acceptIsLoading } = useAcceptFriend();
   const { rejectFriend, isLoading: rejectIsLoading } = useRejectFriend();
+  const { t } = useTranslation();
 
   useAppStateListener(() => {
     getFriendRequests();
@@ -59,24 +62,17 @@ const EditFriendRequests = () => {
 
   return (
     <View className="bg-btc500">
-      <View className="items-start">
-        <Text className="text-btc100 font-funnel-regular text-2xl">
-          Pending Friend Requests
-        </Text>
-      </View>
-      <View className="mt-2 flex-col">
+      <View className="flex-col">
         {isLoading ? (
-          <View className="mt-8 flex-1 items-center justify-center">
-            <ActivityIndicator size="large" color="white" />
+          <View className="mt-8 items-center">
+            <ActivityIndicator size="large" color={colors.btc100} />
           </View>
         ) : (
           <>
             {!friendRequests || friendRequests.length === 0 ? (
-              <View className="mt-2 flex-1 items-center justify-center">
-                <Text className="text-btc100 font-funnel-regular text-2xl">
-                  You have no pending friend requests
-                </Text>
-              </View>
+              <Text className="text-btc100 font-funnel-regular text-2xl mt-4">
+                {t("friends.requests.empty")}
+              </Text>
             ) : (
               friendRequests.map((friend: Friend) => (
                 <View
@@ -102,17 +98,17 @@ const EditFriendRequests = () => {
                     </Text>
                   </View>
                   <View className="flex-row justify-end">
-                    <AntDesign
-                      name="checkcircleo"
+                    <MaterialCommunityIcons
+                      name="check-circle"
                       size={28}
-                      color="#AAFF00"
+                      color={colors.success}
                       className="mr-4"
                       onPress={() => handleOnPressAccept(friend.uniqueId)}
                     />
-                    <AntDesign
-                      name="closecircleo"
+                    <MaterialCommunityIcons
+                      name="close-circle"
                       size={28}
-                      color="red"
+                      color={colors.danger}
                       onPress={() => handleOnPressReject(friend.uniqueId)}
                     />
                   </View>

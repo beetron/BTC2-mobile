@@ -1,0 +1,295 @@
+{
+  "common": {
+    "ok": "OK",
+    "cancel": "Cancel",
+    "save": "Save",
+    "error": "Error",
+    "success": "Success",
+    "loading": "Loading...",
+    "remove": "Remove",
+    "block": "Block",
+    "delete": "Delete",
+    "add": "Add",
+    "create": "Create",
+    "unknown": "Unknown"
+  },
+  "tabs": {
+    "home": "Home",
+    "editFriends": "Edit Friends",
+    "settings": "Settings",
+    "logout": "Logout",
+    "logoutConfirmTitle": "Logout?"
+  },
+  "home": {
+    "newGroupButton": "New Group",
+    "emptyFriends": "Add a friend to start chatting!",
+    "groupFallbackName": "Group chat",
+    "memberCount": "{{count}} members"
+  },
+  "conversation": {
+    "chatFallbackTitle": "Chat",
+    "groupFallbackTitle": "Group chat",
+    "memberCountSubtitle": "{{count}} members",
+    "syncing": "Syncing…",
+    "noMessagesWith": "You have no messages with {{name}}",
+    "yourFriendFallback": "your friend",
+    "inputPlaceholder": "Start typing...",
+    "sendMessageFailed": "Failed to send message",
+    "actionMenu": {
+      "deleteMessages": "Delete Messages",
+      "reportUser": "Report User",
+      "blockUser": "Block User",
+      "groupSettings": "Group Settings",
+      "noMessagesToDelete": "No messages to delete",
+      "deleteConfirmMessage": "Delete Messages?\n\nThis only deletes the messages from your own view. Other participants will still see them.",
+      "noMessageSelectedTitle": "No messages selected",
+      "noMessageSelectedMessage": "Please select a message to report.",
+      "reportReasonMessage": "Why are you reporting this user?",
+      "reasonInappropriate": "Inappropriate Content",
+      "reasonHarassment": "Harassment",
+      "reasonSpam": "Spam",
+      "reasonOther": "Other",
+      "confirmReportTitle": "Confirm Report",
+      "confirmReportMessage": "Are you sure you want to report this user for \"{{reason}}\"?",
+      "reportButton": "Report",
+      "reportSubmittedTitle": "Report Submitted",
+      "reportSubmittedMessage": "Thank you for your report.",
+      "unableToIdentifyReport": "Unable to identify user to report.",
+      "unableToIdentifyBlock": "Unable to identify user to block.",
+      "blockConfirmTitle": "Block User",
+      "blockConfirmMessage": "Blocking a user will remove them from your friend list and delete conversations. Continue?",
+      "selectMemberToReport": "Select a member to report",
+      "noMembersToReport": "There are no other members in this group to report.",
+      "blockUnavailableInGroupMessage": "Blocking isn't available in group chats. If you're having a bad experience, you can leave the group instead."
+    },
+    "linkPreview": {
+      "loading": "Loading preview…",
+      "unavailable": "Preview unavailable"
+    }
+  },
+  "media": {
+    "shareImageTitle": "Share Image",
+    "failedToLoad": "Failed to load image",
+    "permissionDeniedTitle": "Permission Denied",
+    "permissionDeniedMessage": "Photos permission is required to save images.",
+    "imageUriUnavailable": "Image URI not available",
+    "savedSuccess": "Image saved to your photos!",
+    "saveFailed": "Failed to save image",
+    "noImagesToSave": "No images to save",
+    "noValidImageUris": "No valid image URIs",
+    "savedAllSuccess": "Successfully saved {{saved}} of {{total}} images to your photos!",
+    "saveAllFailed": "Failed to save images",
+    "savingLabel": "Saving...",
+    "saveButton": "Save",
+    "saveAllButton": "Save All",
+    "attachPermissionMessage": "Photo library access is required to attach images.",
+    "tooManyFilesTitle": "Too Many Files",
+    "tooManyFilesMessage": "Maximum {{max}} files allowed per upload.",
+    "fileSizeExceededTitle": "File Size Exceeded",
+    "fileSizeExceededMessage": "Total file size cannot exceed 49MB. Current selection: {{size}}MB",
+    "attachFailed": "Failed to attach images."
+  },
+  "fcm": {
+    "tokenGenerationFailed": "Error generating FCM token",
+    "manageFailed": "Failed managing FCM token"
+  },
+  "friends": {
+    "addFriend": {
+      "title": "Add Friend",
+      "placeholder": "Unique ID",
+      "missingIdTitle": "Missing Unique ID",
+      "scanQrButton": "Scan QR",
+      "myQrLabel": "Your QR Code"
+    },
+    "scanQr": {
+      "title": "Scan QR Code",
+      "instructions": "Point your camera at a friend's QR code",
+      "permissionMessage": "Camera access is needed to scan QR codes.",
+      "permissionButton": "Grant Camera Access",
+      "invalidQrTitle": "Invalid QR Code",
+      "invalidQrMessage": "This doesn't look like a valid bTC2 friend code."
+    },
+    "blockedRow": "Blocked Users",
+    "removeRow": "Remove / Block Friend",
+    "requests": {
+      "title": "Pending Friend Requests",
+      "empty": "You have no pending friend requests"
+    },
+    "blockedScreen": {
+      "notice": "You could unblock users here. \nUnblocking enables sending friend requests again.",
+      "empty": "You have no blocked users"
+    },
+    "removeScreen": {
+      "notice": "Removing a friend will remove yourself from their friend list.\nBlocking a friend will make you completely unreachable.",
+      "empty": "You have no friends to remove",
+      "removeConfirmTitle": "Remove {{name}}?",
+      "blockConfirmTitle": "Block {{name}}?"
+    },
+    "acceptedSuccess": "Friend accepted",
+    "requestSentSuccess": "Friend request sent",
+    "addFriendGenericError": "An error occurred while adding friend.",
+    "rejectedSuccess": "Rejected friend request",
+    "removedSuccess": "Friend Removed",
+    "unblockedSuccess": "User unblocked successfully",
+    "blockedSuccess": "User blocked successfully"
+  },
+  "group": {
+    "createTitle": "New Group",
+    "namePlaceholder": "Group name",
+    "addFriendsLabel": "Add friends",
+    "settingsTitle": "Group Settings",
+    "membersLabel": "Members ({{count}})",
+    "roleOwner": "owner",
+    "roleMember": "member",
+    "removeMemberTitle": "Remove Member",
+    "removeMemberMessage": "Remove {{name}} from the group?",
+    "removeMemberFallbackName": "this member",
+    "leaveGroupTitle": "Leave Group",
+    "leaveGroupMessage": "Are you sure you want to leave this group?",
+    "leaveButton": "Leave",
+    "addMembersButton": "Add Members",
+    "allFriendsInGroup": "All your friends are already in this group.",
+    "friendSelectDefaultEmpty": "Add a friend first to start a group.",
+    "createFailed": "Failed to create group",
+    "addMembersFailed": "Failed to add members",
+    "removeMemberFailed": "Failed to remove member",
+    "updateFailed": "Failed to update group"
+  },
+  "eula": {
+    "welcomeTitle": "Welcome to bTChatty2",
+    "intro": "Before you can use the app, please review our End User License Agreement."
+  },
+  "legalDocument": {
+    "offlineMessage": "Please check your internet connection to view this document.",
+    "loadErrorMessage": "Unable to load this document.",
+    "retryButton": "Retry"
+  },
+  "auth": {
+    "fillAllFieldsTitle": "Please fill in all fields",
+    "login": {
+      "usernameLabel": "Username",
+      "passwordLabel": "Password",
+      "forgotPasswordLink": "Forgot Password?",
+      "loginButton": "Login",
+      "needAccount": "Need an account?",
+      "signUpHere": "Sign up here",
+      "failedTitle": "Login failed"
+    },
+    "signup": {
+      "emailLabel": "Email",
+      "usernameLabel": "Username",
+      "passwordLabel": "Password",
+      "confirmPasswordLabel": "Confirm Password",
+      "friendIdLabel": "Friend's ID",
+      "signupButton": "Signup",
+      "alreadyHaveAccount": "Already have an account?",
+      "loginHere": "Login here",
+      "passwordsMismatch": "Passwords do not match",
+      "successTitle": "Signup Successful",
+      "successMessage": "Logging in with your new account...",
+      "continueButton": "Continue",
+      "failedTitle": "Signup failed",
+      "eulaPrefix": "By signing up, you agree to our ",
+      "eulaLink": "EULA",
+      "eulaSuffix": "."
+    },
+    "forgotPassword": {
+      "subtitle": "Matching username and email required for password reset.",
+      "usernameLabel": "Username",
+      "emailLabel": "Email",
+      "resetButton": "Reset Password",
+      "backToLogin": "Back to Login",
+      "forgotUsernameLink": "Forgot Username?",
+      "validationErrorTitle": "Validation Error",
+      "validationErrorMessage": "Please fill in all fields"
+    },
+    "forgotUsername": {
+      "subtitle": "Enter your email address and we'll send you your username",
+      "emailLabel": "Email",
+      "sendButton": "Send Username",
+      "backToLogin": "Back to Login",
+      "forgotPasswordLink": "Forgot Password?",
+      "validationErrorTitle": "Validation Error",
+      "validationErrorMessage": "Please enter your email address"
+    }
+  },
+  "settings": {
+    "sections": {
+      "account": "Account",
+      "preferences": "Preferences",
+      "legal": "Legal",
+      "version": "Version",
+      "dangerZone": "Danger zone"
+    },
+    "languageRow": "Language",
+    "language": {
+      "title": "Language",
+      "english": "English",
+      "japanese": "日本語"
+    },
+    "nickname": {
+      "label": "Display Name",
+      "updatedSuccess": "Nickname updated",
+      "updateError": "Error updating nickname",
+      "updateFailedError": "Failed to update nickname"
+    },
+    "uniqueId": {
+      "rowLabel": "Unique ID",
+      "label": "Unique ID (signup & friend requests)",
+      "updatedFallback": "Unique ID updated",
+      "badRequest": "Bad request"
+    },
+    "username": {
+      "label": "Current Username"
+    },
+    "email": {
+      "title": "Update Email",
+      "currentLabel": "Current Email",
+      "currentPasswordLabel": "Current Password",
+      "newLabel": "Email",
+      "updatedFallback": "Email updated"
+    },
+    "password": {
+      "title": "Change Password",
+      "currentLabel": "Current Password",
+      "newLabel": "Password",
+      "confirmLabel": "Confirm Password",
+      "changedSuccess": "Password changed"
+    },
+    "profileImage": {
+      "updateFailed": "Failed to update profile image"
+    },
+    "deleteAccount": {
+      "buttonLabel": "Delete Account",
+      "confirmTitle": "Delete Account",
+      "confirmMessage": "Are you sure you want to delete your account? This action cannot be undone.",
+      "userIdNotFoundError": "Unable to delete account. User ID not found.",
+      "deletedTitle": "Account Deleted",
+      "deletedMessage": "Your account has been deleted successfully."
+    },
+    "changeIcon": {
+      "rowLabel": "Change App Icon",
+      "subtitle": "Choose an icon for your home screen",
+      "resetButton": "Reset to Default Icon"
+    },
+    "legal": {
+      "privacyPolicy": "Privacy Policy",
+      "eula": "EULA"
+    }
+  },
+  "errors": {
+    "noInternetTitle": "No Internet Connection",
+    "noInternetGeneric": "Please check your connection and try again",
+    "noInternetLoadFriends": "Please check your connection to load friends",
+    "noInternetLoadGroups": "Please check your connection to load groups",
+    "noInternetOpenChat": "Please check your connection to open this chat",
+    "connectionTimeoutTitle": "Connection Timeout",
+    "connectionTimeoutMessage": "Request took too long. Please try again",
+    "generic": "An unexpected error occurred",
+    "noInternetLoadBlocked": "Please check your connection to load blocked users",
+    "noInternetLoadRequests": "Please check your connection to load friend requests",
+    "noInternetDeleteMessages": "Please check your connection to delete messages",
+    "noInternetReportUsers": "Please check your connection to report users",
+    "noInternetSendMessages": "Please check your connection to send messages"
+  }
+}

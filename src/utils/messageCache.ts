@@ -3,11 +3,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 export interface Message {
   _id: string;
   senderId: string;
-  nickname?: string; // from friendStore for display
+  nickname?: string; // from conversationStore for display
   message?: string;
   imageFiles?: string[];
   createdAt: string;
-  receiverId?: string;
+  conversationId?: string;
   updatedAt?: string;
 }
 
@@ -17,14 +17,20 @@ export interface CachedMessages {
 }
 
 const CACHE_PREFIX = "msg_cache";
-const CACHE_VERSION = "v1"; // helps with cache migrations
+// v2: keyed by conversationId instead of friendId, following the backend's
+// migration to a unified Conversation model. v1 entries are intentionally
+// never read again rather than migrated.
+const CACHE_VERSION = "v2";
 
 /**
  * Generate a unique cache key for a user+conversation pair
- * Format: msg_cache:v1:{userId}:{friendId}
+ * Format: msg_cache:v2:{userId}:{conversationId}
  */
-export const makeCacheKey = (userId: string, friendId: string): string => {
-  return `${CACHE_PREFIX}:${CACHE_VERSION}:${userId}:${friendId}`;
+export const makeCacheKey = (
+  userId: string,
+  conversationId: string
+): string => {
+  return `${CACHE_PREFIX}:${CACHE_VERSION}:${userId}:${conversationId}`;
 };
 
 /**
@@ -33,12 +39,12 @@ export const makeCacheKey = (userId: string, friendId: string): string => {
  */
 export const saveMessagesToCache = async (
   userId: string,
-  friendId: string,
+  conversationId: string,
   messages: Message[],
   maxMessages = 500
 ): Promise<void> => {
   try {
-    const key = makeCacheKey(userId, friendId);
+    const key = makeCacheKey(userId, conversationId);
     // Keep only the most recent maxMessages (assume already sorted newest first)
     const truncated = messages.slice(0, maxMessages);
     const payload: CachedMessages = {
@@ -58,10 +64,10 @@ export const saveMessagesToCache = async (
  */
 export const loadMessagesFromCache = async (
   userId: string,
-  friendId: string
+  conversationId: string
 ): Promise<CachedMessages | null> => {
   try {
-    const key = makeCacheKey(userId, friendId);
+    const key = makeCacheKey(userId, conversationId);
     const raw = await AsyncStorage.getItem(key);
     if (!raw) return null;
 
@@ -82,10 +88,10 @@ export const loadMessagesFromCache = async (
  */
 export const removeMessagesCache = async (
   userId: string,
-  friendId: string
+  conversationId: string
 ): Promise<void> => {
   try {
-    const key = makeCacheKey(userId, friendId);
+    const key = makeCacheKey(userId, conversationId);
     await AsyncStorage.removeItem(key);
   } catch (error) {
     console.warn("removeMessagesCache failed:", error);

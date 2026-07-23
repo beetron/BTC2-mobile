@@ -15,6 +15,7 @@ import CustomButton from "../../components/CustomButton";
 import CustomInput from "../../components/CustomInput";
 import { useForgotPassword } from "../../hooks/useForgotPassword";
 import profileValidator from "../../utils/profileValidator";
+import { useTranslation } from "../../hooks/useTranslation";
 
 interface FormData {
   username: string;
@@ -30,10 +31,17 @@ const ForgotPassword = () => {
   const router = useRouter();
   const { forgotPassword, isLoading } = useForgotPassword();
   const { checkEmailRegex } = profileValidator();
+  const { t, locale } = useTranslation();
+  // Noto Sans JP renders visibly larger than Funnel Display at the same
+  // nominal size, so Japanese uses one step down here.
+  const linkTextSize = locale === "ja" ? "text-base" : "text-lg";
 
   const onSubmit = async () => {
     if (formData.username === "" || formData.email === "") {
-      Alert.alert("Validation Error", "Please fill in all fields");
+      Alert.alert(
+        t("auth.forgotPassword.validationErrorTitle"),
+        t("auth.forgotPassword.validationErrorMessage")
+      );
       return;
     }
 
@@ -45,14 +53,14 @@ const ForgotPassword = () => {
     const result = await forgotPassword(formData);
 
     if (result.success && result.message) {
-      Alert.alert("Success", result.message, [
+      Alert.alert(t("common.success"), result.message, [
         {
-          text: "OK",
+          text: t("common.ok"),
           onPress: () => router.push("./Login"),
         },
       ]);
     } else if (result.error) {
-      Alert.alert("Error", result.error);
+      Alert.alert(t("common.error"), result.error);
     }
   };
 
@@ -77,12 +85,12 @@ const ForgotPassword = () => {
 
             {/* Subtitle */}
             <Text className="text-btc100 text-center mb-6 px-4">
-              Matching username and email required for password reset.
+              {t("auth.forgotPassword.subtitle")}
             </Text>
 
             {/* Username input */}
             <CustomInput
-              title="Username"
+              title={t("auth.forgotPassword.usernameLabel")}
               value={formData.username}
               onChangeText={(e) => setFormData({ ...formData, username: e })}
               containerStyles="w-3/5"
@@ -92,7 +100,7 @@ const ForgotPassword = () => {
 
             {/* Email input */}
             <CustomInput
-              title="Email"
+              title={t("auth.forgotPassword.emailLabel")}
               value={formData.email}
               onChangeText={(e) => setFormData({ ...formData, email: e })}
               containerStyles="w-3/5"
@@ -103,7 +111,7 @@ const ForgotPassword = () => {
 
             {/* Submit button */}
             <CustomButton
-              title="Reset Password"
+              title={t("auth.forgotPassword.resetButton")}
               isLoading={isLoading}
               textStyles="font-funnel-regular"
               containerStyles="w-3/5 top-5"
@@ -115,8 +123,8 @@ const ForgotPassword = () => {
               onPress={() => router.push("./Login")}
               className="top-8"
             >
-              <Text className="text-lg font-funnel-regular color-btc200 p-2">
-                Back to Login
+              <Text className={`${linkTextSize} font-funnel-regular color-btc200 p-2`}>
+                {t("auth.forgotPassword.backToLogin")}
               </Text>
             </TouchableOpacity>
 
@@ -125,8 +133,8 @@ const ForgotPassword = () => {
               onPress={() => router.push("./ForgotUsername")}
               className="top-10"
             >
-              <Text className="text-lg font-funnel-regular color-btc200 p-2">
-                Forgot Username?
+              <Text className={`${linkTextSize} font-funnel-regular color-btc200 p-2`}>
+                {t("auth.forgotPassword.forgotUsernameLink")}
               </Text>
             </TouchableOpacity>
           </View>

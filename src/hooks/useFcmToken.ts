@@ -1,19 +1,35 @@
-import { useState, useCallback } from "react";
-import messaging from "@react-native-firebase/messaging";
+import { useState, useCallback, useRef } from "react";
+import { getMessaging, getToken } from "@react-native-firebase/messaging";
+import * as Notifications from "expo-notifications";
 import * as SecureStore from "expo-secure-store";
 import * as Device from "expo-device";
 import axiosClient from "@/src/utils/axiosClient";
 import { useAuth } from "@/src/context/AuthContext";
 import { Alert } from "react-native";
 import { useNetwork } from "@/src/context/NetworkContext";
+import { useTranslation } from "@/src/hooks/useTranslation";
 
 const FCM_TOKEN = "fcm_token";
+const DEVICE_ID = "device_id";
+
+function generateUuidV4(): string {
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === "x" ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+}
 
 export default function useFcmToken() {
   const [fcmToken, setFcmToken] = useState<string | null>(null);
   const [isRegistering, setIsRegistering] = useState(false);
   const { authState } = useAuth();
   const { isConnected } = useNetwork();
+  const { t } = useTranslation();
+  // Guards against overlapping registration attempts -- manageFcmToken runs
+  // on mount and again on every app-foreground event, so a slow backend
+  // response to a previous call shouldn't get a second one stacked on top.
+  const isManagingRef = useRef(false);
 
   // Get mobile device info
   const getDeviceInfo = async () => {
@@ -24,6 +40,19 @@ export default function useFcmToken() {
     const deviceModel = Device.modelName || "Unknown Model";
 
     return `${deviceManufacturer}:${deviceModel}`;
+  };
+
+  // Stable per-install identifier so the backend can replace this device's
+  // FCM token instead of accumulating a duplicate when it rotates (e.g.
+  // after a cache clear). Persisted in SecureStore, same as fcm_token.
+  const getOrCreateDeviceId = async () => {
+    const existing = await SecureStore.getItemAsync(DEVICE_ID);
+    if (existing) {
+      return existing;
+    }
+    const newDeviceId = generateUuidV4();
+    await SecureStore.setItemAsync(DEVICE_ID, newDeviceId);
+    return newDeviceId;
   };
   /////////////////////////////////////////////
   // Register or Renew FCM token with backend
@@ -44,10 +73,12 @@ export default function useFcmToken() {
       try {
         setIsRegistering(true);
         const deviceInfo = await getDeviceInfo();
+        const deviceId = await getOrCreateDeviceId();
 
         const response = await axiosClient.put("/users/fcm/register", {
           token,
           device: deviceInfo,
+          deviceId,
         });
 
         if (response.status === 200) {
@@ -79,12 +110,14 @@ export default function useFcmToken() {
   /////////////////////////////////////////////
   const generateNewFcmToken = useCallback(async () => {
     try {
+      const messagingInstance = getMessaging();
+
       // Request client for notification permission
-      const permStatus = await messaging().requestPermission();
-      console.log("Notification permission status: ", permStatus);
+      const { status } = await Notifications.requestPermissionsAsync();
+      console.log("Notification permission status: ", status);
 
       // Get FCM token
-      const token = await messaging().getToken();
+      const token = await getToken(messagingInstance);
 
       if (token) {
         // Save FCM token to SecureStore
@@ -95,10 +128,10 @@ export default function useFcmToken() {
       return null;
     } catch (error) {
       console.error("Error generating FCM token: ", error);
-      Alert.alert("Error generating FCM token");
+      Alert.alert(t("fcm.tokenGenerationFailed"));
       return null;
     }
-  }, []);
+  }, [t]);
 
   /////////////////////////////////////////////
   // Token registration
@@ -108,17 +141,19 @@ export default function useFcmToken() {
       return;
     }
 
+    if (isManagingRef.current) {
+      return;
+    }
+    isManagingRef.current = true;
+
     try {
       // First check notification permission status
       // Permission status needs re-checking when app is re-installed
-      const permStatus = await messaging().hasPermission();
-      console.log("Current notification permission status:", permStatus);
+      const { status } = await Notifications.getPermissionsAsync();
+      console.log("Current notification permission status:", status);
 
       // If permission not granted, generate new token which will trigger permission request
-      if (
-        permStatus === messaging.AuthorizationStatus.NOT_DETERMINED ||
-        permStatus === messaging.AuthorizationStatus.DENIED
-      ) {
+      if (status === "undetermined" || status === "denied") {
         console.log(
           "Notification permission not granted, requesting permission..."
         );
@@ -148,9 +183,11 @@ export default function useFcmToken() {
       }
     } catch (error) {
       console.error("Error managing FCM token: ", error);
-      Alert.alert("Failed managing FCM token");
+      Alert.alert(t("fcm.manageFailed"));
+    } finally {
+      isManagingRef.current = false;
     }
-  }, [authState?.authenticated, generateNewFcmToken, registerFcmToken]);
+  }, [authState?.authenticated, generateNewFcmToken, registerFcmToken, t]);
 
   return { fcmToken, isRegistering, manageFcmToken };
 }

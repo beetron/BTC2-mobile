@@ -2,7 +2,7 @@ import { useCallback, useState } from "react";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 import { useNetwork } from "@/src/context/NetworkContext";
-import FriendStore from "../zustand/friendStore";
+import conversationStore from "../zustand/conversationStore";
 import { API_URL } from "../constants/api";
 
 interface AttachedImage {
@@ -16,7 +16,7 @@ export const useSendImages = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { authState } = useAuth();
   const { isConnected } = useNetwork();
-  const { selectedFriend, setShouldRender } = FriendStore();
+  const { selectedConversation, bumpRefreshSignal } = conversationStore();
 
   const sendImages = useCallback(
     async (images: AttachedImage[]): Promise<boolean> => {
@@ -25,8 +25,8 @@ export const useSendImages = () => {
         return false;
       }
 
-      if (!selectedFriend || !authState?.token) {
-        console.error("Missing selectedFriend or auth token");
+      if (!selectedConversation || !authState?.token) {
+        console.error("Missing selectedConversation or auth token");
         return false;
       }
 
@@ -40,7 +40,7 @@ export const useSendImages = () => {
 
         // Create FormData
         const formData = new FormData();
-        images.forEach((image, index) => {
+        images.forEach((image) => {
           formData.append("messageImages", {
             uri: image.uri,
             name: image.name,
@@ -50,7 +50,7 @@ export const useSendImages = () => {
 
         // Upload images
         const response = await axios.post(
-          `${API_URL}/messages/upload/${selectedFriend._id}`,
+          `${API_URL}/conversations/${selectedConversation.conversationId}/upload`,
           formData,
           {
             headers: {
@@ -61,8 +61,11 @@ export const useSendImages = () => {
         );
 
         if (response.data?.success) {
-          // Trigger message refresh to show uploaded images
-          setShouldRender();
+          // Unlike a text send, the upload response only returns a
+          // messageId (server-normalized filenames aren't echoed back), so
+          // there isn't enough to construct the message locally -- signal
+          // useGetMessages to refetch instead of an optimistic prepend.
+          bumpRefreshSignal();
           setIsLoading(false);
           return true;
         } else {
@@ -76,7 +79,7 @@ export const useSendImages = () => {
         return false;
       }
     },
-    [isConnected, selectedFriend, authState?.token, setShouldRender]
+    [isConnected, selectedConversation, authState?.token, bumpRefreshSignal]
   );
 
   return { sendImages, isLoading };

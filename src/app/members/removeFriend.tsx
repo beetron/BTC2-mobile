@@ -1,14 +1,14 @@
-import { View, Text, ActivityIndicator } from "react-native";
-import { useState, useEffect } from "react";
-import AntDesign from "@expo/vector-icons/AntDesign";
+import { View, Text, ActivityIndicator, Alert } from "react-native";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import CustomButton from "../../components/CustomButton";
-import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import useBlockUser from "@/src/hooks/useBlockUser";
 import { Image } from "expo-image";
 import { images } from "../../constants/images";
 import useGetMyFriends from "@/src/hooks/useGetMyFriends";
 import useRemoveFriend from "@/src/hooks/useRemoveFriend";
 import RemoveFriendHeader from "../../components/RemoveFriendHeader";
+import { useTranslation } from "../../hooks/useTranslation";
+import { colors } from "../../constants/colors";
 
 interface Friend {
   _id: string;
@@ -18,33 +18,56 @@ interface Friend {
   profileImageData?: string;
 }
 
-const removeFriend = () => {
+const RemoveFriendScreen = () => {
   const placeholderProfileImage = images.placeholderProfileImage;
-  const [shouldRender, setShouldRender] = useState(false);
+  // useGetMyFriends already fetches on focus internally -- the initial load
+  // comes from that, so we only need to call getMyFriends() here to refresh
+  // after a mutation (remove/block) while staying on this screen.
   const { myFriends, getMyFriends, isLoading } = useGetMyFriends();
   const { removeFriend, isLoading: removeIsLoading } = useRemoveFriend();
   const { blockUser, isLoading: blockIsLoading } = useBlockUser();
-
-  // Refresh list after removing a friend
-  useEffect(() => {
-    getMyFriends();
-  }, [shouldRender]);
+  const { t } = useTranslation();
 
   // Handle onPress remove
-  const handleOnPressRemove = async (friendId: string) => {
-    const success = await removeFriend(friendId);
-    if (success) {
-      console.log("Friend removed successfully");
-      setShouldRender((prev) => !prev);
-    }
+  const handleOnPressRemove = (friend: Friend) => {
+    Alert.alert(
+      t("friends.removeScreen.removeConfirmTitle", { name: friend.nickname }),
+      "",
+      [
+        { text: t("common.cancel"), style: "cancel" },
+        {
+          text: t("common.remove"),
+          style: "destructive",
+          onPress: async () => {
+            const success = await removeFriend(friend.uniqueId);
+            if (success) {
+              getMyFriends();
+            }
+          },
+        },
+      ]
+    );
   };
 
   // Handle onPress Block friend
-  const handleOnPressBlock = async (friendId: string) => {
-    const success = await blockUser(friendId);
-    if (success) {
-      setShouldRender((prev) => !prev);
-    }
+  const handleOnPressBlock = (friend: Friend) => {
+    Alert.alert(
+      t("friends.removeScreen.blockConfirmTitle", { name: friend.nickname }),
+      "",
+      [
+        { text: t("common.cancel"), style: "cancel" },
+        {
+          text: t("common.block"),
+          style: "destructive",
+          onPress: async () => {
+            const success = await blockUser(friend._id);
+            if (success) {
+              getMyFriends();
+            }
+          },
+        },
+      ]
+    );
   };
 
   return (
@@ -52,27 +75,26 @@ const removeFriend = () => {
       <RemoveFriendHeader />
       <View className="bg-btc500 m-6">
         <View className="flex-row items-start max-w-[90%]">
-          <AntDesign
-            name="exclamationcircleo"
+          <MaterialCommunityIcons
+            name="alert-circle-outline"
             size={28}
-            color="yellow"
+            color={colors.warning}
             className="m-2"
           />
           <Text className="text-btc100 font-funnel-regular text-xl">
-            Removing a friend will remove yourself from their friend list.{"\n"}
-            Blocking a friend will make you completely unreachable.
+            {t("friends.removeScreen.notice")}
           </Text>
         </View>
         {isLoading ? (
           <View className="mt-2 items-center jusitfy-center">
-            <ActivityIndicator size="large" color="white" />
+            <ActivityIndicator size="large" color={colors.btc100} />
           </View>
         ) : (
           <>
             <View className="mt-2 flex-col items-start w-full">
               {!myFriends || myFriends.length === 0 ? (
                 <Text className="text-btc100 font-funnel-regular text-2xl mt-4">
-                  You have no friends to remove
+                  {t("friends.removeScreen.empty")}
                 </Text>
               ) : (
                 myFriends.map((friend: Friend) => (
@@ -107,16 +129,18 @@ const removeFriend = () => {
                       style={{ width: 180, marginLeft: 8 }}
                     >
                       <CustomButton
-                        title="Remove"
-                        handlePress={() => handleOnPressRemove(friend.uniqueId)}
-                        containerStyles="px-4 py-2 mr-2 bg-yellow-700"
+                        title={t("common.remove")}
+                        handlePress={() => handleOnPressRemove(friend)}
+                        variant="danger"
+                        containerStyles="px-4 py-2 mr-2"
                         textStyles="text-base"
                       />
 
                       <CustomButton
-                        title="Block"
-                        handlePress={() => handleOnPressBlock(friend._id)}
-                        containerStyles="px-4 py-2 bg-red-700"
+                        title={t("common.block")}
+                        handlePress={() => handleOnPressBlock(friend)}
+                        variant="danger"
+                        containerStyles="px-4 py-2"
                         textStyles="text-base"
                       />
                     </View>
@@ -131,4 +155,4 @@ const removeFriend = () => {
   );
 };
 
-export default removeFriend;
+export default RemoveFriendScreen;
