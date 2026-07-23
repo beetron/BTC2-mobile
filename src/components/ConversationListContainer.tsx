@@ -9,6 +9,7 @@ import GroupConversationListItem from "./GroupConversationListItem";
 import { useFocusEffect } from "@react-navigation/native";
 import { useAppStateListener } from "@/src/context/AppStateContext";
 import conversationStore from "../zustand/conversationStore";
+import unreadStore from "../zustand/unreadStore";
 import useFcmToken from "../hooks/useFcmToken";
 import useSetBadgeCount from "../hooks/useSetBadgeCount";
 import useSocketListener from "../hooks/useSocketListener";
@@ -27,6 +28,7 @@ const ConversationListContainer = () => {
     useGetGroupConversations();
   const { manageFcmToken } = useFcmToken();
   const { setBadgeCountFromFriends } = useSetBadgeCount();
+  const { setTotalUnreadCount } = unreadStore();
 
   // Run Effect when screen is back in focus. getMyFriends/getGroupConversations
   // aren't called here -- useGetMyFriends/useGetGroupConversations already
@@ -58,6 +60,21 @@ const ConversationListContainer = () => {
   useEffect(() => {
     setBadgeCountFromFriends(myFriends);
   }, [myFriends, setBadgeCountFromFriends]);
+
+  // Home tab badge -- direct-chat unread (myFriends) plus group-chat unread
+  // (groupConversations), recomputed whenever either list changes so it
+  // stays live across socket-driven refreshes and focus refetches.
+  useEffect(() => {
+    const friendsUnread = myFriends.reduce(
+      (sum, friend) => sum + (friend.unreadCount || 0),
+      0
+    );
+    const groupsUnread = groupConversations.reduce(
+      (sum, group) => sum + (group.unreadCount || 0),
+      0
+    );
+    setTotalUnreadCount(friendsUnread + groupsUnread);
+  }, [myFriends, groupConversations, setTotalUnreadCount]);
 
   // Refresh unread counts / ordering on any conversation activity -- any of
   // these can change what /users/friendlist or /conversations reports.

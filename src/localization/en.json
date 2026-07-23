@@ -108,7 +108,9 @@
     },
     "removeScreen": {
       "notice": "Removing a friend will remove yourself from their friend list.\nBlocking a friend will make you completely unreachable.",
-      "empty": "You have no friends to remove"
+      "empty": "You have no friends to remove",
+      "removeConfirmTitle": "Remove {{name}}?",
+      "blockConfirmTitle": "Block {{name}}?"
     },
     "acceptedSuccess": "Friend accepted",
     "requestSentSuccess": "Friend request sent",

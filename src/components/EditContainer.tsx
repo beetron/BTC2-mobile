@@ -1,14 +1,23 @@
 import { View, ScrollView } from "react-native";
-import React from "react";
+import React, { useCallback } from "react";
+import { useFocusEffect } from "expo-router";
 import EditAddFriendRow from "./EditAddFriendRow";
 import EditFriendRequestsRow from "./EditFriendRequestsRow";
 import EditBlockedFriend from "./EditBlockedFriend";
 import EditRemoveFriend from "./EditRemoveFriend";
 import SettingsSection from "./SettingsSection";
 import { useTranslation } from "../hooks/useTranslation";
+import useFriendRequestsCount from "../hooks/useFriendRequestsCount";
 
 const EditContainer = () => {
   const { t } = useTranslation();
+  const { refreshFriendRequestsCount } = useFriendRequestsCount();
+
+  useFocusEffect(
+    useCallback(() => {
+      refreshFriendRequestsCount();
+    }, [refreshFriendRequestsCount])
+  );
 
   return (
     <ScrollView

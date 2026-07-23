@@ -6,6 +6,7 @@ import { Alert } from "react-native";
 import useGetProfileImage from "./useGetProfileImage";
 import { useNetwork } from "@/src/context/NetworkContext";
 import { useTranslation } from "./useTranslation";
+import friendRequestsStore from "../zustand/friendRequestsStore";
 
 interface Friend {
   _id: string;
@@ -22,6 +23,7 @@ const useGetFriendRequests = () => {
   const { getProfileImage } = useGetProfileImage();
   const { isConnected } = useNetwork();
   const { t } = useTranslation();
+  const { setPendingCount } = friendRequestsStore();
 
   const getFriendRequests = useCallback(async () => {
     try {
@@ -60,6 +62,7 @@ const useGetFriendRequests = () => {
         })
       );
       setFriendRequests(friendsWithImages);
+      setPendingCount(friendsWithImages.length);
     } catch (error: any) {
       if (error.networkError === "TIMEOUT") {
         Alert.alert(
@@ -74,7 +77,7 @@ const useGetFriendRequests = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [isConnected, t]);
+  }, [isConnected, t, setPendingCount]);
 
   useFocusEffect(
     useCallback(() => {

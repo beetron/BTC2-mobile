@@ -1,4 +1,4 @@
-import { View, Text, ActivityIndicator } from "react-native";
+import { View, Text, ActivityIndicator, Alert } from "react-native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import CustomButton from "../../components/CustomButton";
 import useBlockUser from "@/src/hooks/useBlockUser";
@@ -29,20 +29,45 @@ const RemoveFriendScreen = () => {
   const { t } = useTranslation();
 
   // Handle onPress remove
-  const handleOnPressRemove = async (friendId: string) => {
-    const success = await removeFriend(friendId);
-    if (success) {
-      console.log("Friend removed successfully");
-      getMyFriends();
-    }
+  const handleOnPressRemove = (friend: Friend) => {
+    Alert.alert(
+      t("friends.removeScreen.removeConfirmTitle", { name: friend.nickname }),
+      "",
+      [
+        { text: t("common.cancel"), style: "cancel" },
+        {
+          text: t("common.remove"),
+          style: "destructive",
+          onPress: async () => {
+            const success = await removeFriend(friend.uniqueId);
+            if (success) {
+              getMyFriends();
+            }
+          },
+        },
+      ]
+    );
   };
 
   // Handle onPress Block friend
-  const handleOnPressBlock = async (friendId: string) => {
-    const success = await blockUser(friendId);
-    if (success) {
-      getMyFriends();
-    }
+  const handleOnPressBlock = (friend: Friend) => {
+    Alert.alert(
+      t("friends.removeScreen.blockConfirmTitle", { name: friend.nickname }),
+      "",
+      [
+        { text: t("common.cancel"), style: "cancel" },
+        {
+          text: t("common.block"),
+          style: "destructive",
+          onPress: async () => {
+            const success = await blockUser(friend._id);
+            if (success) {
+              getMyFriends();
+            }
+          },
+        },
+      ]
+    );
   };
 
   return (
@@ -105,7 +130,7 @@ const RemoveFriendScreen = () => {
                     >
                       <CustomButton
                         title={t("common.remove")}
-                        handlePress={() => handleOnPressRemove(friend.uniqueId)}
+                        handlePress={() => handleOnPressRemove(friend)}
                         variant="danger"
                         containerStyles="px-4 py-2 mr-2"
                         textStyles="text-base"
@@ -113,7 +138,7 @@ const RemoveFriendScreen = () => {
 
                       <CustomButton
                         title={t("common.block")}
-                        handlePress={() => handleOnPressBlock(friend._id)}
+                        handlePress={() => handleOnPressBlock(friend)}
                         variant="danger"
                         containerStyles="px-4 py-2"
                         textStyles="text-base"

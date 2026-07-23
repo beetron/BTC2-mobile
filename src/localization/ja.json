@@ -108,7 +108,9 @@
     },
     "removeScreen": {
       "notice": "友達を削除すると、相手の友達リストからも削除されます。\nブロックすると、完全に連絡が取れなくなります。",
-      "empty": "削除できる友達がいません"
+      "empty": "削除できる友達がいません",
+      "removeConfirmTitle": "{{name}}を削除しますか?",
+      "blockConfirmTitle": "{{name}}をブロックしますか?"
     },
     "acceptedSuccess": "友達リクエストを承認しました",
     "requestSentSuccess": "友達リクエストを送信しました",
