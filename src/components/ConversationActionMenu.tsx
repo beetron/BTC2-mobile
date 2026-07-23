@@ -6,20 +6,25 @@ import useDeleteMessages from "@/src/hooks/useDeleteMessages";
 import useReportUser from "@/src/hooks/useReportUser";
 import useBlockUser from "@/src/hooks/useBlockUser";
 import conversationStore from "@/src/zustand/conversationStore";
+import { useAuth } from "@/src/context/AuthContext";
 import { useRouter } from "expo-router";
 import { useTranslation } from "@/src/hooks/useTranslation";
-import ActionSheet from "./ActionSheet";
+import ActionSheet, { ActionSheetOption } from "./ActionSheet";
 
-// Direct chats: Delete Messages / Report User / Block User (report/block
-// need selectedConversation.partnerId, which is null for groups).
-// Group chats: Delete Messages / Group Settings -- member management
-// (add/remove/rename/leave) lives in the groupSettings screen instead of
-// being duplicated in this menu.
+// Direct chats: Delete Messages / Report User / Block User, targeting
+// selectedConversation.partnerId directly.
+// Group chats: Delete Messages / Report User / Block User / Group Settings.
+// Report opens a second sheet to pick which member to report (partnerId
+// doesn't exist for groups). Block is disabled in groups -- there's no
+// single "the other person" to block, and blocking one member wouldn't
+// remove the rest, so we point people at leaving the group instead.
 const ConversationActionMenu = () => {
   const { deleteMessages } = useDeleteMessages();
   const { reportUser } = useReportUser();
   const { blockUser } = useBlockUser();
   const { t } = useTranslation();
+  const { authState } = useAuth();
+  const myUserId = authState?.user?._id;
   const {
     latestMessageId,
     selectedConversation,
@@ -29,6 +34,7 @@ const ConversationActionMenu = () => {
   } = conversationStore();
   const router = useRouter();
   const [menuVisible, setMenuVisible] = useState(false);
+  const [memberPickerVisible, setMemberPickerVisible] = useState(false);
 
   const handleDelete = () => {
     if (!latestMessageId) {
@@ -55,7 +61,9 @@ const ConversationActionMenu = () => {
     );
   };
 
-  const handleReport = () => {
+  // targetUserId: the direct-chat partner by default, or (for groups) the
+  // member picked from the member-select sheet below.
+  const handleReport = (targetUserId?: string) => {
     if (!latestMessageId) {
       Alert.alert(
         t("conversation.actionMenu.noMessageSelectedTitle"),
@@ -64,7 +72,8 @@ const ConversationActionMenu = () => {
       return;
     }
 
-    if (!selectedConversation?.partnerId) {
+    const reportTargetId = targetUserId ?? selectedConversation?.partnerId;
+    if (!reportTargetId) {
       Alert.alert(t("common.error"), t("conversation.actionMenu.unableToIdentifyReport"));
       return;
     }
@@ -75,26 +84,30 @@ const ConversationActionMenu = () => {
       [
         {
           text: t("conversation.actionMenu.reasonInappropriate"),
-          onPress: () => showConfirmation(t("conversation.actionMenu.reasonInappropriate")),
+          onPress: () =>
+            showConfirmation(t("conversation.actionMenu.reasonInappropriate"), reportTargetId),
         },
         {
           text: t("conversation.actionMenu.reasonHarassment"),
-          onPress: () => showConfirmation(t("conversation.actionMenu.reasonHarassment")),
+          onPress: () =>
+            showConfirmation(t("conversation.actionMenu.reasonHarassment"), reportTargetId),
         },
         {
           text: t("conversation.actionMenu.reasonSpam"),
-          onPress: () => showConfirmation(t("conversation.actionMenu.reasonSpam")),
+          onPress: () =>
+            showConfirmation(t("conversation.actionMenu.reasonSpam"), reportTargetId),
         },
         {
           text: t("conversation.actionMenu.reasonOther"),
-          onPress: () => showConfirmation(t("conversation.actionMenu.reasonOther")),
+          onPress: () =>
+            showConfirmation(t("conversation.actionMenu.reasonOther"), reportTargetId),
         },
         { text: t("common.cancel"), style: "cancel" },
       ]
     );
   };
 
-  const showConfirmation = (reason: string) => {
+  const showConfirmation = (reason: string, targetUserId: string) => {
     Alert.alert(
       t("conversation.actionMenu.confirmReportTitle"),
       t("conversation.actionMenu.confirmReportMessage", { reason }),
@@ -103,13 +116,9 @@ const ConversationActionMenu = () => {
           text: t("conversation.actionMenu.reportButton"),
           style: "destructive",
           onPress: async () => {
-            if (!selectedConversation?.partnerId) {
-              Alert.alert(t("common.error"), t("conversation.actionMenu.unableToIdentifyReport"));
-              return;
-            }
             const success = await reportUser({
               reason,
-              friendId: selectedConversation.partnerId,
+              friendId: targetUserId,
             });
             if (success) {
               Alert.alert(
@@ -120,6 +129,55 @@ const ConversationActionMenu = () => {
           },
         },
         { text: t("common.cancel"), style: "cancel" },
+      ]
+    );
+  };
+
+  // Group chats: opens a member-picker sheet since there's no single
+  // partnerId to report -- picking a member re-enters the same
+  // reason-selection flow used for direct chats.
+  const openGroupReportPicker = () => {
+    if (!latestMessageId) {
+      Alert.alert(
+        t("conversation.actionMenu.noMessageSelectedTitle"),
+        t("conversation.actionMenu.noMessageSelectedMessage")
+      );
+      return;
+    }
+
+    const reportableMembers = (selectedConversation?.members ?? []).filter(
+      (member) => member.userId !== myUserId
+    );
+
+    if (reportableMembers.length === 0) {
+      Alert.alert(t("common.error"), t("conversation.actionMenu.noMembersToReport"));
+      return;
+    }
+
+    setMemberPickerVisible(true);
+  };
+
+  const memberPickerOptions: ActionSheetOption[] = (selectedConversation?.members ?? [])
+    .filter((member) => member.userId !== myUserId)
+    .map((member) => ({
+      label: member.nickname || t("common.unknown"),
+      icon: "account-circle-outline",
+      onPress: () => handleReport(member.userId),
+    }));
+
+  // Group chats have no single "the other person" to block, and blocking
+  // one member wouldn't remove the rest from the conversation -- leaving
+  // is the group equivalent of blocking in a direct chat.
+  const handleGroupBlockAttempt = () => {
+    Alert.alert(
+      t("conversation.actionMenu.blockUser"),
+      t("conversation.actionMenu.blockUnavailableInGroupMessage"),
+      [
+        { text: t("common.cancel"), style: "cancel" },
+        {
+          text: t("conversation.actionMenu.groupSettings"),
+          onPress: () => router.push("/members/groupSettings"),
+        },
       ]
     );
   };
@@ -163,6 +221,17 @@ const ConversationActionMenu = () => {
             onPress: handleDelete,
           },
           {
+            label: t("conversation.actionMenu.reportUser"),
+            icon: "flag-outline",
+            onPress: openGroupReportPicker,
+          },
+          {
+            label: t("conversation.actionMenu.blockUser"),
+            icon: "account-cancel-outline",
+            variant: "danger" as const,
+            onPress: handleGroupBlockAttempt,
+          },
+          {
             label: t("conversation.actionMenu.groupSettings"),
             icon: "account-group",
             onPress: () => router.push("/members/groupSettings"),
@@ -197,6 +266,12 @@ const ConversationActionMenu = () => {
         visible={menuVisible}
         onClose={() => setMenuVisible(false)}
         options={menuOptions}
+      />
+      <ActionSheet
+        visible={memberPickerVisible}
+        onClose={() => setMemberPickerVisible(false)}
+        options={memberPickerOptions}
+        title={t("conversation.actionMenu.selectMemberToReport")}
       />
     </View>
   );

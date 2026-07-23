@@ -15,12 +15,14 @@ interface ActionSheetProps {
   visible: boolean;
   onClose: () => void;
   options: ActionSheetOption[];
+  title?: string;
 }
 
 const ActionSheet: React.FC<ActionSheetProps> = ({
   visible,
   onClose,
   options,
+  title,
 }) => {
   const { t } = useTranslation();
 
@@ -47,6 +49,13 @@ const ActionSheet: React.FC<ActionSheetProps> = ({
       >
         <TouchableOpacity activeOpacity={1} className="mx-6">
           <View className="bg-card rounded-2xl overflow-hidden">
+            {title && (
+              <View className="px-4 py-3 border-b border-btc500">
+                <Text className="text-btc200 font-funnel-regular text-sm text-center">
+                  {title}
+                </Text>
+              </View>
+            )}
             {options.map((option, index) => {
               const isDanger = option.variant === "danger";
               return (

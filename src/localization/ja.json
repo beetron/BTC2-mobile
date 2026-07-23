@@ -57,7 +57,10 @@
       "unableToIdentifyReport": "報告するユーザーを特定できません。",
       "unableToIdentifyBlock": "ブロックするユーザーを特定できません。",
       "blockConfirmTitle": "ユーザーをブロック",
-      "blockConfirmMessage": "ユーザーをブロックすると、友達リストから削除され、会話も削除されます。続けますか?"
+      "blockConfirmMessage": "ユーザーをブロックすると、友達リストから削除され、会話も削除されます。続けますか?",
+      "selectMemberToReport": "報告するメンバーを選択してください",
+      "noMembersToReport": "このグループには報告できる他のメンバーがいません。",
+      "blockUnavailableInGroupMessage": "グループチャットではブロック機能は利用できません。嫌な思いをしている場合は、グループから退出してください。"
     },
     "linkPreview": {
       "loading": "プレビューを読み込み中…",
