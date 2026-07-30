@@ -26,12 +26,12 @@ const Conversation = () => {
   // tap, or a future notification deep link).
   useEffect(() => {
     if (!conversationId) {
-      router.replace("/members");
+      router.dismissTo("/members");
       return;
     }
     if (selectedConversation?.conversationId !== conversationId) {
       getConversationDetail(conversationId).then((success) => {
-        if (!success) router.replace("/members");
+        if (!success) router.dismissTo("/members");
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

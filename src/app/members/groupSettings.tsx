@@ -100,7 +100,10 @@ const GroupSettingsScreen = () => {
           if (success) {
             setMessages([]);
             setSelectedConversation(null);
-            router.replace("/members");
+            // Pops groupSettings *and* the conversation underneath it -- replace()
+            // only swapped groupSettings out, stranding a dead conversation screen
+            // for the group we just left in the back stack.
+            router.dismissTo("/members");
           }
         },
       },

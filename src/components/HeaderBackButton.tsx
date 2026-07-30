@@ -4,7 +4,7 @@ import { useRouter } from "expo-router";
 import { colors } from "../constants/colors";
 
 interface HeaderBackButtonProps {
-  routerOption: string;
+  routerOption: "back" | "home";
 }
 
 const HeaderBackButton = ({ routerOption }: HeaderBackButtonProps) => {
@@ -14,8 +14,18 @@ const HeaderBackButton = ({ routerOption }: HeaderBackButtonProps) => {
     if (routerOption === "back") {
       router.back();
     }
-    if (routerOption === "replaceHome") {
-      router.replace("/members");
+    // dismissTo, not replace -- replace("/members") swapped the current screen
+    // for a *brand-new* members/(tabs) route instead of returning to the one
+    // already underneath it, leaving a live copy of the whole tab navigator in
+    // the stack per back tap. dismissTo pops back to the existing entry, and
+    // falls back to replace behaviour if (tabs) isn't in the stack at all
+    // (e.g. opened straight into a chat from a push notification).
+    //
+    // Safe now that the list screens refresh via useFocusEffect -- the forced
+    // remount replace() gave us was only ever a workaround for the plain
+    // useEffect they used to fetch with.
+    if (routerOption === "home") {
+      router.dismissTo("/members");
     }
   };
   return (

@@ -21,7 +21,7 @@ const ConversationHeader = () => {
     <View className="flex-1 max-h-28 border-b-hairline border-btc100 bg-[#1f1f2e]">
       <View className="flex-row absolute bottom-0 items-center w-full px-2">
         <View className="flex-row items-center flex-1 min-w-0">
-          <HeaderBackButton routerOption="replaceHome" />
+          <HeaderBackButton routerOption="home" />
           {selectedConversation && isGroup && (
             <TouchableOpacity
               onPress={() => router.push("/members/groupSettings")}
