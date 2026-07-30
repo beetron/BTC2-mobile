@@ -202,8 +202,9 @@ const ConversationActionMenu = () => {
               // Clear conversation state and go back to friends list
               setMessages([]);
               setSelectedConversation(null);
-              // Replace current route with members index to show the conversation list
-              router.replace("/members");
+              // Pop back to the existing members index to show the conversation
+              // list -- its focus effect refetches, so the blocked user drops off
+              router.dismissTo("/members");
             }
           },
         },

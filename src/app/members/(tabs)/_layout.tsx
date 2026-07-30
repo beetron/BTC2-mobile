@@ -1,8 +1,8 @@
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { Alert, View } from "react-native";
-import { Tabs } from "expo-router";
+import { Tabs, useFocusEffect } from "expo-router";
 import { useAuth } from "../../../context/AuthContext";
-import React, { useEffect } from "react";
+import React, { useCallback } from "react";
 import HeaderPrimary from "../../../components/HeaderPrimary";
 import TabBarBadge from "../../../components/TabBarBadge";
 import { useTranslation } from "../../../hooks/useTranslation";
@@ -19,9 +19,16 @@ const TabsLayout = () => {
   const { totalUnreadCount } = unreadStore();
   const { refreshFriendRequestsCount } = useFriendRequestsCount();
 
-  useEffect(() => {
-    refreshFriendRequestsCount();
-  }, [refreshFriendRequestsCount]);
+  // Focus effect, not mount effect -- this used to be refreshed as a side
+  // effect of the back button remounting the whole tab navigator. Now that
+  // back genuinely pops instead, this layout stays mounted, so a plain
+  // useEffect would leave the pending-requests badge stale after returning
+  // from a conversation. Fires whenever the (tabs) route regains focus.
+  useFocusEffect(
+    useCallback(() => {
+      refreshFriendRequestsCount();
+    }, [refreshFriendRequestsCount])
+  );
 
   useAppStateListener(() => {
     refreshFriendRequestsCount();

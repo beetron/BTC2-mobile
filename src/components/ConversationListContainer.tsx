@@ -23,7 +23,7 @@ const ConversationListContainer = () => {
   const router = useRouter();
   const { t } = useTranslation();
   const { setMessages, setSelectedConversation } = conversationStore();
-  const { myFriends, isLoading, getMyFriends } = useGetMyFriends();
+  const { myFriends, isInitialLoad, getMyFriends } = useGetMyFriends();
   const { groupConversations, getGroupConversations } =
     useGetGroupConversations();
   const { manageFcmToken } = useFcmToken();
@@ -119,7 +119,12 @@ const ConversationListContainer = () => {
     });
   }, [myFriends, groupConversations]);
 
-  if (isLoading) {
+  // Only on the very first load -- a refresh keeps the current rows on screen
+  // and swaps them out when it resolves. Row keys are stable (friend._id /
+  // conversationId) so React updates in place rather than remounting, and
+  // scroll position survives. Same stale-while-revalidate shape as
+  // ConversationMessages.tsx's `isLoading && messages.length === 0`.
+  if (isInitialLoad) {
     return (
       <View className="flex-1 justify-center items-center">
         <ActivityIndicator size="large" color="white" />
