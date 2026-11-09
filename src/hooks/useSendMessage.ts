@@ -14,14 +14,16 @@ const useSendMessage = () => {
   const { isConnected } = useNetwork();
   const { t } = useTranslation();
 
-  const sendMessage = async (message: string) => {
+  // Resolves true only when the message was accepted by the server, so the
+  // caller can restore the input text on any failure path.
+  const sendMessage = async (message: string): Promise<boolean> => {
     try {
       setIsLoading(true);
 
       if (!isConnected) {
         Alert.alert(t("errors.noInternetTitle"), t("errors.noInternetSendMessages"));
         setIsLoading(false);
-        return;
+        return false;
       }
 
       if (authState?.authenticated && selectedConversation && message) {
@@ -43,11 +45,11 @@ const useSendMessage = () => {
             conversationId,
           });
           setLatestMessageId(messageId);
-        } else {
-          Alert.alert(t("common.error"), t("conversation.sendMessageFailed"));
+          return true;
         }
-        setIsLoading(false);
+        Alert.alert(t("common.error"), t("conversation.sendMessageFailed"));
       }
+      return false;
     } catch (e: any) {
       if (e.networkError === "TIMEOUT") {
         Alert.alert(
@@ -58,7 +60,9 @@ const useSendMessage = () => {
         // Already alerted in pre-flight check
       } else {
         console.log("Error: ", e.response?.data?.error || e.message);
+        Alert.alert(t("common.error"), t("conversation.sendMessageFailed"));
       }
+      return false;
     } finally {
       setIsLoading(false);
     }

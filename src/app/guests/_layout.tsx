@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { Redirect, Stack } from "expo-router";
 import { useAuth } from "../../context/AuthContext";
 import { useLocalSearchParams } from "expo-router";
+import AuthCheckingScreen from "../../components/AuthCheckingScreen";
 
 const GuestsLayout = () => {
   const { authState } = useAuth();
@@ -14,6 +15,11 @@ const GuestsLayout = () => {
       console.log("Forcing login screen remount");
     }
   }, [params.reset]);
+
+  // Still restoring the saved session: don't show Login yet
+  if (authState?.authenticated === null) {
+    return <AuthCheckingScreen />;
+  }
 
   if (authState?.authenticated === true) {
     return <Redirect href={"/members" as any} />;

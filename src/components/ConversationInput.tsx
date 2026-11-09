@@ -14,13 +14,17 @@ const ConversationInput = () => {
   const { sendImages, isLoading: isImageLoading } = useSendImages();
 
   // Handle send message
-  const handleOnPress = () => {
-    if (message.trim()) {
-      sendMessage(message);
-      console.log("Sending message:", message);
+  const handleOnPress = async () => {
+    const sent = message;
+    if (!sent.trim()) return;
 
-      // Clear input field
-      setMessage("");
+    // Clear immediately so the composer feels responsive
+    setMessage("");
+
+    const ok = await sendMessage(sent);
+    if (!ok) {
+      // Restore the unsent text, unless the user already started typing again
+      setMessage((current) => (current === "" ? sent : current));
     }
   };
 
@@ -63,7 +67,10 @@ const ConversationInput = () => {
           }}
           value={message}
           onChangeText={handleTextChange}
-          editable={!isDisabled}
+          // Intentionally always editable: toggling `editable` in the same
+          // render as the clear makes iOS blur the field, which commits any
+          // in-progress IME / predictive text and drops the clear. The send
+          // button is already disabled while sending.
         />
         <TouchableOpacity
           onPress={handleOnPress}

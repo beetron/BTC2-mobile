@@ -32,6 +32,8 @@ interface AuthUser {
 interface AuthState {
   token: string | null;
   refreshToken: string | null;
+  // null = still restoring the saved session at launch, so screens must not
+  // treat it as logged out (that is what briefly showed the Login screen)
   authenticated: boolean | null;
   user?: AuthUser | null;
 }
@@ -56,10 +58,11 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }: any) => {
+  // Starts as null (checking) until restoreAuthState settles it to true/false
   const [authState, setAuthState] = useState<AuthState>({
     token: null,
     refreshToken: null,
-    authenticated: false,
+    authenticated: null,
     user: null,
   });
 

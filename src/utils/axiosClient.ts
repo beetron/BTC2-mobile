@@ -95,9 +95,13 @@ export const attemptTokenRefresh = (): Promise<boolean> => {
       // Bare axios call (not axiosClient) so this request never passes
       // through the response interceptor below and can't recursively
       // trigger another refresh attempt.
-      const response = await axios.post(`${API_URL}/auth/refresh`, {
-        refreshToken: storedRefreshToken,
-      });
+      // Same timeout as axiosClient: this runs during launch, so a stalled
+      // network must not leave the app waiting on it indefinitely
+      const response = await axios.post(
+        `${API_URL}/auth/refresh`,
+        { refreshToken: storedRefreshToken },
+        { timeout: 10000 }
+      );
 
       const { token, refreshToken } = response.data;
       await SecureStore.setItemAsync(JWT_KEY, token);

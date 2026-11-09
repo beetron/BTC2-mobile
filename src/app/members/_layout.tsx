@@ -3,9 +3,16 @@ import { useAuth } from "../../context/AuthContext";
 import React from "react";
 import HeaderPrimary from "../../components/HeaderPrimary";
 import { SocketProvider } from "@/src/context/SocketContext";
+import AuthCheckingScreen from "@/src/components/AuthCheckingScreen";
 
 const TabLayout = () => {
   const { authState, onLogout } = useAuth();
+
+  // Still restoring the saved session (e.g. app opened from a notification):
+  // wait instead of bouncing through the Login screen
+  if (authState?.authenticated === null) {
+    return <AuthCheckingScreen />;
+  }
 
   if (authState?.authenticated !== true) {
     return <Redirect href="/guests/Login" />;
