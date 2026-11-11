@@ -99,22 +99,22 @@ export const removeMessagesCache = async (
 };
 
 /**
- * Clear all message caches for a user
- * Useful when user logs out
+ * Delete every cached message on the device, for every user and every
+ * cache version (old v1 entries included). Called on logout: AsyncStorage
+ * is not encrypted, so cached conversations must not outlive the session,
+ * especially on a device someone else may sign in to next.
  */
-export const clearAllUserMessageCaches = async (
-  userId: string
-): Promise<void> => {
+export const clearAllMessageCaches = async (): Promise<void> => {
   try {
     const allKeys = await AsyncStorage.getAllKeys();
-    const userCacheKeys = allKeys.filter((key) =>
-      key.startsWith(`${CACHE_PREFIX}:${CACHE_VERSION}:${userId}:`)
+    const cacheKeys = allKeys.filter((key) =>
+      key.startsWith(`${CACHE_PREFIX}:`)
     );
-    if (userCacheKeys.length > 0) {
-      await AsyncStorage.multiRemove(userCacheKeys);
+    if (cacheKeys.length > 0) {
+      await AsyncStorage.multiRemove(cacheKeys);
     }
   } catch (error) {
-    console.warn("clearAllUserMessageCaches failed:", error);
+    console.warn("clearAllMessageCaches failed:", error);
   }
 };
 

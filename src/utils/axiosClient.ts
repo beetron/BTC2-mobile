@@ -1,6 +1,7 @@
 import axios from "axios";
 import * as SecureStore from "expo-secure-store";
 import { API_URL } from "@/src/constants/api";
+import { clearAllMessageCaches } from "@/src/utils/messageCache";
 
 export const JWT_KEY = "jwt";
 export const REFRESH_KEY = "refreshToken";
@@ -40,9 +41,11 @@ export const handleLogout = async () => {
       SecureStore.deleteItemAsync(JWT_KEY),
       SecureStore.deleteItemAsync(REFRESH_KEY),
       SecureStore.deleteItemAsync(USER_KEY),
+      // Cached messages live in unencrypted AsyncStorage; never fails
+      clearAllMessageCaches(),
     ]);
 
-    console.log("Logged out - tokens cleared");
+    console.log("Logged out - tokens and message cache cleared");
 
     // Best-effort server-side revocation; failure is fine since local state
     // is already cleared.
