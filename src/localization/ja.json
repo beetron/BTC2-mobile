@@ -51,6 +51,7 @@
     "yourFriendFallback": "友達",
     "inputPlaceholder": "メッセージを入力...",
     "sendMessageFailed": "メッセージの送信に失敗しました",
+    "sendPhotosFailed": "写真の送信に失敗しました",
     "actionMenu": {
       "deleteMessages": "メッセージを削除",
       "reportUser": "ユーザーを報告",
@@ -168,6 +169,7 @@
       "instructions": "友達のQRコードにカメラを向けてください",
       "permissionMessage": "QRコードをスキャンするにはカメラへのアクセスが必要です。",
       "permissionButton": "カメラへのアクセスを許可",
+      "openSettingsButton": "設定を開く",
       "invalidQrTitle": "無効なQRコード",
       "invalidQrMessage": "有効なbTC2の友達コードではないようです。"
     },

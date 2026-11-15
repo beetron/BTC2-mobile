@@ -1,14 +1,15 @@
 import { useCallback, useState } from "react";
 import { Alert } from "react-native";
-import axios from "axios";
+import axiosClient from "../utils/axiosClient";
 import { useAuth } from "../context/AuthContext";
 import { useNetwork } from "@/src/context/NetworkContext";
-import conversationStore from "../zustand/conversationStore";
-import { API_URL } from "../constants/api";
-import { getCurrentSocketId, SOCKET_ID_HEADER } from "../utils/socketIdentity";
+import conversationStore, { isConversationOpen } from "../zustand/conversationStore";
 import { saveCurrentMessagesToCache } from "../utils/messageCache";
 import { isReplyTargetGone } from "./useSendMessage";
 import { useTranslation } from "./useTranslation";
+
+// Several photos over a slow connection take well over axiosClient's 10s
+const UPLOAD_TIMEOUT_MS = 120000;
 
 interface AttachedImage {
   uri: string;
@@ -29,7 +30,7 @@ export const useSendImages = () => {
   const sendImages = useCallback(
     async (images: AttachedImage[], replyToId?: string): Promise<boolean> => {
       if (!isConnected) {
-        console.error("No internet connection");
+        Alert.alert(t("errors.noInternetTitle"), t("errors.noInternetSendMessages"));
         return false;
       }
 
@@ -57,43 +58,52 @@ export const useSendImages = () => {
         });
         if (replyToId) formData.append("replyToId", replyToId);
 
-        // Plain axios (multipart), so the X-Socket-Id that axiosClient adds
-        // to every other call is added here by hand
-        const socketId = getCurrentSocketId();
-        const response = await axios.post(
-          `${API_URL}/conversations/${selectedConversation.conversationId}/upload`,
+        // Through axiosClient (auth header, X-Socket-Id, and refresh-and-
+        // retry on an expired access token, which plain axios skipped so
+        // the upload just failed). Photos take longer than the default 10s.
+        const conversationId = selectedConversation.conversationId;
+        const response = await axiosClient.post(
+          `/conversations/${conversationId}/upload`,
           formData,
           {
-            headers: {
-              Authorization: `Bearer ${authState.token}`,
-              "Content-Type": "multipart/form-data",
-              ...(socketId ? { [SOCKET_ID_HEADER]: socketId } : {}),
-            },
+            headers: { "Content-Type": "multipart/form-data" },
+            timeout: UPLOAD_TIMEOUT_MS,
           }
         );
 
         if (response.data?.success) {
-          if (response.data.message) {
-            // The response carries the stored message (server filenames
-            // and, for a reply, the replyTo preview)
-            upsertMessages([response.data.message]);
-            saveCurrentMessagesToCache(authState.user?._id);
-          } else {
-            bumpRefreshSignal();
+          // Left the chat during the upload: the photos were still sent and
+          // show when that chat is opened again
+          if (isConversationOpen(conversationId)) {
+            if (response.data.message) {
+              // The response carries the stored message (server filenames
+              // and, for a reply, the replyTo preview)
+              upsertMessages([response.data.message]);
+              saveCurrentMessagesToCache(authState.user?._id, conversationId);
+            } else {
+              bumpRefreshSignal();
+            }
           }
           setIsLoading(false);
           return true;
         } else {
           console.error("Upload failed:", response.data);
+          Alert.alert(t("common.error"), t("conversation.sendPhotosFailed"));
           setIsLoading(false);
           return false;
         }
-      } catch (error) {
+      } catch (error: any) {
         if (replyToId && isReplyTargetGone(error)) {
           clearComposer();
           Alert.alert(t("common.error"), t("conversation.composer.replyTargetGone"));
+        } else if (error?.networkError === "TIMEOUT") {
+          Alert.alert(
+            t("errors.connectionTimeoutTitle"),
+            t("errors.connectionTimeoutMessage")
+          );
         } else {
           console.error("Error sending images:", error);
+          Alert.alert(t("common.error"), t("conversation.sendPhotosFailed"));
         }
         setIsLoading(false);
         return false;

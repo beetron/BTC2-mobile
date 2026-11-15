@@ -169,7 +169,15 @@ const conversationStore = create<ConversationStore>((set) => ({
       state.selectedConversation?.conversationId === selectedConversation?.conversationId
         ? { selectedConversation }
         : {
+            // Everything tied to the previous conversation goes. A stale
+            // latestMessageId let "Delete messages" in a chat whose messages
+            // hadn't loaded yet clear the PREVIOUS chat (the server finds
+            // the conversation from the message id), and a stale nextCursor
+            // paged the new chat with the old one's cursor.
             selectedConversation,
+            messages: [],
+            latestMessageId: null,
+            nextCursor: null,
             composer: null,
             changesSince: null,
             changesCursor: null,
@@ -221,3 +229,11 @@ const mergeOlder = (current: Message[], older: Message[]) => {
 };
 
 export default conversationStore;
+
+// True while `conversationId` is still the open chat. Anything that awaits
+// the network and then writes into the store checks this first: by the
+// time a send, upload or page load finishes the user may have gone back
+// and opened another chat, and the result must not land in that one.
+export const isConversationOpen = (conversationId: string | undefined): boolean =>
+  !!conversationId &&
+  conversationStore.getState().selectedConversation?.conversationId === conversationId;

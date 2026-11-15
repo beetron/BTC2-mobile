@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Alert } from "react-native";
 import axiosClient from "../utils/axiosClient";
-import conversationStore from "../zustand/conversationStore";
+import conversationStore, { isConversationOpen } from "../zustand/conversationStore";
 import { useAuth } from "../context/AuthContext";
 import { useNetwork } from "@/src/context/NetworkContext";
 import { useTranslation } from "./useTranslation";
@@ -28,12 +28,15 @@ const useMessageActions = () => {
     }
     try {
       setIsLoading(true);
-      const res = await request(selectedConversation.conversationId);
+      const conversationId = selectedConversation.conversationId;
+      const res = await request(conversationId);
       if (res.status === 200 && res.data?.message) {
         // The updated message (or the tombstone). upsertMessages also
         // refreshes every loaded quote of it.
-        upsertMessages([res.data.message]);
-        saveCurrentMessagesToCache(authState?.user?._id);
+        if (isConversationOpen(conversationId)) {
+          upsertMessages([res.data.message]);
+          saveCurrentMessagesToCache(authState?.user?._id, conversationId);
+        }
         return true;
       }
       Alert.alert(t("common.error"), t(failedKey));

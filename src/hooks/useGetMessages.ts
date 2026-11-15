@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import axiosClient from "../utils/axiosClient";
-import conversationStore, { Message } from "../zustand/conversationStore";
+import conversationStore, { Message, isConversationOpen } from "../zustand/conversationStore";
 import { hasFeature } from "../zustand/configStore";
 import { useAuth } from "../context/AuthContext";
 import { useNetwork } from "@/src/context/NetworkContext";
@@ -59,6 +59,7 @@ const useGetMessages = () => {
     // Load cache first and display immediately
     try {
       const cached = await loadMessagesFromCache(userId, conversationId);
+      if (!isConversationOpen(conversationId)) return;
       if (cached && cached.messages && cached.messages.length > 0) {
         setMessages(cached.messages);
         setLatestMessageId(cached.messages[0]._id);
@@ -88,6 +89,12 @@ const useGetMessages = () => {
       );
       if (res.status === 200) {
         const freshMessages: Message[] = res.data.messages;
+        // Cache this chat's fresh page either way, but only show it if the
+        // user is still in it
+        if (!isConversationOpen(conversationId)) {
+          await saveMessagesToCache(userId, conversationId, freshMessages);
+          return;
+        }
         setMessages(freshMessages);
         setNextCursor(res.data.nextCursor);
         // Restart the changes feed from this page. With no messages yet
@@ -172,7 +179,9 @@ const useGetMessages = () => {
           setChangesPosition({ cursor });
         }
         if (!res.data.hasMore) {
-          if (changed.length > 0) await saveCurrentMessagesToCache(authState.user._id);
+          if (changed.length > 0) {
+            await saveCurrentMessagesToCache(authState.user._id, conversationId);
+          }
           return;
         }
       }
@@ -215,11 +224,11 @@ const useGetMessages = () => {
         { params: { ...HISTORY_PARAMS, cursor: nextCursor } }
       );
 
-      if (res.status === 200) {
+      if (res.status === 200 && isConversationOpen(conversationId)) {
         const olderMessages: Message[] = res.data.messages;
         appendOlderMessages(olderMessages);
         setNextCursor(res.data.nextCursor);
-        await saveCurrentMessagesToCache(userId);
+        await saveCurrentMessagesToCache(userId, conversationId);
       }
     } catch (error: any) {
       console.log(

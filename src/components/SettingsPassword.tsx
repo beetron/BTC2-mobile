@@ -53,7 +53,9 @@ const SettingsPassword = () => {
       value={value}
       onChangeText={onChangeText}
       isPassword
-      maxLength={20}
+      // Signup and the API allow up to 72; 20 here locked out anyone with
+      // a longer password (current password could never be typed)
+      maxLength={72}
       autoCapitalize="none"
     />
   );

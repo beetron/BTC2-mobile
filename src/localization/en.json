@@ -51,6 +51,7 @@
     "yourFriendFallback": "your friend",
     "inputPlaceholder": "Start typing...",
     "sendMessageFailed": "Failed to send message",
+    "sendPhotosFailed": "Failed to send photos",
     "actionMenu": {
       "deleteMessages": "Delete Messages",
       "reportUser": "Report User",
@@ -168,6 +169,7 @@
       "instructions": "Point your camera at a friend's QR code",
       "permissionMessage": "Camera access is needed to scan QR codes.",
       "permissionButton": "Grant Camera Access",
+      "openSettingsButton": "Open Settings",
       "invalidQrTitle": "Invalid QR Code",
       "invalidQrMessage": "This doesn't look like a valid bTC2 friend code."
     },

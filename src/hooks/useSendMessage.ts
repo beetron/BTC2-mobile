@@ -1,6 +1,6 @@
 import { useState } from "react";
 import axiosClient from "../utils/axiosClient";
-import conversationStore, { Message } from "../zustand/conversationStore";
+import conversationStore, { Message, isConversationOpen } from "../zustand/conversationStore";
 import { useAuth } from "../context/AuthContext";
 import { Alert } from "react-native";
 import { useNetwork } from "@/src/context/NetworkContext";
@@ -55,8 +55,12 @@ const useSendMessage = () => {
             createdAt: new Date().toISOString(),
             conversationId,
           };
-          upsertMessages([stored]);
-          saveCurrentMessagesToCache(authState.user._id);
+          // Left the chat while this was sending: it was still sent, and
+          // shows when that chat is opened again
+          if (isConversationOpen(conversationId)) {
+            upsertMessages([stored]);
+            saveCurrentMessagesToCache(authState.user._id, conversationId);
+          }
           return true;
         }
         Alert.alert(t("common.error"), t("conversation.sendMessageFailed"));

@@ -32,6 +32,7 @@ const useReportUser = () => {
         console.log("useReportUser successful");
         return true;
       }
+      Alert.alert(t("common.error"), t("errors.generic"));
       return false;
     } catch (error: any) {
       if (error.networkError === "TIMEOUT") {
@@ -41,9 +42,11 @@ const useReportUser = () => {
         );
       } else if (error.networkError === "NO_INTERNET") {
         // Already alerted in pre-flight check
-      } else if (error.data && error.data.error) {
-        console.error("Error reporting user:", error.data.message);
-        Alert.alert(t("common.error"), error.data.message);
+      } else {
+        // Never fail silently here: the user would assume the report went
+        // through. Server text is English-only, so use the translated one.
+        console.error("Error reporting user:", error.response?.data?.error ?? error);
+        Alert.alert(t("common.error"), t("errors.generic"));
       }
       return false;
     } finally {

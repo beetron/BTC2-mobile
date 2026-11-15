@@ -63,14 +63,8 @@ const ConversationActionMenu = () => {
   // targetUserId: the direct-chat partner by default, or (for groups) the
   // member picked from the member-select sheet below.
   const handleReport = (targetUserId?: string) => {
-    if (!latestMessageId) {
-      Alert.alert(
-        t("conversation.actionMenu.noMessageSelectedTitle"),
-        t("conversation.actionMenu.noMessageSelectedMessage")
-      );
-      return;
-    }
-
+    // No message needed: a user can be reported for their name or photo,
+    // or from a chat that has no messages (or was cleared)
     const reportTargetId = targetUserId ?? selectedConversation?.partnerId;
     if (!reportTargetId) {
       Alert.alert(t("common.error"), t("conversation.actionMenu.unableToIdentifyReport"));
@@ -136,14 +130,6 @@ const ConversationActionMenu = () => {
   // partnerId to report -- picking a member re-enters the same
   // reason-selection flow used for direct chats.
   const openGroupReportPicker = () => {
-    if (!latestMessageId) {
-      Alert.alert(
-        t("conversation.actionMenu.noMessageSelectedTitle"),
-        t("conversation.actionMenu.noMessageSelectedMessage")
-      );
-      return;
-    }
-
     const reportableMembers = (selectedConversation?.members ?? []).filter(
       (member) => member.userId !== myUserId
     );

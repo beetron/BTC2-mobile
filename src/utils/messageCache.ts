@@ -55,15 +55,18 @@ export const saveMessagesToCache = async (
 };
 
 /**
- * Save the open conversation's messages as the store holds them right now,
- * e.g. after an upsert from a send, edit, delete or change sync
+ * Save `conversationId`'s messages as the store holds them right now, e.g.
+ * after an upsert from a send, edit, delete or change sync. Skipped when
+ * that conversation is no longer the open one: the store then holds
+ * another chat's messages, which must not be written under this id.
  */
 export const saveCurrentMessagesToCache = async (
-  userId: string | undefined
+  userId: string | undefined,
+  conversationId: string
 ): Promise<void> => {
   const { selectedConversation, messages } = conversationStore.getState();
-  if (!userId || !selectedConversation) return;
-  await saveMessagesToCache(userId, selectedConversation.conversationId, messages);
+  if (!userId || selectedConversation?.conversationId !== conversationId) return;
+  await saveMessagesToCache(userId, conversationId, messages);
 };
 
 /**

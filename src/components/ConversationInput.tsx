@@ -183,7 +183,7 @@ const ConversationInput = () => {
           // in-progress IME / predictive text and drops the clear. The send
           // button is already disabled while sending.
         />
-        {isLoading || isSavingEdit ? (
+        {isLoading || isSavingEdit || isImageLoading ? (
           <View style={{ width: 44, height: 44, alignItems: "center", justifyContent: "center" }}>
             <ActivityIndicator size="small" color={colors.primary} />
           </View>

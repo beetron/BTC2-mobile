@@ -69,7 +69,7 @@ const SettingsEmail = () => {
           value={currentPassword}
           onChangeText={setCurrentPassword}
           isPassword
-          maxLength={20}
+          maxLength={72}
           autoCapitalize="none"
         />
         <CustomInput

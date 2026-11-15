@@ -27,7 +27,6 @@ const Signup = () => {
   const {
     checkLengthUsername,
     checkLengthPassword,
-    checkAlphanumeric,
     checkEmailRegex,
   } = profileValidator();
   const [formData, setFormData] = useState<FormData>({
@@ -54,12 +53,14 @@ const Signup = () => {
       formData.uniqueId === ""
     ) {
       Alert.alert(t("auth.fillAllFieldsTitle"));
+      return;
     }
-    // Validate via utils/profileValidator.ts
+    // Validate via utils/profileValidator.ts. No letters-and-numbers rule
+    // on the password: the API accepts any characters, and the rule
+    // rejected the strong password iOS suggests (e.g. abcdef-ghijkl-mnopqr)
     if (
       !checkLengthUsername(formData.username) ||
       !checkLengthPassword(formData.password) ||
-      !checkAlphanumeric(formData.password) ||
       !checkEmailRegex(formData.email)
     ) {
       return;
