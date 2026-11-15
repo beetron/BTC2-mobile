@@ -38,3 +38,12 @@ export const useTypeScale = () => {
   const { locale } = useLocale();
   return SCALE[locale];
 };
+
+// Numeric body size for components that only take a `style` (e.g. Autolink,
+// which NativeWind doesn't style through className). Matches `body` above.
+const BODY_FONT_SIZE = { en: 16, ja: 15 } as const;
+
+export const useBodyFontSize = () => {
+  const { locale } = useLocale();
+  return BODY_FONT_SIZE[locale];
+};

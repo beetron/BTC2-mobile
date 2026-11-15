@@ -10,6 +10,9 @@ import { API_URL } from "../constants/api";
 
 interface LinkPreviewCardProps {
   url: string;
+  // Touch-and-hold on the card: the message bubble passes its menu handler
+  // so holding the card works like holding the rest of the bubble
+  onLongPress?: () => void;
 }
 
 const getHostname = (url: string): string => {
@@ -20,7 +23,7 @@ const getHostname = (url: string): string => {
   }
 };
 
-const LinkPreviewCard: React.FC<LinkPreviewCardProps> = ({ url }) => {
+const LinkPreviewCard: React.FC<LinkPreviewCardProps> = ({ url, onLongPress }) => {
   const colors = useThemeColors();
   const { authState } = useAuth();
   const { t } = useTranslation();
@@ -65,6 +68,7 @@ const LinkPreviewCard: React.FC<LinkPreviewCardProps> = ({ url }) => {
       <TouchableOpacity
         activeOpacity={0.7}
         onPress={handlePress}
+        onLongPress={onLongPress}
         className="mt-2 rounded-2xl p-3 flex-row items-center"
         style={{ backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border }}
       >
@@ -88,6 +92,7 @@ const LinkPreviewCard: React.FC<LinkPreviewCardProps> = ({ url }) => {
     <TouchableOpacity
       activeOpacity={0.7}
       onPress={handlePress}
+        onLongPress={onLongPress}
       className="mt-2 rounded-2xl overflow-hidden"
       style={{ backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border }}
     >

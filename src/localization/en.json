@@ -85,7 +85,45 @@
     },
     "send": "Send",
     "attachPhotos": "Attach photos",
-    "scrollToLatest": "Jump to latest message"
+    "scrollToLatest": "Jump to latest message",
+    "you": "You",
+    "edited": "Edited",
+    "deletedPlaceholder": "This message was deleted",
+    "messageActions": {
+      "reply": "Reply",
+      "copyText": "Copy text",
+      "edit": "Edit",
+      "deleteForEveryone": "Delete for everyone",
+      "deleteConfirmTitle": "Delete for everyone?",
+      "deleteConfirmMessage": "This removes the message for everyone in this chat. It can't be undone.",
+      "showActionsHint": "Shows message actions",
+      "copied": "Copied",
+      "copyFailed": "Couldn't copy the text",
+      "editFailed": "Couldn't edit the message",
+      "deleteFailed": "Couldn't delete the message"
+    },
+    "quote": {
+      "deleted": "Message deleted",
+      "unavailable": "Original message unavailable",
+      "photo": "Photo",
+      "photoExpired": "Photo expired"
+    },
+    "composer": {
+      "replyingTo": "Replying to {{name}}",
+      "replyingToSelf": "Replying to yourself",
+      "editing": "Editing message",
+      "cancelReply": "Cancel reply",
+      "cancelEdit": "Cancel editing",
+      "saveEdit": "Save edit",
+      "replyTargetGone": "The message you're replying to was deleted."
+    },
+    "a11y": {
+      "replyTo": "Reply to {{name}}: {{text}}",
+      "photos": "{{count}} photos",
+      "viewPhotos": "View photos",
+      "openLink": "Open link"
+    },
+    "photosExpired": "{{count}} photos expired"
   },
   "media": {
     "shareImageTitle": "Share Image",

@@ -85,7 +85,45 @@
     },
     "send": "送信",
     "attachPhotos": "写真を添付",
-    "scrollToLatest": "最新のメッセージへ移動"
+    "scrollToLatest": "最新のメッセージへ移動",
+    "you": "あなた",
+    "edited": "編集済み",
+    "deletedPlaceholder": "このメッセージは削除されました",
+    "messageActions": {
+      "reply": "返信",
+      "copyText": "テキストをコピー",
+      "edit": "編集",
+      "deleteForEveryone": "全員から削除",
+      "deleteConfirmTitle": "全員から削除しますか？",
+      "deleteConfirmMessage": "このメッセージはチャットの全員の画面から削除されます。元に戻すことはできません。",
+      "showActionsHint": "メッセージの操作を表示",
+      "copied": "コピーしました",
+      "copyFailed": "テキストをコピーできませんでした",
+      "editFailed": "メッセージを編集できませんでした",
+      "deleteFailed": "メッセージを削除できませんでした"
+    },
+    "quote": {
+      "deleted": "削除されたメッセージ",
+      "unavailable": "元のメッセージは表示できません",
+      "photo": "写真",
+      "photoExpired": "写真は期限切れです"
+    },
+    "composer": {
+      "replyingTo": "{{name}}さんに返信",
+      "replyingToSelf": "自分のメッセージに返信",
+      "editing": "メッセージを編集中",
+      "cancelReply": "返信をやめる",
+      "cancelEdit": "編集をやめる",
+      "saveEdit": "編集を保存",
+      "replyTargetGone": "返信先のメッセージは削除されました。"
+    },
+    "a11y": {
+      "replyTo": "{{name}}への返信：{{text}}",
+      "photos": "写真{{count}}枚",
+      "viewPhotos": "写真を見る",
+      "openLink": "リンクを開く"
+    },
+    "photosExpired": "写真{{count}}枚は期限切れです"
   },
   "media": {
     "shareImageTitle": "画像を共有",

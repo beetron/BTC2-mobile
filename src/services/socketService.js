@@ -2,6 +2,7 @@ import { io } from "socket.io-client";
 import * as SecureStore from "expo-secure-store";
 import { API_URL } from "../constants/api";
 import { attemptTokenRefresh, JWT_KEY } from "../utils/axiosClient";
+import { setCurrentSocketId } from "../utils/socketIdentity";
 
 let _socket = null;
 const _listeners = new Map();
@@ -65,6 +66,7 @@ const disconnect = () => {
     _socket.disconnect();
     _socket = null;
   }
+  setCurrentSocketId(null);
 };
 
 // Add event listener
@@ -100,11 +102,13 @@ const setupEvents = () => {
 
   _socket.on("connect", () => {
     console.log("Socket connected with ID:", _socket?.id);
+    setCurrentSocketId(_socket?.id);
     emit("connectionChange", true);
   });
 
   _socket.on("disconnect", () => {
     console.log("Socket disconnected");
+    setCurrentSocketId(null);
     emit("connectionChange", false);
   });
 

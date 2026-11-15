@@ -6,31 +6,33 @@ import {
 } from "react-native";
 import React, { useCallback, useRef, useState } from "react";
 import { useAppStateListener } from "../context/AppStateContext";
-import conversationStore from "../zustand/conversationStore";
+import conversationStore, { Message } from "../zustand/conversationStore";
 import { useAuth } from "../context/AuthContext";
 import useGetMessages from "../hooks/useGetMessages";
-import useGetMessageImages from "../hooks/useGetMessageImages";
 import useSocketListener from "../hooks/useSocketListener";
-import formatDate from "../utils/formatDate";
-import Autolink from "react-native-autolink";
-import Avatar from "./Avatar";
 import IconCircleButton from "./IconCircleButton";
 import { useThemeColors } from "../context/ThemeContext";
 import { useTypeScale } from "../hooks/useTypeScale";
-import { senderColorFor } from "../constants/theme";
 import useSetBadgeCount from "../hooks/useSetBadgeCount";
-import MessageImageGallery from "./MessageImageGallery";
-import LinkPreviewCard from "./LinkPreviewCard";
 import { useTranslation } from "../hooks/useTranslation";
-import { extractFirstUrl } from "../utils/extractFirstUrl";
+import MessageBubble from "./MessageBubble";
+import MessageActionSheet from "./MessageActionSheet";
+import useMessageActionHandlers, { haptic } from "../hooks/useMessageActionHandlers";
 
 const ConversationMessages = () => {
   const { authState } = useAuth();
   const { t } = useTranslation();
   const colors = useThemeColors();
   const ts = useTypeScale();
-  const { isLoading, isSyncing, isLoadingMore, hasMore, getMessages, loadMore } =
-    useGetMessages();
+  const {
+    isLoading,
+    isSyncing,
+    isLoadingMore,
+    hasMore,
+    getMessages,
+    syncChanges,
+    loadMore,
+  } = useGetMessages();
   const { messages, selectedConversation } = conversationStore();
   const flatListRef = useRef<FlatList<any> | null>(null);
   const [showScrollToLatest, setShowScrollToLatest] = useState(false);
@@ -40,22 +42,38 @@ const ConversationMessages = () => {
   // sidesteps the native scrollTo path entirely, since a freshly mounted
   // inverted list always starts at offset 0 (the newest message).
   const [listResetKey, setListResetKey] = useState(0);
-  const { getMessageImageSource } = useGetMessageImages();
+  // The message whose action sheet is open
+  const [actionMessage, setActionMessage] = useState<Message | null>(null);
+  const { available, perform, labelFor } = useMessageActionHandlers();
   // Using getMyFriends-derived unread total to update BadgeCount (temporary solution)
   const { setBadgeCount } = useSetBadgeCount();
   const myUserId = authState?.user?._id;
 
-  // Refresh when a new message arrives for THIS conversation specifically.
+  // A message in THIS conversation was created, edited or deleted. The
+  // payload only carries ids, so pull just the changed messages from the
+  // changes feed. No `action` means a bulk change (an admin deleting a
+  // user's messages): refetch the thread instead.
   const onConversationMessage = useCallback(
-    (payload: { conversationId?: string }) => {
+    (payload: { conversationId?: string; action?: string }) => {
       if (payload?.conversationId === selectedConversation?.conversationId) {
-        getMessages();
+        if (payload.action) syncChanges();
+        else getMessages();
         setBadgeCount();
       }
     },
-    [selectedConversation?.conversationId, getMessages, setBadgeCount]
+    [selectedConversation?.conversationId, getMessages, syncChanges, setBadgeCount]
   );
   useSocketListener("conversation:message", onConversationMessage);
+
+  // Edits and deletes made while the socket was down never reach us as
+  // events, so catch up once it reconnects
+  const onConnectionChange = useCallback(
+    (connected: boolean) => {
+      if (connected) syncChanges();
+    },
+    [syncChanges]
+  );
+  useSocketListener("connectionChange", onConnectionChange);
 
   // Rollout-safety fallback for peers still sending via legacy /messages/*
   const onLegacySignal = useCallback(() => {
@@ -64,11 +82,17 @@ const ConversationMessages = () => {
   }, [getMessages, setBadgeCount]);
   useSocketListener("newMessageSignal", onLegacySignal);
 
-  // Refresh messages when app becomes active
-  useAppStateListener(() => {
-    getMessages();
+  // Catch up when the app becomes active
+  const onAppActive = useCallback(() => {
+    syncChanges();
     setBadgeCount();
-  });
+  }, [syncChanges, setBadgeCount]);
+  useAppStateListener(onAppActive);
+
+  const openActions = useCallback((message: Message) => {
+    haptic("light");
+    setActionMessage(message);
+  }, []);
 
   if (isLoading && messages.length === 0) {
     // flex-1 here matters: without it this placeholder is only as tall as
@@ -135,111 +159,26 @@ const ConversationMessages = () => {
         }
         renderItem={({ item: message }) => {
           // "Mine vs. not-mine" rather than comparing against a single known
-          // partner id -- the direct-chat case where the other sender is
-          // always the same person is a special case of this, and this is
-          // the shape a group thread (multiple possible senders) needs.
+          // partner id -- the direct-chat case is a special case of this.
           const isMine = message.senderId === myUserId;
-
-          // Direct chats: the "other" avatar is always the conversation
-          // partner's, already resolved on selectedConversation. Group
-          // chats: resolve per-sender since there are multiple possible
-          // "other" senders.
           const isGroup = selectedConversation?.type === "group";
+          // Direct chats: the "other" avatar is always the partner's.
+          // Group chats: resolved per sender.
           const sender = isGroup
-            ? selectedConversation?.members.find(
-                (m) => m.userId === message.senderId
-              )
+            ? selectedConversation?.members.find((m) => m.userId === message.senderId)
             : null;
-          const otherAvatarData = isGroup
-            ? sender?.profileImageData
-            : selectedConversation?.avatarData;
-
-          const firstUrl = extractFirstUrl(message.message);
-
-          const attachments = (
-            <>
-              {message.imageFiles && message.imageFiles.length > 0 && (
-                <MessageImageGallery
-                  imageFilenames={message.imageFiles}
-                  imageSources={message.imageFiles.map((filename: string) =>
-                    getMessageImageSource(filename)
-                  )}
-                />
-              )}
-              {firstUrl && <LinkPreviewCard url={firstUrl} />}
-            </>
-          );
-
-          if (isMine) {
-            return (
-              <View className="items-end mb-3 ml-auto" style={{ maxWidth: "80%" }}>
-                <View
-                  className="px-3.5 py-2.5"
-                  style={{
-                    backgroundColor: colors.primary,
-                    borderTopLeftRadius: 20,
-                    borderTopRightRadius: 20,
-                    borderBottomLeftRadius: 20,
-                    borderBottomRightRadius: 6,
-                  }}
-                >
-                  {message.message ? (
-                    <Autolink
-                      text={message.message}
-                      className={ts.body}
-                      style={{ color: colors.onPrimary, fontSize: 16 }}
-                      linkStyle={{ color: colors.onPrimary, textDecorationLine: "underline" }}
-                    />
-                  ) : null}
-                  {attachments}
-                </View>
-                <Text className={`${ts.caption} text-inkMuted mt-1 mr-1.5`}>
-                  {formatDate(message.createdAt)}
-                </Text>
-              </View>
-            );
-          }
-
           return (
-            <View className="flex-row items-end mb-3 mr-auto gap-2" style={{ maxWidth: "84%" }}>
-              {isGroup && <Avatar uri={otherAvatarData} size={28} />}
-              <View className="flex-shrink items-start">
-                {isGroup && (
-                  <Text
-                    className={`${ts.label} ml-2.5 mb-1`}
-                    style={{ color: senderColorFor(colors, message.senderId) }}
-                    numberOfLines={1}
-                  >
-                    {sender?.nickname || t("common.unknown")}
-                  </Text>
-                )}
-                <View
-                  className="px-3.5 py-2.5"
-                  style={{
-                    backgroundColor: colors.bubbleOther,
-                    borderWidth: 1,
-                    borderColor: colors.border,
-                    borderTopLeftRadius: 20,
-                    borderTopRightRadius: 20,
-                    borderBottomRightRadius: 20,
-                    borderBottomLeftRadius: 6,
-                  }}
-                >
-                  {message.message ? (
-                    <Autolink
-                      text={message.message}
-                      className={ts.body}
-                      style={{ color: colors.ink, fontSize: 16 }}
-                      linkStyle={{ color: colors.primary, textDecorationLine: "underline" }}
-                    />
-                  ) : null}
-                  {attachments}
-                </View>
-                <Text className={`${ts.caption} text-inkMuted mt-1 ml-1.5`}>
-                  {formatDate(message.createdAt)}
-                </Text>
-              </View>
-            </View>
+            <MessageBubble
+              message={message}
+              isMine={isMine}
+              isGroup={isGroup}
+              sender={sender}
+              otherAvatarData={isGroup ? sender?.profileImageData : selectedConversation?.avatarData}
+              actions={available(message)}
+              actionLabel={labelFor}
+              onOpenActions={openActions}
+              onAction={perform}
+            />
           );
         }}
       />
@@ -260,6 +199,8 @@ const ConversationMessages = () => {
           />
         </View>
       )}
+
+      <MessageActionSheet message={actionMessage} onClose={() => setActionMessage(null)} />
     </View>
   );
 };

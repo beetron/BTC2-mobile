@@ -1,15 +1,9 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export interface Message {
-  _id: string;
-  senderId: string;
-  nickname?: string; // from conversationStore for display
-  message?: string;
-  imageFiles?: string[];
-  createdAt: string;
-  conversationId?: string;
-  updatedAt?: string;
-}
+import conversationStore, { type Message } from "../zustand/conversationStore";
+
+// One message shape for the store and the cache
+export type { Message };
 
 export interface CachedMessages {
   ts: number; // timestamp when cached
@@ -18,13 +12,15 @@ export interface CachedMessages {
 
 const CACHE_PREFIX = "msg_cache";
 // v2: keyed by conversationId instead of friendId, following the backend's
-// migration to a unified Conversation model. v1 entries are intentionally
-// never read again rather than migrated.
-const CACHE_VERSION = "v2";
+// migration to a unified Conversation model.
+// v3: API 2.0 messages (tombstones, replyTo, editedAt). A v2 entry would
+// still show the text of messages deleted for everyone, so older entries
+// are never read again rather than migrated.
+const CACHE_VERSION = "v3";
 
 /**
  * Generate a unique cache key for a user+conversation pair
- * Format: msg_cache:v2:{userId}:{conversationId}
+ * Format: msg_cache:v3:{userId}:{conversationId}
  */
 export const makeCacheKey = (
   userId: string,
@@ -56,6 +52,18 @@ export const saveMessagesToCache = async (
     console.warn("saveMessagesToCache failed:", error);
     // Silently fail; caching is optional
   }
+};
+
+/**
+ * Save the open conversation's messages as the store holds them right now,
+ * e.g. after an upsert from a send, edit, delete or change sync
+ */
+export const saveCurrentMessagesToCache = async (
+  userId: string | undefined
+): Promise<void> => {
+  const { selectedConversation, messages } = conversationStore.getState();
+  if (!userId || !selectedConversation) return;
+  await saveMessagesToCache(userId, selectedConversation.conversationId, messages);
 };
 
 /**

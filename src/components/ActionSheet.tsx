@@ -17,6 +17,9 @@ interface ActionSheetProps {
   onClose: () => void;
   options: ActionSheetOption[];
   title?: string;
+  // Drawn above the options in place of the title, e.g. a preview of the
+  // message the options act on
+  header?: React.ReactNode;
 }
 
 const ActionSheet: React.FC<ActionSheetProps> = ({
@@ -24,6 +27,7 @@ const ActionSheet: React.FC<ActionSheetProps> = ({
   onClose,
   options,
   title,
+  header,
 }) => {
   const { t } = useTranslation();
   const { colors, colorVarsStyle } = useTheme();
@@ -57,10 +61,14 @@ const ActionSheet: React.FC<ActionSheetProps> = ({
         >
           <TouchableOpacity activeOpacity={1} className="mx-6">
             <View className="bg-surface rounded-[22px] overflow-hidden">
-              {title && (
-                <View className="px-5 py-3.5 border-b border-divider">
-                  <Text className={`${ts.label} text-inkMuted text-center`}>{title}</Text>
-                </View>
+              {header ? (
+                <View className="border-b border-divider">{header}</View>
+              ) : (
+                title && (
+                  <View className="px-5 py-3.5 border-b border-divider">
+                    <Text className={`${ts.label} text-inkMuted text-center`}>{title}</Text>
+                  </View>
+                )
               )}
               {options.map((option, index) => {
                 const isDanger = option.variant === "danger";

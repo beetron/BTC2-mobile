@@ -2,6 +2,8 @@ import axios from "axios";
 import * as SecureStore from "expo-secure-store";
 import { API_URL } from "@/src/constants/api";
 import { clearAllMessageCaches } from "@/src/utils/messageCache";
+import { clearImageCaches } from "@/src/utils/imageCache";
+import { getCurrentSocketId, SOCKET_ID_HEADER } from "@/src/utils/socketIdentity";
 
 export const JWT_KEY = "jwt";
 export const REFRESH_KEY = "refreshToken";
@@ -43,9 +45,11 @@ export const handleLogout = async () => {
       SecureStore.deleteItemAsync(USER_KEY),
       // Cached messages live in unencrypted AsyncStorage; never fails
       clearAllMessageCaches(),
+      // Saved copies of message photos (expo-image disk cache); never fails
+      clearImageCaches(),
     ]);
 
-    console.log("Logged out - tokens and message cache cleared");
+    console.log("Logged out - tokens, message cache and image cache cleared");
 
     // Best-effort server-side revocation; failure is fine since local state
     // is already cleared.
@@ -147,6 +151,10 @@ axiosClient.interceptors.request.use(
       }
     } catch (error) {
       console.error("Error retrieving token from SecureStore: ", error);
+    }
+    const socketId = getCurrentSocketId();
+    if (socketId) {
+      config.headers[SOCKET_ID_HEADER] = socketId;
     }
     return config;
   },

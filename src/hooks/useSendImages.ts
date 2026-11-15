@@ -1,9 +1,14 @@
 import { useCallback, useState } from "react";
+import { Alert } from "react-native";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 import { useNetwork } from "@/src/context/NetworkContext";
 import conversationStore from "../zustand/conversationStore";
 import { API_URL } from "../constants/api";
+import { getCurrentSocketId, SOCKET_ID_HEADER } from "../utils/socketIdentity";
+import { saveCurrentMessagesToCache } from "../utils/messageCache";
+import { isReplyTargetGone } from "./useSendMessage";
+import { useTranslation } from "./useTranslation";
 
 interface AttachedImage {
   uri: string;
@@ -16,10 +21,13 @@ export const useSendImages = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { authState } = useAuth();
   const { isConnected } = useNetwork();
-  const { selectedConversation, bumpRefreshSignal } = conversationStore();
+  const { t } = useTranslation();
+  const { selectedConversation, bumpRefreshSignal, upsertMessages, clearComposer } =
+    conversationStore();
 
+  // replyToId makes the upload a quote reply
   const sendImages = useCallback(
-    async (images: AttachedImage[]): Promise<boolean> => {
+    async (images: AttachedImage[], replyToId?: string): Promise<boolean> => {
       if (!isConnected) {
         console.error("No internet connection");
         return false;
@@ -47,8 +55,11 @@ export const useSendImages = () => {
             type: image.type,
           } as any);
         });
+        if (replyToId) formData.append("replyToId", replyToId);
 
-        // Upload images
+        // Plain axios (multipart), so the X-Socket-Id that axiosClient adds
+        // to every other call is added here by hand
+        const socketId = getCurrentSocketId();
         const response = await axios.post(
           `${API_URL}/conversations/${selectedConversation.conversationId}/upload`,
           formData,
@@ -56,16 +67,20 @@ export const useSendImages = () => {
             headers: {
               Authorization: `Bearer ${authState.token}`,
               "Content-Type": "multipart/form-data",
+              ...(socketId ? { [SOCKET_ID_HEADER]: socketId } : {}),
             },
           }
         );
 
         if (response.data?.success) {
-          // Unlike a text send, the upload response only returns a
-          // messageId (server-normalized filenames aren't echoed back), so
-          // there isn't enough to construct the message locally -- signal
-          // useGetMessages to refetch instead of an optimistic prepend.
-          bumpRefreshSignal();
+          if (response.data.message) {
+            // The response carries the stored message (server filenames
+            // and, for a reply, the replyTo preview)
+            upsertMessages([response.data.message]);
+            saveCurrentMessagesToCache(authState.user?._id);
+          } else {
+            bumpRefreshSignal();
+          }
           setIsLoading(false);
           return true;
         } else {
@@ -74,12 +89,26 @@ export const useSendImages = () => {
           return false;
         }
       } catch (error) {
-        console.error("Error sending images:", error);
+        if (replyToId && isReplyTargetGone(error)) {
+          clearComposer();
+          Alert.alert(t("common.error"), t("conversation.composer.replyTargetGone"));
+        } else {
+          console.error("Error sending images:", error);
+        }
         setIsLoading(false);
         return false;
       }
     },
-    [isConnected, selectedConversation, authState?.token, bumpRefreshSignal]
+    [
+      isConnected,
+      selectedConversation,
+      authState?.token,
+      authState?.user?._id,
+      bumpRefreshSignal,
+      upsertMessages,
+      clearComposer,
+      t,
+    ]
   );
 
   return { sendImages, isLoading };

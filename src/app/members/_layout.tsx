@@ -4,6 +4,13 @@ import React from "react";
 import { SocketProvider } from "@/src/context/SocketContext";
 import AuthCheckingScreen from "@/src/components/AuthCheckingScreen";
 import { useThemeColors } from "@/src/context/ThemeContext";
+import useServerFeatures from "@/src/hooks/useServerFeatures";
+
+// Loads the API's feature flags (GET /config) for the signed-in session
+const ServerFeaturesLoader = () => {
+  useServerFeatures();
+  return null;
+};
 
 const TabLayout = () => {
   const { authState } = useAuth();
@@ -21,6 +28,7 @@ const TabLayout = () => {
 
   return (
     <SocketProvider>
+      <ServerFeaturesLoader />
       <Stack
         screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.bg } }}
       >
