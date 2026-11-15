@@ -3,10 +3,12 @@ import { Redirect, Stack } from "expo-router";
 import { useAuth } from "../../context/AuthContext";
 import { useLocalSearchParams } from "expo-router";
 import AuthCheckingScreen from "../../components/AuthCheckingScreen";
+import { useThemeColors } from "../../context/ThemeContext";
 
 const GuestsLayout = () => {
   const { authState } = useAuth();
   const params = useLocalSearchParams();
+  const colors = useThemeColors();
 
   // Force remount when reset param is present
   useEffect(() => {
@@ -26,7 +28,7 @@ const GuestsLayout = () => {
   }
 
   return (
-    <Stack>
+    <Stack screenOptions={{ contentStyle: { backgroundColor: colors.bg } }}>
       <Stack.Screen name="Login" options={{ headerShown: false }} />
       <Stack.Screen name="Signup" options={{ headerShown: false }} />
       <Stack.Screen name="ForgotPassword" options={{ headerShown: false }} />

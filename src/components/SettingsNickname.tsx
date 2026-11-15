@@ -1,10 +1,11 @@
 import { useState, useCallback } from "react";
-import { Alert, Text, TextInput, View, Keyboard } from "react-native";
+import { Alert, View, Keyboard } from "react-native";
 import useUpdateNickname from "@/src/hooks/useUpdateNickname";
 import { useAuth } from "@/src/context/AuthContext";
 import { useFocusEffect } from "expo-router";
 import { useTranslation } from "@/src/hooks/useTranslation";
 import CustomButton from "./CustomButton";
+import CustomInput from "./CustomInput";
 
 const SettingsNickname = () => {
   const { authState } = useAuth();
@@ -36,27 +37,20 @@ const SettingsNickname = () => {
 
   return (
     <View>
-      <View className="bg-card rounded-xl p-4">
-        <TextInput
-          value={nickname}
-          maxLength={20}
-          onChangeText={(text) => setNickname(text)}
-          style={{
-            height: 44,
-            textAlignVertical: "center",
-          }}
-          className="text-btc100 font-funnel-regular text-xl bg-btc400 rounded-lg px-3"
-        />
-        <Text className="text-btc300 text-xs mt-2 text-right">
-          {nickname.length}/20
-        </Text>
-      </View>
+      <CustomInput
+        title=""
+        accessibilityLabel={t("settings.nickname.label")}
+        value={nickname}
+        maxLength={20}
+        onChangeText={setNickname}
+        helperText={`${nickname.length}/20`}
+      />
       <CustomButton
         title={t("common.save")}
         handlePress={handleOnPress}
         isLoading={isLoading}
         disabled={currentNickname === nickname || !nickname.trim()}
-        containerStyles="mt-4"
+        containerStyles="mt-6"
       />
     </View>
   );

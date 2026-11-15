@@ -3,9 +3,7 @@ import {
   Text,
   FlatList,
   ActivityIndicator,
-  TouchableOpacity,
 } from "react-native";
-import { Image } from "expo-image";
 import React, { useCallback, useRef, useState } from "react";
 import { useAppStateListener } from "../context/AppStateContext";
 import conversationStore from "../zustand/conversationStore";
@@ -15,17 +13,22 @@ import useGetMessageImages from "../hooks/useGetMessageImages";
 import useSocketListener from "../hooks/useSocketListener";
 import formatDate from "../utils/formatDate";
 import Autolink from "react-native-autolink";
-import { images } from "../constants/images";
+import Avatar from "./Avatar";
+import IconCircleButton from "./IconCircleButton";
+import { useThemeColors } from "../context/ThemeContext";
+import { useTypeScale } from "../hooks/useTypeScale";
+import { senderColorFor } from "../constants/theme";
 import useSetBadgeCount from "../hooks/useSetBadgeCount";
 import MessageImageGallery from "./MessageImageGallery";
 import LinkPreviewCard from "./LinkPreviewCard";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useTranslation } from "../hooks/useTranslation";
 import { extractFirstUrl } from "../utils/extractFirstUrl";
 
 const ConversationMessages = () => {
   const { authState } = useAuth();
   const { t } = useTranslation();
+  const colors = useThemeColors();
+  const ts = useTypeScale();
   const { isLoading, isSyncing, isLoadingMore, hasMore, getMessages, loadMore } =
     useGetMessages();
   const { messages, selectedConversation } = conversationStore();
@@ -40,7 +43,6 @@ const ConversationMessages = () => {
   const { getMessageImageSource } = useGetMessageImages();
   // Using getMyFriends-derived unread total to update BadgeCount (temporary solution)
   const { setBadgeCount } = useSetBadgeCount();
-  const placeholderProfileImage = images.placeholderProfileImage;
   const myUserId = authState?.user?._id;
 
   // Refresh when a new message arrives for THIS conversation specifically.
@@ -76,9 +78,7 @@ const ConversationMessages = () => {
     // real (flex-1) FlatList swaps in below.
     return (
       <View className="flex-1 justify-center items-center mt-14">
-        <Text className="font-funnel-regular text-btc100 text-2xl">
-          {t("common.loading")}
-        </Text>
+        <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
   }
@@ -87,9 +87,9 @@ const ConversationMessages = () => {
     <View className="flex-1">
       {/* Subtle syncing indicator when fetching fresh messages but cache is displayed */}
       {isSyncing && messages.length > 0 && (
-        <View className="flex-row items-center justify-center py-1 bg-btc400">
-          <ActivityIndicator size="small" color="#75E6DA" />
-          <Text className="font-funnel-regular text-btc100 text-xs ml-2">
+        <View className="flex-row items-center justify-center py-1.5 bg-primarySoft">
+          <ActivityIndicator size="small" color={colors.primary} />
+          <Text className={`${ts.caption} text-ink ml-2`}>
             {t("conversation.syncing")}
           </Text>
         </View>
@@ -98,6 +98,7 @@ const ConversationMessages = () => {
       <FlatList
         key={listResetKey}
         className="flex-1"
+        contentContainerStyle={{ paddingHorizontal: 14, paddingVertical: 12 }}
         ref={flatListRef}
         data={messages}
         inverted={true}
@@ -119,13 +120,13 @@ const ConversationMessages = () => {
         ListFooterComponent={
           isLoadingMore ? (
             <View className="py-4 items-center">
-              <ActivityIndicator size="small" color="#75E6DA" />
+              <ActivityIndicator size="small" color={colors.primary} />
             </View>
           ) : null
         }
         ListEmptyComponent={
-          <View className="justify-center items-center mt-64">
-            <Text className="font-funnel-regular text-btc100 text-2xl">
+          <View className="justify-center items-center mt-64 mx-8">
+            <Text className={`${ts.body} text-inkMuted text-center`}>
               {t("conversation.noMessagesWith", {
                 name: selectedConversation?.name ?? t("conversation.yourFriendFallback"),
               })}
@@ -155,75 +156,89 @@ const ConversationMessages = () => {
 
           const firstUrl = extractFirstUrl(message.message);
 
-          return (
-            <View>
-              {!isMine ? (
-                <View className="items-start mb-5 mr-auto max-w-[80%]">
-                  {isGroup && (
-                    <Text className="font-funnel-regular text-btc200 text-xs ml-2 mb-1">
-                      {sender?.nickname || t("common.unknown")}
-                    </Text>
+          const attachments = (
+            <>
+              {message.imageFiles && message.imageFiles.length > 0 && (
+                <MessageImageGallery
+                  imageFilenames={message.imageFiles}
+                  imageSources={message.imageFiles.map((filename: string) =>
+                    getMessageImageSource(filename)
                   )}
-                  <View className="flex-row bg-btc400 rounded-e-2xl pl-2 p-4">
-                    {otherAvatarData ? (
-                      <Image
-                        source={{ uri: otherAvatarData }}
-                        style={{ width: 50, height: 50, borderRadius: 50 }}
-                        className="bg-btc100"
-                      />
-                    ) : (
-                      <Image
-                        source={placeholderProfileImage}
-                        style={{ width: 50, height: 50, borderRadius: 50 }}
-                        className="bg-btc100"
-                      />
-                    )}
-                    <View className="flex-1 pl-2">
-                      <Autolink
-                        text={message.message}
-                        className="text-btc100 text-lg"
-                        linkStyle={{ color: "#75E6DA" }}
-                      />
-                      {message.imageFiles && message.imageFiles.length > 0 && (
-                        <MessageImageGallery
-                          imageFilenames={message.imageFiles}
-                          imageSources={message.imageFiles.map(
-                            (filename: string) =>
-                              getMessageImageSource(filename)
-                          )}
-                        />
-                      )}
-                      {firstUrl && <LinkPreviewCard url={firstUrl} />}
-                    </View>
-                  </View>
-                  <Text className="font-funnel-regular text-btc100 text-sm ml-2">
-                    {formatDate(message.createdAt)}
-                  </Text>
-                </View>
-              ) : (
-                <View className="item-end mb-5 ml-auto max-w-[80%]">
-                  <View className="flex bg-btc300 rounded-s-2xl pl-3 p-4">
+                />
+              )}
+              {firstUrl && <LinkPreviewCard url={firstUrl} />}
+            </>
+          );
+
+          if (isMine) {
+            return (
+              <View className="items-end mb-3 ml-auto" style={{ maxWidth: "80%" }}>
+                <View
+                  className="px-3.5 py-2.5"
+                  style={{
+                    backgroundColor: colors.primary,
+                    borderTopLeftRadius: 20,
+                    borderTopRightRadius: 20,
+                    borderBottomLeftRadius: 20,
+                    borderBottomRightRadius: 6,
+                  }}
+                >
+                  {message.message ? (
                     <Autolink
                       text={message.message}
-                      className="text-btc400 text-lg"
-                      linkStyle={{ color: "#D4F1F4" }}
+                      className={ts.body}
+                      style={{ color: colors.onPrimary, fontSize: 16 }}
+                      linkStyle={{ color: colors.onPrimary, textDecorationLine: "underline" }}
                     />
-                    {message.imageFiles && message.imageFiles.length > 0 && (
-                      <MessageImageGallery
-                        imageFilenames={message.imageFiles}
-                        imageSources={message.imageFiles.map(
-                          (filename: string) =>
-                            getMessageImageSource(filename)
-                        )}
-                      />
-                    )}
-                    {firstUrl && <LinkPreviewCard url={firstUrl} />}
-                  </View>
-                  <Text className="font-funnel-regular text-btc100 text-sm mr-2">
-                    {formatDate(message.createdAt)}
-                  </Text>
+                  ) : null}
+                  {attachments}
                 </View>
-              )}
+                <Text className={`${ts.caption} text-inkMuted mt-1 mr-1.5`}>
+                  {formatDate(message.createdAt)}
+                </Text>
+              </View>
+            );
+          }
+
+          return (
+            <View className="flex-row items-end mb-3 mr-auto gap-2" style={{ maxWidth: "84%" }}>
+              {isGroup && <Avatar uri={otherAvatarData} size={28} />}
+              <View className="flex-shrink items-start">
+                {isGroup && (
+                  <Text
+                    className={`${ts.label} ml-2.5 mb-1`}
+                    style={{ color: senderColorFor(colors, message.senderId) }}
+                    numberOfLines={1}
+                  >
+                    {sender?.nickname || t("common.unknown")}
+                  </Text>
+                )}
+                <View
+                  className="px-3.5 py-2.5"
+                  style={{
+                    backgroundColor: colors.bubbleOther,
+                    borderWidth: 1,
+                    borderColor: colors.border,
+                    borderTopLeftRadius: 20,
+                    borderTopRightRadius: 20,
+                    borderBottomRightRadius: 20,
+                    borderBottomLeftRadius: 6,
+                  }}
+                >
+                  {message.message ? (
+                    <Autolink
+                      text={message.message}
+                      className={ts.body}
+                      style={{ color: colors.ink, fontSize: 16 }}
+                      linkStyle={{ color: colors.primary, textDecorationLine: "underline" }}
+                    />
+                  ) : null}
+                  {attachments}
+                </View>
+                <Text className={`${ts.caption} text-inkMuted mt-1 ml-1.5`}>
+                  {formatDate(message.createdAt)}
+                </Text>
+              </View>
             </View>
           );
         }}
@@ -231,9 +246,10 @@ const ConversationMessages = () => {
 
       {/* Floating scroll-to-latest button */}
       {messages.length > 0 && showScrollToLatest && (
-        <View className="absolute right-4 bottom-24 z-50">
-          <TouchableOpacity
-            className="rounded-full bg-btc300 p-2 shadow-lg"
+        <View className="absolute right-4 bottom-4 z-50" style={{ elevation: 4 }}>
+          <IconCircleButton
+            icon="arrow-down"
+            accessibilityLabel={t("conversation.scrollToLatest")}
             onPress={() => {
               setShowScrollToLatest(false);
               // Remount instead of scrollToOffset/scrollToIndex -- both are
@@ -241,13 +257,7 @@ const ConversationMessages = () => {
               // fresh mount always renders starting at the newest message.
               setListResetKey((k) => k + 1);
             }}
-          >
-            <MaterialCommunityIcons
-              name="arrow-down-circle"
-              size={28}
-              color="#D4F1F4"
-            />
-          </TouchableOpacity>
+          />
         </View>
       )}
     </View>

@@ -15,7 +15,15 @@ import * as MediaLibrary from "expo-media-library";
 import * as FileSystem from "expo-file-system/legacy";
 import { useAuth } from "@/src/context/AuthContext";
 import { useTranslation } from "@/src/hooks/useTranslation";
-import { colors } from "@/src/constants/colors";
+// The full-screen viewer is always dark, in both app themes -- photos read
+// best on black, and it's a transient overlay rather than app chrome.
+const VIEWER = {
+  bg: "#000000",
+  panel: "#111A1F",
+  fg: "#FFFFFF",
+  muted: "#B8C7CF",
+  accent: "#5BBCE0",
+};
 
 interface MessageImageModalProps {
   imageSources: ImageSource[];
@@ -197,15 +205,15 @@ const MessageImageModal: React.FC<MessageImageModalProps> = ({
       }}
     >
       {errors[index] ? (
-        <View className="flex-1 bg-btc100 justify-center items-center">
-          <MaterialCommunityIcons name="alert-circle-outline" size={64} color={colors.btc100} />
-          <Text className="text-btc400 text-lg mt-4">{t("media.failedToLoad")}</Text>
+        <View className="flex-1 justify-center items-center" style={{ backgroundColor: VIEWER.panel }}>
+          <MaterialCommunityIcons name="alert-circle-outline" size={64} color={VIEWER.muted} />
+          <Text className="text-lg mt-4" style={{ color: VIEWER.muted }}>{t("media.failedToLoad")}</Text>
         </View>
       ) : (
         <>
           {loading[index] && (
-            <View className="absolute inset-0 justify-center items-center bg-btc100 z-10">
-              <ActivityIndicator size="large" color="#75E6DA" />
+            <View className="absolute inset-0 justify-center items-center z-10" style={{ backgroundColor: VIEWER.panel }}>
+              <ActivityIndicator size="large" color={VIEWER.accent} />
             </View>
           )}
           <Image
@@ -228,7 +236,7 @@ const MessageImageModal: React.FC<MessageImageModalProps> = ({
       onRequestClose={onClose}
       hardwareAccelerated={true}
     >
-      <View className="flex-1 bg-btc500">
+      <View className="flex-1" style={{ backgroundColor: VIEWER.bg }}>
         {/* Invisible safe area header - prevents touch conflicts with system gestures */}
         <View
           style={{
@@ -279,7 +287,7 @@ const MessageImageModal: React.FC<MessageImageModalProps> = ({
               activeOpacity={0.6}
               hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
             >
-              <MaterialCommunityIcons name="close" size={32} color={colors.btc200} />
+              <MaterialCommunityIcons name="close" size={32} color={VIEWER.fg} />
             </TouchableOpacity>
           </View>
 
@@ -298,7 +306,7 @@ const MessageImageModal: React.FC<MessageImageModalProps> = ({
           >
             <Text
               style={{
-                color: "#D4F1F4",
+                color: VIEWER.fg,
                 fontWeight: "bold",
                 fontSize: 14,
               }}
@@ -336,12 +344,12 @@ const MessageImageModal: React.FC<MessageImageModalProps> = ({
               }}
             >
               {isSaving ? (
-                <ActivityIndicator size={32} color="#75E6DA" />
+                <ActivityIndicator size={32} color={VIEWER.accent} />
               ) : (
-                <MaterialCommunityIcons name="download" size={32} color={colors.btc200} />
+                <MaterialCommunityIcons name="download" size={32} color={VIEWER.fg} />
               )}
               <Text
-                style={{ color: "#75E6DA", fontSize: 18, fontWeight: "600" }}
+                style={{ color: VIEWER.accent, fontSize: 18, fontWeight: "600" }}
               >
                 {isSaving ? t("media.savingLabel") : t("media.saveButton")}
               </Text>
@@ -364,12 +372,12 @@ const MessageImageModal: React.FC<MessageImageModalProps> = ({
                 }}
               >
                 {isSaving ? (
-                  <ActivityIndicator size={32} color="#75E6DA" />
+                  <ActivityIndicator size={32} color={VIEWER.accent} />
                 ) : (
-                  <MaterialCommunityIcons name="image-multiple" size={32} color={colors.btc200} />
+                  <MaterialCommunityIcons name="image-multiple" size={32} color={VIEWER.fg} />
                 )}
                 <Text
-                  style={{ color: "#75E6DA", fontSize: 18, fontWeight: "600" }}
+                  style={{ color: VIEWER.accent, fontSize: 18, fontWeight: "600" }}
                 >
                   {isSaving ? t("media.savingLabel") : t("media.saveAllButton")}
                 </Text>

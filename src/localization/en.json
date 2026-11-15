@@ -11,20 +11,36 @@
     "delete": "Delete",
     "add": "Add",
     "create": "Create",
-    "unknown": "Unknown"
+    "unknown": "Unknown",
+    "back": "Back",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password"
   },
   "tabs": {
     "home": "Home",
     "editFriends": "Edit Friends",
     "settings": "Settings",
-    "logout": "Logout",
-    "logoutConfirmTitle": "Logout?"
+    "logout": "Log out",
+    "logoutConfirmTitle": "Log out?",
+    "chats": "Chats",
+    "friends": "Friends"
   },
   "home": {
     "newGroupButton": "New Group",
     "emptyFriends": "Add a friend to start chatting!",
     "groupFallbackName": "Group chat",
-    "memberCount": "{{count}} members"
+    "memberCount": "{{count}} members",
+    "searchPlaceholder": "Search by name",
+    "noResults": "No chats match your search.",
+    "newMessageOne": "1 new message",
+    "newMessages": "{{count}} new messages",
+    "filter": {
+      "all": "All",
+      "unread": "Unread",
+      "direct": "Direct",
+      "groups": "Groups"
+    },
+    "newCountShort": "{{count}} new"
   },
   "conversation": {
     "chatFallbackTitle": "Chat",
@@ -60,12 +76,16 @@
       "blockConfirmMessage": "Blocking a user will remove them from your friend list and delete conversations. Continue?",
       "selectMemberToReport": "Select a member to report",
       "noMembersToReport": "There are no other members in this group to report.",
-      "blockUnavailableInGroupMessage": "Blocking isn't available in group chats. If you're having a bad experience, you can leave the group instead."
+      "blockUnavailableInGroupMessage": "Blocking isn't available in group chats. If you're having a bad experience, you can leave the group instead.",
+      "openMenu": "Chat options"
     },
     "linkPreview": {
       "loading": "Loading preview…",
       "unavailable": "Preview unavailable"
-    }
+    },
+    "send": "Send",
+    "attachPhotos": "Attach photos",
+    "scrollToLatest": "Jump to latest message"
   },
   "media": {
     "shareImageTitle": "Share Image",
@@ -99,7 +119,11 @@
       "placeholder": "Unique ID",
       "missingIdTitle": "Missing Unique ID",
       "scanQrButton": "Scan QR",
-      "myQrLabel": "Your QR Code"
+      "myQrLabel": "Your QR Code",
+      "idLabel": "Friend's unique ID",
+      "yourIdLabel": "Your ID",
+      "copyIdA11y": "Copy your ID {{id}}",
+      "copyUnavailable": "Copying needs the latest app build. You can long-press the ID to copy it."
     },
     "scanQr": {
       "title": "Scan QR Code",
@@ -113,11 +137,16 @@
     "removeRow": "Remove / Block Friend",
     "requests": {
       "title": "Pending Friend Requests",
-      "empty": "You have no pending friend requests"
+      "empty": "You have no pending friend requests",
+      "accept": "Accept",
+      "acceptA11y": "Accept request from {{name}}",
+      "decline": "Decline request from {{name}}"
     },
     "blockedScreen": {
       "notice": "You could unblock users here. \nUnblocking enables sending friend requests again.",
-      "empty": "You have no blocked users"
+      "empty": "You have no blocked users",
+      "unblock": "Unblock",
+      "unblockA11y": "Unblock {{name}}"
     },
     "removeScreen": {
       "notice": "Removing a friend will remove yourself from their friend list.\nBlocking a friend will make you completely unreachable.",
@@ -131,7 +160,23 @@
     "rejectedSuccess": "Rejected friend request",
     "removedSuccess": "Friend Removed",
     "unblockedSuccess": "User unblocked successfully",
-    "blockedSuccess": "User blocked successfully"
+    "blockedSuccess": "User blocked successfully",
+    "swipeHint": "Swipe left on a friend, or tap them, to remove or block.",
+    "hub": {
+      "addById": "Add by ID",
+      "addByIdSubtitle": "Enter a friend's unique ID",
+      "scanQr": "QR code",
+      "scanQrSubtitle": "Show yours or scan a friend's",
+      "requestsTitle": "Requests",
+      "manageTitle": "Manage",
+      "allFriends": "All friends",
+      "idPrefix": "ID · {{id}}"
+    },
+    "qr": {
+      "hint": "Friends can scan this code to add you.",
+      "scanButton": "Scan a friend's code",
+      "a11y": "Your friend QR code for ID {{id}}"
+    }
   },
   "group": {
     "createTitle": "New Group",
@@ -153,7 +198,8 @@
     "createFailed": "Failed to create group",
     "addMembersFailed": "Failed to add members",
     "removeMemberFailed": "Failed to remove member",
-    "updateFailed": "Failed to update group"
+    "updateFailed": "Failed to update group",
+    "removeMemberA11y": "Remove {{name}} from the group"
   },
   "eula": {
     "welcomeTitle": "Welcome to bTChatty2",
@@ -173,7 +219,9 @@
       "loginButton": "Login",
       "needAccount": "Need an account?",
       "signUpHere": "Sign up here",
-      "failedTitle": "Login failed"
+      "failedTitle": "Login failed",
+      "title": "Welcome back",
+      "subtitle": "Sign in to keep the conversation going."
     },
     "signup": {
       "emailLabel": "Email",
@@ -191,7 +239,8 @@
       "failedTitle": "Signup failed",
       "eulaPrefix": "By signing up, you agree to our ",
       "eulaLink": "EULA",
-      "eulaSuffix": "."
+      "eulaSuffix": ".",
+      "title": "Create your account"
     },
     "forgotPassword": {
       "subtitle": "Matching username and email required for password reset.",
@@ -210,7 +259,8 @@
       "backToLogin": "Back to Login",
       "forgotPasswordLink": "Forgot Password?",
       "validationErrorTitle": "Validation Error",
-      "validationErrorMessage": "Please enter your email address"
+      "validationErrorMessage": "Please enter your email address",
+      "title": "Find your username"
     }
   },
   "settings": {
@@ -219,7 +269,8 @@
       "preferences": "Preferences",
       "legal": "Legal",
       "version": "Version",
-      "dangerZone": "Danger zone"
+      "dangerZone": "Danger zone",
+      "about": "About"
     },
     "languageRow": "Language",
     "language": {
@@ -247,7 +298,8 @@
       "currentLabel": "Current Email",
       "currentPasswordLabel": "Current Password",
       "newLabel": "Email",
-      "updatedFallback": "Email updated"
+      "updatedFallback": "Email updated",
+      "rowLabel": "Email"
     },
     "password": {
       "title": "Change Password",
@@ -257,7 +309,8 @@
       "changedSuccess": "Password changed"
     },
     "profileImage": {
-      "updateFailed": "Failed to update profile image"
+      "updateFailed": "Failed to update profile image",
+      "change": "Change profile photo"
     },
     "deleteAccount": {
       "buttonLabel": "Delete Account",
@@ -268,13 +321,27 @@
       "deletedMessage": "Your account has been deleted successfully."
     },
     "changeIcon": {
-      "rowLabel": "Change App Icon",
+      "rowLabel": "App icon",
       "subtitle": "Choose an icon for your home screen",
-      "resetButton": "Reset to Default Icon"
+      "chooseLabel": "Choose an icon",
+      "systemNote": "iOS confirms the change with a short system message.",
+      "names": {
+        "default": "Default",
+        "icon1": "Connect",
+        "icon2": "Spark",
+        "icon3": "Leaf",
+        "icon4": "Flight"
+      }
     },
     "legal": {
       "privacyPolicy": "Privacy Policy",
       "eula": "EULA"
+    },
+    "appearance": {
+      "title": "Appearance",
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
     }
   },
   "errors": {

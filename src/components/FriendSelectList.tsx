@@ -1,9 +1,10 @@
 import { View, Text, Pressable, ActivityIndicator } from "react-native";
-import { Image } from "expo-image";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { images } from "../constants/images";
 import useGetMyFriends from "../hooks/useGetMyFriends";
 import { useTranslation } from "../hooks/useTranslation";
+import { useTypeScale } from "../hooks/useTypeScale";
+import { useThemeColors } from "../context/ThemeContext";
+import Avatar from "./Avatar";
 
 interface FriendSelectListProps {
   selectedIds: string[];
@@ -20,9 +21,10 @@ const FriendSelectList = ({
   excludeIds = [],
   emptyMessage,
 }: FriendSelectListProps) => {
-  const placeholderProfileImage = images.placeholderProfileImage;
   const { myFriends, isLoading } = useGetMyFriends();
   const { t } = useTranslation();
+  const ts = useTypeScale();
+  const colors = useThemeColors();
   const resolvedEmptyMessage = emptyMessage ?? t("group.friendSelectDefaultEmpty");
 
   const candidates = myFriends.filter((f) => !excludeIds.includes(f._id));
@@ -38,45 +40,38 @@ const FriendSelectList = ({
   if (isLoading) {
     return (
       <View className="items-center justify-center py-6">
-        <ActivityIndicator size="small" color="white" />
+        <ActivityIndicator size="small" color={colors.primary} />
       </View>
     );
   }
 
   if (candidates.length === 0) {
     return (
-      <Text className="font-funnel-regular text-btc100 text-lg text-center mt-4">
+      <Text className={`${ts.body} text-inkMuted text-center mt-4`}>
         {resolvedEmptyMessage}
       </Text>
     );
   }
 
   return (
-    <View className="w-full" style={{ maxHeight: 300 }}>
-      {candidates.map((friend) => {
+    <View className="w-full bg-surface border border-border rounded-[20px] overflow-hidden">
+      {candidates.map((friend, index) => {
         const isSelected = selectedIds.includes(friend._id);
         return (
           <Pressable
             key={friend._id}
             onPress={() => toggle(friend._id)}
-            className="flex-row items-center justify-between w-full py-2"
+            accessibilityRole="checkbox"
+            accessibilityState={{ checked: isSelected }}
+            className={`flex-row items-center justify-between w-full px-4 py-2.5 gap-3 ${
+              index > 0 ? "border-t border-divider" : ""
+            }`}
+            style={{ minHeight: 58 }}
           >
-            <View className="flex-row items-center gap-4 flex-1 min-w-0">
-              {friend.profileImageData ? (
-                <Image
-                  source={{ uri: friend.profileImageData }}
-                  style={{ width: 40, height: 40, borderRadius: 40 }}
-                  className="bg-btc100 flex-shrink-0"
-                />
-              ) : (
-                <Image
-                  source={placeholderProfileImage}
-                  style={{ width: 40, height: 40, borderRadius: 40 }}
-                  className="bg-btc100"
-                />
-              )}
+            <View className="flex-row items-center gap-3 flex-1 min-w-0">
+              <Avatar uri={friend.profileImageData} size={40} />
               <Text
-                className="text-btc100 font-funnel-regular text-xl flex-1"
+                className={`${ts.body} text-ink flex-1`}
                 numberOfLines={1}
               >
                 {friend.nickname}
@@ -85,7 +80,7 @@ const FriendSelectList = ({
             <MaterialCommunityIcons
               name={isSelected ? "checkbox-marked" : "checkbox-blank-outline"}
               size={26}
-              color={isSelected ? "#75E6DA" : "#D4F1F4"}
+              color={isSelected ? colors.primary : colors.inkSubtle}
             />
           </Pressable>
         );

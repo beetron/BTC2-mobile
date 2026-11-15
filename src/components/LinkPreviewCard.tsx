@@ -5,7 +5,7 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import useLinkPreview from "../hooks/useLinkPreview";
 import { useAuth } from "../context/AuthContext";
 import { useTranslation } from "../hooks/useTranslation";
-import { colors } from "../constants/colors";
+import { useThemeColors } from "../context/ThemeContext";
 import { API_URL } from "../constants/api";
 
 interface LinkPreviewCardProps {
@@ -21,6 +21,7 @@ const getHostname = (url: string): string => {
 };
 
 const LinkPreviewCard: React.FC<LinkPreviewCardProps> = ({ url }) => {
+  const colors = useThemeColors();
   const { authState } = useAuth();
   const { t } = useTranslation();
   const { data, isLoading, isError, hasContent } = useLinkPreview(url);
@@ -49,10 +50,10 @@ const LinkPreviewCard: React.FC<LinkPreviewCardProps> = ({ url }) => {
     return (
       <View
         className="mt-2 rounded-2xl p-3 flex-row items-center"
-        style={{ backgroundColor: colors.card }}
+        style={{ backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border }}
       >
-        <ActivityIndicator size="small" color={colors.btc200} />
-        <Text className="font-funnel-regular text-btc100 text-sm ml-2">
+        <ActivityIndicator size="small" color={colors.inkMuted} />
+        <Text className="font-funnel-regular text-ink text-sm ml-2">
           {t("conversation.linkPreview.loading")}
         </Text>
       </View>
@@ -65,17 +66,17 @@ const LinkPreviewCard: React.FC<LinkPreviewCardProps> = ({ url }) => {
         activeOpacity={0.7}
         onPress={handlePress}
         className="mt-2 rounded-2xl p-3 flex-row items-center"
-        style={{ backgroundColor: colors.card }}
+        style={{ backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border }}
       >
-        <MaterialCommunityIcons name="web" size={20} color={colors.btc200} />
+        <MaterialCommunityIcons name="web" size={20} color={colors.inkMuted} />
         <View className="ml-2 flex-1">
           <Text
-            className="font-funnel-regular text-btc100 text-sm"
+            className="font-funnel-regular text-ink text-sm"
             numberOfLines={1}
           >
             {hostname}
           </Text>
-          <Text className="font-funnel-regular text-btc200 text-xs">
+          <Text className="font-funnel-regular text-inkMuted text-xs">
             {t("conversation.linkPreview.unavailable")}
           </Text>
         </View>
@@ -88,7 +89,7 @@ const LinkPreviewCard: React.FC<LinkPreviewCardProps> = ({ url }) => {
       activeOpacity={0.7}
       onPress={handlePress}
       className="mt-2 rounded-2xl overflow-hidden"
-      style={{ backgroundColor: colors.card }}
+      style={{ backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border }}
     >
       {imageSource && (
         <View style={{ width: "100%", height: 140 }}>
@@ -102,7 +103,7 @@ const LinkPreviewCard: React.FC<LinkPreviewCardProps> = ({ url }) => {
                 zIndex: 10,
               }}
             >
-              <ActivityIndicator size="small" color={colors.btc200} />
+              <ActivityIndicator size="small" color={colors.inkMuted} />
             </View>
           )}
           <Image
@@ -120,7 +121,7 @@ const LinkPreviewCard: React.FC<LinkPreviewCardProps> = ({ url }) => {
       <View className="p-3">
         {data?.title && (
           <Text
-            className="font-funnel-medium text-btc100 text-sm"
+            className="font-funnel-medium text-ink text-sm"
             numberOfLines={2}
           >
             {data.title}
@@ -128,16 +129,16 @@ const LinkPreviewCard: React.FC<LinkPreviewCardProps> = ({ url }) => {
         )}
         {data?.description && (
           <Text
-            className="font-funnel-regular text-btc200 text-xs mt-1"
+            className="font-funnel-regular text-inkMuted text-xs mt-1"
             numberOfLines={2}
           >
             {data.description}
           </Text>
         )}
         <View className="flex-row items-center mt-1">
-          <MaterialCommunityIcons name="web" size={12} color={colors.btc200} />
+          <MaterialCommunityIcons name="web" size={12} color={colors.inkMuted} />
           <Text
-            className="font-funnel-regular text-btc200 text-xs ml-1"
+            className="font-funnel-regular text-inkMuted text-xs ml-1"
             numberOfLines={1}
           >
             {data?.siteName || hostname}

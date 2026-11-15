@@ -68,9 +68,7 @@ const SettingsDeleteAccount = () => {
       title={t("settings.deleteAccount.buttonLabel")}
       handlePress={handleDeleteAccount}
       isLoading={isLoading}
-      variant="danger"
-      textStyles="text-lg"
-      containerStyles="min-h-[44px]"
+      variant="dangerGhost"
     />
   );
 };

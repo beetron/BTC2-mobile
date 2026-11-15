@@ -1,6 +1,9 @@
 import React, { useState } from "react";
-import { View, TouchableOpacity, TextInput, ActivityIndicator } from "react-native";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { View, TextInput, ActivityIndicator } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useKeyboardState } from "react-native-keyboard-controller";
+import IconCircleButton from "./IconCircleButton";
+import { useThemeColors } from "../context/ThemeContext";
 import useSendeMessages from "../hooks/useSendMessage";
 import { useAttachImages } from "../hooks/useAttachImages";
 import { useSendImages } from "../hooks/useSendImages";
@@ -9,6 +12,11 @@ import { useTranslation } from "../hooks/useTranslation";
 const ConversationInput = () => {
   const [message, setMessage] = useState<string>("");
   const { t } = useTranslation();
+  const colors = useThemeColors();
+  const insets = useSafeAreaInsets();
+  // Home-indicator inset only while the keyboard is down -- when it is up
+  // the composer sits on the keyboard and the inset would be a dead gap.
+  const keyboardVisible = useKeyboardState((state) => state.isVisible);
   const { sendMessage, isLoading } = useSendeMessages();
   const { attachImages } = useAttachImages();
   const { sendImages, isLoading: isImageLoading } = useSendImages();
@@ -45,25 +53,39 @@ const ConversationInput = () => {
 
   const isDisabled = isLoading || isImageLoading;
 
+  const canSend = !!message.trim() && !isDisabled;
+
   return (
-    <View className="flex min-h-28 max-h-60 justify-center border-t-hairline border-btc100 bg-[#1f1f2e] overflow-hidden px-5 py-2">
-      <View className="flex-row items-center gap-2">
-        <TouchableOpacity
+    <View
+      className="bg-surface border-t border-border px-3 pt-2"
+      style={{ paddingBottom: keyboardVisible ? 10 : Math.max(insets.bottom, 10) }}
+    >
+      <View className="flex-row items-end gap-2">
+        <IconCircleButton
+          icon="plus"
+          variant="muted"
+          accessibilityLabel={t("conversation.attachPhotos")}
           onPress={handleAttachImages}
           disabled={isDisabled}
-          style={{ opacity: isDisabled ? 0.2 : 1 }}
-        >
-          <MaterialCommunityIcons name="paperclip" size={24} color="white" />
-        </TouchableOpacity>
+        />
         <TextInput
           placeholder={t("conversation.inputPlaceholder")}
-          placeholderTextColor="black"
-          className="flex-1 px-4 text-lg bg-btc100 rounded-2xl border-2 border-btc20"
+          placeholderTextColor={colors.inkSubtle}
+          accessibilityLabel={t("conversation.inputPlaceholder")}
+          className="flex-1 px-4 font-funnel-regular"
           multiline={true}
-          textAlignVertical="top"
+          textAlignVertical="center"
           style={{
-            maxHeight: 100,
-            paddingVertical: 8,
+            minHeight: 44,
+            maxHeight: 120,
+            paddingTop: 11,
+            paddingBottom: 11,
+            borderRadius: 22,
+            borderWidth: 1,
+            borderColor: colors.border,
+            backgroundColor: colors.bg,
+            color: colors.ink,
+            fontSize: 16,
           }}
           value={message}
           onChangeText={handleTextChange}
@@ -72,17 +94,19 @@ const ConversationInput = () => {
           // in-progress IME / predictive text and drops the clear. The send
           // button is already disabled while sending.
         />
-        <TouchableOpacity
-          onPress={handleOnPress}
-          disabled={!message.trim() || isDisabled}
-          style={{ opacity: message.trim() && !isDisabled ? 1 : 0.2 }}
-        >
-          {isLoading ? (
-            <ActivityIndicator size="small" color="white" />
-          ) : (
-            <MaterialCommunityIcons name="send" size={24} color="white" />
-          )}
-        </TouchableOpacity>
+        {isLoading ? (
+          <View style={{ width: 44, height: 44, alignItems: "center", justifyContent: "center" }}>
+            <ActivityIndicator size="small" color={colors.primary} />
+          </View>
+        ) : (
+          <IconCircleButton
+            icon="arrow-up"
+            variant="primary"
+            accessibilityLabel={t("conversation.send")}
+            onPress={handleOnPress}
+            disabled={!canSend}
+          />
+        )}
       </View>
     </View>
   );

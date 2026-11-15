@@ -11,20 +11,36 @@
     "delete": "削除",
     "add": "追加",
     "create": "作成",
-    "unknown": "不明"
+    "unknown": "不明",
+    "back": "戻る",
+    "showPassword": "パスワードを表示",
+    "hidePassword": "パスワードを隠す"
   },
   "tabs": {
     "home": "ホーム",
     "editFriends": "友達を編集",
     "settings": "設定",
     "logout": "ログアウト",
-    "logoutConfirmTitle": "ログアウトしますか?"
+    "logoutConfirmTitle": "ログアウトしますか?",
+    "chats": "チャット",
+    "friends": "友達"
   },
   "home": {
     "newGroupButton": "新しいグループ",
     "emptyFriends": "友達を追加してチャットを始めましょう!",
     "groupFallbackName": "グループチャット",
-    "memberCount": "{{count}}人のメンバー"
+    "memberCount": "{{count}}人のメンバー",
+    "searchPlaceholder": "名前で検索",
+    "noResults": "一致するチャットはありません。",
+    "newMessageOne": "新着メッセージ1件",
+    "newMessages": "新着メッセージ{{count}}件",
+    "filter": {
+      "all": "すべて",
+      "unread": "未読",
+      "direct": "個人",
+      "groups": "グループ"
+    },
+    "newCountShort": "新着{{count}}件"
   },
   "conversation": {
     "chatFallbackTitle": "チャット",
@@ -60,12 +76,16 @@
       "blockConfirmMessage": "ユーザーをブロックすると、友達リストから削除され、会話も削除されます。続けますか?",
       "selectMemberToReport": "報告するメンバーを選択してください",
       "noMembersToReport": "このグループには報告できる他のメンバーがいません。",
-      "blockUnavailableInGroupMessage": "グループチャットではブロック機能は利用できません。嫌な思いをしている場合は、グループから退出してください。"
+      "blockUnavailableInGroupMessage": "グループチャットではブロック機能は利用できません。嫌な思いをしている場合は、グループから退出してください。",
+      "openMenu": "チャットのオプション"
     },
     "linkPreview": {
       "loading": "プレビューを読み込み中…",
       "unavailable": "プレビューを利用できません"
-    }
+    },
+    "send": "送信",
+    "attachPhotos": "写真を添付",
+    "scrollToLatest": "最新のメッセージへ移動"
   },
   "media": {
     "shareImageTitle": "画像を共有",
@@ -99,7 +119,11 @@
       "placeholder": "固有ID",
       "missingIdTitle": "固有IDが入力されていません",
       "scanQrButton": "QRコードをスキャン",
-      "myQrLabel": "あなたのQRコード"
+      "myQrLabel": "あなたのQRコード",
+      "idLabel": "友達の固有ID",
+      "yourIdLabel": "あなたのID",
+      "copyIdA11y": "あなたのID {{id}} をコピー",
+      "copyUnavailable": "コピーするには最新のアプリが必要です。IDを長押ししてコピーすることもできます。"
     },
     "scanQr": {
       "title": "QRコードをスキャン",
@@ -113,11 +137,16 @@
     "removeRow": "友達を削除/ブロック",
     "requests": {
       "title": "保留中の友達リクエスト",
-      "empty": "保留中の友達リクエストはありません"
+      "empty": "保留中の友達リクエストはありません",
+      "accept": "承認",
+      "acceptA11y": "{{name}}からのリクエストを承認",
+      "decline": "{{name}}からのリクエストを拒否"
     },
     "blockedScreen": {
       "notice": "ここでユーザーのブロックを解除できます。\nブロックを解除すると、再度フレンドリクエストを送信できるようになります。",
-      "empty": "ブロックしたユーザーはいません"
+      "empty": "ブロックしたユーザーはいません",
+      "unblock": "ブロック解除",
+      "unblockA11y": "{{name}}のブロックを解除"
     },
     "removeScreen": {
       "notice": "友達を削除すると、相手の友達リストからも削除されます。\nブロックすると、完全に連絡が取れなくなります。",
@@ -131,7 +160,23 @@
     "rejectedSuccess": "友達リクエストを拒否しました",
     "removedSuccess": "友達を削除しました",
     "unblockedSuccess": "ユーザーのブロックを解除しました",
-    "blockedSuccess": "ユーザーをブロックしました"
+    "blockedSuccess": "ユーザーをブロックしました",
+    "swipeHint": "友達を左にスワイプするかタップすると、削除またはブロックできます。",
+    "hub": {
+      "addById": "IDで追加",
+      "addByIdSubtitle": "友達の固有IDを入力",
+      "scanQr": "QRコード",
+      "scanQrSubtitle": "自分のコードを表示・友達のコードをスキャン",
+      "requestsTitle": "友達リクエスト",
+      "manageTitle": "管理",
+      "allFriends": "すべての友達",
+      "idPrefix": "ID · {{id}}"
+    },
+    "qr": {
+      "hint": "友達がこのコードをスキャンすると、あなたを追加できます。",
+      "scanButton": "友達のコードをスキャン",
+      "a11y": "ID {{id}} の友達追加用QRコード"
+    }
   },
   "group": {
     "createTitle": "新しいグループ",
@@ -153,7 +198,8 @@
     "createFailed": "グループの作成に失敗しました",
     "addMembersFailed": "メンバーの追加に失敗しました",
     "removeMemberFailed": "メンバーの削除に失敗しました",
-    "updateFailed": "グループの更新に失敗しました"
+    "updateFailed": "グループの更新に失敗しました",
+    "removeMemberA11y": "{{name}}をグループから削除"
   },
   "eula": {
     "welcomeTitle": "bTChatty2へようこそ",
@@ -173,7 +219,9 @@
       "loginButton": "ログイン",
       "needAccount": "アカウントをお持ちでないですか?",
       "signUpHere": "こちらから登録",
-      "failedTitle": "ログインに失敗しました"
+      "failedTitle": "ログインに失敗しました",
+      "title": "おかえりなさい",
+      "subtitle": "ログインして会話を続けましょう。"
     },
     "signup": {
       "emailLabel": "メールアドレス",
@@ -191,7 +239,8 @@
       "failedTitle": "登録に失敗しました",
       "eulaPrefix": "登録することで、",
       "eulaLink": "EULA",
-      "eulaSuffix": "に同意したものとみなされます。"
+      "eulaSuffix": "に同意したものとみなされます。",
+      "title": "アカウントを作成"
     },
     "forgotPassword": {
       "subtitle": "パスワードのリセットには、一致するユーザー名とメールアドレスが必要です。",
@@ -210,7 +259,8 @@
       "backToLogin": "ログインに戻る",
       "forgotPasswordLink": "パスワードをお忘れですか?",
       "validationErrorTitle": "入力エラー",
-      "validationErrorMessage": "メールアドレスを入力してください"
+      "validationErrorMessage": "メールアドレスを入力してください",
+      "title": "ユーザー名の確認"
     }
   },
   "settings": {
@@ -219,7 +269,8 @@
       "preferences": "環境設定",
       "legal": "法的情報",
       "version": "バージョン",
-      "dangerZone": "危険な操作"
+      "dangerZone": "危険な操作",
+      "about": "このアプリについて"
     },
     "languageRow": "言語",
     "language": {
@@ -247,7 +298,8 @@
       "currentLabel": "現在のメールアドレス",
       "currentPasswordLabel": "現在のパスワード",
       "newLabel": "メールアドレス",
-      "updatedFallback": "メールアドレスを更新しました"
+      "updatedFallback": "メールアドレスを更新しました",
+      "rowLabel": "メールアドレス"
     },
     "password": {
       "title": "パスワードを変更",
@@ -257,7 +309,8 @@
       "changedSuccess": "パスワードを変更しました"
     },
     "profileImage": {
-      "updateFailed": "プロフィール画像の更新に失敗しました"
+      "updateFailed": "プロフィール画像の更新に失敗しました",
+      "change": "プロフィール写真を変更"
     },
     "deleteAccount": {
       "buttonLabel": "アカウントを削除",
@@ -268,13 +321,27 @@
       "deletedMessage": "アカウントの削除が完了しました。"
     },
     "changeIcon": {
-      "rowLabel": "アプリのアイコンを変更",
+      "rowLabel": "アプリアイコン",
       "subtitle": "ホーム画面のアイコンを選んでください",
-      "resetButton": "デフォルトアイコンに戻す"
+      "chooseLabel": "アイコンを選択",
+      "systemNote": "変更時にiOSの確認メッセージが表示されます。",
+      "names": {
+        "default": "デフォルト",
+        "icon1": "コネクト",
+        "icon2": "スパーク",
+        "icon3": "リーフ",
+        "icon4": "フライト"
+      }
     },
     "legal": {
       "privacyPolicy": "プライバシーポリシー",
       "eula": "利用規約"
+    },
+    "appearance": {
+      "title": "外観",
+      "light": "ライト",
+      "dark": "ダーク",
+      "system": "システム"
     }
   },
   "errors": {

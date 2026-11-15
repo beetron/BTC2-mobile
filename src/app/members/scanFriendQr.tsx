@@ -6,7 +6,7 @@ import {
   BarcodeScanningResult,
 } from "expo-camera";
 import { useRouter, useFocusEffect } from "expo-router";
-import RemoveFriendHeader from "../../components/RemoveFriendHeader";
+import StackHeader from "../../components/StackHeader";
 import CustomButton from "../../components/CustomButton";
 import useAddFriend from "../../hooks/useAddFriend";
 import { useTranslation } from "../../hooks/useTranslation";
@@ -49,16 +49,13 @@ const ScanFriendQr = () => {
   };
 
   return (
-    <View className="flex-1 bg-btc500">
-      <RemoveFriendHeader />
-      <View className="flex-1 m-6">
-        <Text className="text-btc100 font-funnel-semi-bold text-2xl mb-4">
-          {t("friends.scanQr.title")}
-        </Text>
+    <View className="flex-1 bg-bg">
+      <StackHeader title={t("friends.scanQr.title")} />
+      <View className="flex-1 mx-4 my-5">
 
         {!permission ? null : !permission.granted ? (
           <View className="flex-1 items-center justify-center">
-            <Text className="text-btc100 font-funnel-regular text-lg text-center mb-4">
+            <Text className="text-ink font-funnel-regular text-lg text-center mb-4">
               {t("friends.scanQr.permissionMessage")}
             </Text>
             <CustomButton
@@ -77,7 +74,7 @@ const ScanFriendQr = () => {
                 onBarcodeScanned={handleBarcodeScanned}
               />
             </View>
-            <Text className="text-btc200 font-funnel-regular text-sm text-center mt-3">
+            <Text className="text-inkMuted font-funnel-regular text-sm text-center mt-3">
               {t("friends.scanQr.instructions")}
             </Text>
           </View>

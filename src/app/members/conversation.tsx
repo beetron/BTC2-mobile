@@ -11,6 +11,7 @@ import ConversationHeader from "../../components/ConversationHeader";
 import ConversationInput from "../../components/ConversationInput";
 import conversationStore from "../../zustand/conversationStore";
 import useGetConversationDetail from "../../hooks/useGetConversationDetail";
+import { useThemeColors } from "../../context/ThemeContext";
 
 const Conversation = () => {
   const { conversationId } = useLocalSearchParams<{
@@ -19,6 +20,7 @@ const Conversation = () => {
   const router = useRouter();
   const { selectedConversation } = conversationStore();
   const { getConversationDetail } = useGetConversationDetail();
+  const colors = useThemeColors();
 
   // Always resolve full detail from the conversationId route param, rather
   // than relying on whatever navigated here to have already seeded the
@@ -39,14 +41,14 @@ const Conversation = () => {
 
   if (!selectedConversation || selectedConversation.conversationId !== conversationId) {
     return (
-      <View className="flex-1 bg-btc500 justify-center items-center">
-        <ActivityIndicator size="large" color="white" />
+      <View className="flex-1 bg-bg justify-center items-center">
+        <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
   }
 
   return (
-    <View className="flex-1 bg-btc500">
+    <View className="flex-1 bg-bg">
       <ConversationHeader />
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}

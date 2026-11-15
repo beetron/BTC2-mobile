@@ -1,21 +1,23 @@
-import { ActivityIndicator, View } from "react-native";
-import { Image } from "expo-image";
+import { ActivityIndicator, TouchableOpacity, View } from "react-native";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/src/context/AuthContext";
 import useGetProfileImage from "@/src/hooks/useGetProfileImage";
 import * as ImagePicker from "expo-image-picker";
-import { images } from "@/src/constants/images";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import useUpdateProfileImage from "@/src/hooks/useUpdateProfileImage";
-import { colors } from "@/src/constants/colors";
+import { useThemeColors } from "@/src/context/ThemeContext";
+import { useTranslation } from "@/src/hooks/useTranslation";
+import Avatar from "./Avatar";
+
+const SIZE = 64;
 
 const SettingsProfileImage = () => {
   const [image, setImage] = useState<string | null>(null);
   const { authState } = useAuth();
   const { getProfileImage, isLoading } = useGetProfileImage();
   const { updateProfileImage } = useUpdateProfileImage();
-
-  const placeholderImage = images.placeholderProfileImage;
+  const colors = useThemeColors();
+  const { t } = useTranslation();
 
   // Fetch current profile image from backend
   useEffect(() => {
@@ -31,6 +33,7 @@ const SettingsProfileImage = () => {
       }
     };
     loadInitialImage();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Image picker function and update profile image with backend
@@ -59,33 +62,44 @@ const SettingsProfileImage = () => {
   };
 
   return (
-    <View className="relative justify-center">
+    <View style={{ width: SIZE, height: SIZE }}>
       {isLoading ? (
-        <ActivityIndicator size="small" color={colors.btc100} />
+        <View
+          style={{
+            width: SIZE,
+            height: SIZE,
+            borderRadius: SIZE / 2,
+            backgroundColor: colors.surfaceMuted,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <ActivityIndicator size="small" color={colors.primary} />
+        </View>
       ) : (
-        <>
-          {image ? (
-            <Image
-              source={{ uri: image }}
-              style={{ width: 80, height: 80, borderRadius: 50 }}
-              className="bg-btc100"
-            />
-          ) : (
-            <Image
-              source={placeholderImage}
-              style={{ width: 80, height: 80, borderRadius: 50 }}
-              className="bg-btc100"
-            />
-          )}
-        </>
+        <Avatar uri={image} size={SIZE} />
       )}
-      <MaterialCommunityIcons
-        name="image-plus"
-        size={22}
-        color={colors.accent}
+      <TouchableOpacity
         onPress={pickImage}
-        className="absolute bottom-0 right-0 bg-btc500 rounded-full p-0.5"
-      />
+        accessibilityRole="button"
+        accessibilityLabel={t("settings.profileImage.change")}
+        hitSlop={8}
+        style={{
+          position: "absolute",
+          right: -4,
+          bottom: -4,
+          width: 28,
+          height: 28,
+          borderRadius: 14,
+          borderWidth: 2,
+          borderColor: colors.surface,
+          backgroundColor: colors.primary,
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <MaterialCommunityIcons name="camera" size={14} color={colors.onPrimary} />
+      </TouchableOpacity>
     </View>
   );
 };

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import { View, TouchableOpacity, Alert } from "react-native";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { colors } from "@/src/constants/colors";
+import { View, Alert } from "react-native";
+import IconCircleButton from "./IconCircleButton";
 import useDeleteMessages from "@/src/hooks/useDeleteMessages";
 import useReportUser from "@/src/hooks/useReportUser";
 import useBlockUser from "@/src/hooks/useBlockUser";
@@ -260,9 +259,13 @@ const ConversationActionMenu = () => {
 
   return (
     <View>
-      <TouchableOpacity onPress={() => setMenuVisible(true)}>
-        <MaterialCommunityIcons name="cog-outline" size={32} color={colors.btc100} />
-      </TouchableOpacity>
+      <IconCircleButton
+        icon="dots-vertical"
+        variant="plain"
+        iconSize={24}
+        accessibilityLabel={t("conversation.actionMenu.openMenu")}
+        onPress={() => setMenuVisible(true)}
+      />
       <ActionSheet
         visible={menuVisible}
         onClose={() => setMenuVisible(false)}

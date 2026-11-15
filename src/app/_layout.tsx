@@ -1,5 +1,8 @@
 import { useEffect } from "react";
 import { View } from "react-native";
+import { StatusBar } from "expo-status-bar";
+import * as SystemUI from "expo-system-ui";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useFonts } from "expo-font";
 import { SplashScreen, Stack } from "expo-router";
 import { vars } from "nativewind";
@@ -7,6 +10,7 @@ import { AuthProvider, useAuth } from "@/src/context/AuthContext";
 import { AppStateProvider } from "@/src/context/AppStateContext";
 import { NetworkProvider } from "@/src/context/NetworkContext";
 import { LocaleProvider, useLocale } from "@/src/context/LocaleContext";
+import { ThemeProvider, useTheme } from "@/src/context/ThemeContext";
 import { FONT_MAP, getFontVars } from "@/src/constants/fonts";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import "../../global.css";
@@ -52,43 +56,73 @@ const AuthSplashGate = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
-// Sets the CSS vars (see tailwind.config.js) that every font-funnel-*
-// className resolves through, to the current locale's family names --
-// updates live on locale change since all families are already loaded.
-const FontVarsProvider = ({ children }: { children: React.ReactNode }) => {
+// Sets the CSS vars (see tailwind.config.js) that every font-funnel-* and
+// color className resolves through: the current locale's font family names
+// and the current theme's color channels. Both update live (locale switch,
+// theme switch, or the OS appearance changing under "system").
+const StyleVarsProvider = ({ children }: { children: React.ReactNode }) => {
   const { locale } = useLocale();
+  const { scheme, colors, colorVarsStyle } = useTheme();
 
-  return <View style={[{ flex: 1 }, vars(getFontVars(locale))]}>{children}</View>;
+  // Native root background -- what shows behind screens during transitions
+  // and keyboard animations, so it never flashes the other theme's color.
+  useEffect(() => {
+    SystemUI.setBackgroundColorAsync(colors.bg).catch(() => {});
+  }, [colors.bg]);
+
+  return (
+    <View
+      style={[
+        { flex: 1, backgroundColor: colors.bg },
+        vars(getFontVars(locale)),
+        colorVarsStyle,
+      ]}
+    >
+      <StatusBar style={scheme === "dark" ? "light" : "dark"} />
+      {children}
+    </View>
+  );
+};
+
+const ThemedStack = () => {
+  const { colors } = useTheme();
+  return (
+    <Stack
+      screenOptions={{
+        headerShown: false,
+        contentStyle: { backgroundColor: colors.bg },
+      }}
+    >
+      <Stack.Screen name="members" />
+      <Stack.Screen name="guests" />
+      <Stack.Screen name="index" />
+    </Stack>
+  );
 };
 
 const RootLayout = () => {
   return (
-    <LocaleProvider>
-      <FontGate>
-        <FontVarsProvider>
-          <NetworkProvider>
-            <AuthProvider>
-              <AuthSplashGate>
-                <AppStateProvider>
-                  <KeyboardProvider>
-                    <Stack
-                      screenOptions={{
-                        headerShown: false,
-                      }}
-                    >
-                      <Stack.Screen name="members" />
-                      <Stack.Screen name="guests" />
-                      <Stack.Screen name="index" />
-                      <Stack.Screen name="screens" />
-                    </Stack>
-                  </KeyboardProvider>
-                </AppStateProvider>
-              </AuthSplashGate>
-            </AuthProvider>
-          </NetworkProvider>
-        </FontVarsProvider>
-      </FontGate>
-    </LocaleProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <LocaleProvider>
+        <ThemeProvider>
+          <FontGate>
+            <StyleVarsProvider>
+              <NetworkProvider>
+                <AuthProvider>
+                  <AuthSplashGate>
+                    <AppStateProvider>
+                      <KeyboardProvider>
+                        <ThemedStack />
+                      </KeyboardProvider>
+                    </AppStateProvider>
+                  </AuthSplashGate>
+                </AuthProvider>
+              </NetworkProvider>
+            </StyleVarsProvider>
+          </FontGate>
+        </ThemeProvider>
+      </LocaleProvider>
+    </GestureHandlerRootView>
   );
 };
 

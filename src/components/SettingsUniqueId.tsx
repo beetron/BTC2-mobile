@@ -1,11 +1,12 @@
 import { useState, useCallback } from "react";
-import { Text, TextInput, View, Keyboard } from "react-native";
+import { View, Keyboard } from "react-native";
 import useUpdateUniqueId from "@/src/hooks/useUpdateUniqueId";
 import { useAuth } from "@/src/context/AuthContext";
 import { useFocusEffect } from "expo-router";
 import profileValidator from "@/src/utils/profileValidator";
 import { useTranslation } from "@/src/hooks/useTranslation";
 import CustomButton from "./CustomButton";
+import CustomInput from "./CustomInput";
 
 const SettingsUniqueId = () => {
   const { authState } = useAuth();
@@ -44,31 +45,21 @@ const SettingsUniqueId = () => {
 
   return (
     <View>
-      <View className="bg-card rounded-xl p-4">
-        <Text className="font-funnel-regular text-btc300 text-sm mb-2">
-          {t("settings.uniqueId.label")}
-        </Text>
-        <TextInput
-          value={uniqueId}
-          maxLength={20}
-          autoCapitalize="none"
-          onChangeText={(text) => setUniqueId(text.toLowerCase())}
-          style={{
-            height: 44,
-            textAlignVertical: "center",
-          }}
-          className="text-btc100 font-funnel-regular text-xl bg-btc400 rounded-lg px-3"
-        />
-        <Text className="text-btc300 text-xs mt-2 text-right">
-          {uniqueId.length}/20
-        </Text>
-      </View>
+      <CustomInput
+        title={t("settings.uniqueId.label")}
+        value={uniqueId}
+        maxLength={20}
+        autoCapitalize="none"
+        autoCorrect={false}
+        onChangeText={(text) => setUniqueId(text.toLowerCase())}
+        helperText={`${uniqueId.length}/20`}
+      />
       <CustomButton
         title={t("common.save")}
         handlePress={handleOnPress}
         isLoading={isLoading}
         disabled={currentUniqueId === uniqueId || !isValidFormat}
-        containerStyles="mt-4"
+        containerStyles="mt-6"
       />
     </View>
   );

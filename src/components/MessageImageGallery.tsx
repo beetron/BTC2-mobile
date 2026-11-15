@@ -11,7 +11,7 @@ import { Image, ImageSource } from "expo-image";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import MessageImageModal from "./MessageImageModal";
 import { useTranslation } from "../hooks/useTranslation";
-import { colors } from "../constants/colors";
+import { useThemeColors } from "../context/ThemeContext";
 
 interface MessageImageGalleryProps {
   imageFilenames: string[];
@@ -22,6 +22,7 @@ const MessageImageGallery: React.FC<MessageImageGalleryProps> = ({
   imageFilenames,
   imageSources,
 }) => {
+  const colors = useThemeColors();
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(
     null
   );
@@ -83,8 +84,8 @@ const MessageImageGallery: React.FC<MessageImageGalleryProps> = ({
       }}
     >
       {errors[index] ? (
-        <View className="flex-1 bg-btc100 rounded-2xl justify-center items-center">
-          <MaterialCommunityIcons name="alert-circle-outline" size={32} color={colors.btc100} />
+        <View className="flex-1 bg-surfaceMuted rounded-2xl justify-center items-center">
+          <MaterialCommunityIcons name="alert-circle-outline" size={32} color={colors.ink} />
         </View>
       ) : (
         <>
@@ -95,11 +96,11 @@ const MessageImageGallery: React.FC<MessageImageGalleryProps> = ({
                 inset: 0,
                 justifyContent: "center",
                 alignItems: "center",
-                backgroundColor: "#D4F1F4",
+                backgroundColor: colors.surfaceMuted,
                 zIndex: 10,
               }}
             >
-              <ActivityIndicator size="small" color="#75E6DA" />
+              <ActivityIndicator size="small" color={colors.primary} />
             </View>
           )}
           <Image

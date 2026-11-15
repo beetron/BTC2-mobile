@@ -1,21 +1,14 @@
 import { useState } from "react";
-import {
-  View,
-  Text,
-  Keyboard,
-  TouchableWithoutFeedback,
-  Alert,
-  TouchableOpacity,
-} from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { View, Text, Alert, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
-import { KeyboardAvoidingView } from "react-native-keyboard-controller";
-import Logo from "../../components/Logo";
+import AuthScreen from "../../components/AuthScreen";
 import CustomButton from "../../components/CustomButton";
 import CustomInput from "../../components/CustomInput";
 import { useForgotUsername } from "../../hooks/useForgotUsername";
 import profileValidator from "../../utils/profileValidator";
 import { useTranslation } from "../../hooks/useTranslation";
+import { useTypeScale } from "../../hooks/useTypeScale";
+import { useThemeColors } from "../../context/ThemeContext";
 
 interface FormData {
   email: string;
@@ -29,10 +22,9 @@ const ForgotUsername = () => {
   const router = useRouter();
   const { forgotUsername, isLoading } = useForgotUsername();
   const { checkEmailRegex } = profileValidator();
-  const { t, locale } = useTranslation();
-  // Noto Sans JP renders visibly larger than Funnel Display at the same
-  // nominal size, so Japanese uses one step down here.
-  const linkTextSize = locale === "ja" ? "text-base" : "text-lg";
+  const { t } = useTranslation();
+  const ts = useTypeScale();
+  const colors = useThemeColors();
 
   const onSubmit = async () => {
     if (formData.email === "") {
@@ -63,72 +55,48 @@ const ForgotUsername = () => {
   };
 
   return (
-    <SafeAreaView className="h-full bg-btc500">
-      <KeyboardAvoidingView
-        behavior="padding"
-        keyboardVerticalOffset={100}
-        style={{ flex: 1 }}
-      >
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <View
-            style={{
-              flex: 1,
-              padding: 16,
-              justifyContent: "center",
-              alignItems: "center",
-              marginTop: 40,
-            }}
+    <AuthScreen
+      showBack
+      title={t("auth.forgotUsername.title")}
+      subtitle={t("auth.forgotUsername.subtitle")}
+      footer={
+        <View className="items-center gap-1">
+          <TouchableOpacity
+            onPress={() => router.push("./Login")}
+            accessibilityRole="link"
+            style={{ paddingVertical: 8 }}
           >
-            <Logo />
-
-            {/* Subtitle */}
-            <Text className="text-btc100 text-center mb-6 px-4">
-              {t("auth.forgotUsername.subtitle")}
+            <Text className={`${ts.bodyStrong} text-center`} style={{ color: colors.primary }}>
+              {t("auth.forgotUsername.backToLogin")}
             </Text>
-
-            {/* Email input */}
-            <CustomInput
-              title={t("auth.forgotUsername.emailLabel")}
-              value={formData.email}
-              onChangeText={(e) => setFormData({ ...formData, email: e })}
-              containerStyles="w-3/5"
-              isPassword={false}
-              autoCompleteType="email"
-              keyboardType="email-address"
-            />
-
-            {/* Submit button */}
-            <CustomButton
-              title={t("auth.forgotUsername.sendButton")}
-              isLoading={isLoading}
-              textStyles="font-funnel-regular"
-              containerStyles="w-3/5 top-5"
-              handlePress={onSubmit}
-            />
-
-            {/* Back to Login */}
-            <TouchableOpacity
-              onPress={() => router.push("./Login")}
-              className="top-8"
-            >
-              <Text className={`${linkTextSize} font-funnel-regular color-btc200 p-2`}>
-                {t("auth.forgotUsername.backToLogin")}
-              </Text>
-            </TouchableOpacity>
-
-            {/* Forgot Password link */}
-            <TouchableOpacity
-              onPress={() => router.push("./ForgotPassword")}
-              className="top-10"
-            >
-              <Text className={`${linkTextSize} font-funnel-regular color-btc200 p-2`}>
-                {t("auth.forgotUsername.forgotPasswordLink")}
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </TouchableWithoutFeedback>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => router.push("./ForgotPassword")}
+            accessibilityRole="link"
+            style={{ paddingVertical: 8 }}
+          >
+            <Text className={`${ts.bodyStrong} text-center`} style={{ color: colors.primary }}>
+              {t("auth.forgotUsername.forgotPasswordLink")}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      }
+    >
+      <CustomInput
+        title={t("auth.forgotUsername.emailLabel")}
+        value={formData.email}
+        onChangeText={(e) => setFormData({ ...formData, email: e })}
+        autoCapitalize="none"
+        autoComplete="email"
+        keyboardType="email-address"
+      />
+      <CustomButton
+        title={t("auth.forgotUsername.sendButton")}
+        isLoading={isLoading}
+        containerStyles="mt-2"
+        handlePress={onSubmit}
+      />
+    </AuthScreen>
   );
 };
 
