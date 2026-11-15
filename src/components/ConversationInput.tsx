@@ -36,9 +36,21 @@ const ConversationInput = () => {
   // here and comes back when the edit is saved or cancelled
   const draftBeforeEdit = useRef<string | null>(null);
   const previousComposer = useRef<ComposerState>(null);
+  // Text the box held just before the code replaced it, while its IME echo
+  // may still be in flight (see handleTextChange)
+  const pendingEcho = useRef<{ text: string; at: number } | null>(null);
 
   const isEditing = composer?.mode === "edit";
   const replyTarget = composer?.mode === "reply" ? composer.target : null;
+
+  // Programmatically swap the box's contents. Every such swap goes through
+  // here so a late IME commit of the old text can't undo it.
+  const replaceText = (next: string) => {
+    // An empty box has no uncommitted IME text to echo, and guarding "" would
+    // swallow the user clearing the box themselves
+    pendingEcho.current = message ? { text: message, at: Date.now() } : null;
+    setMessage(next);
+  };
 
   useEffect(() => {
     const prev = previousComposer.current;
@@ -48,11 +60,11 @@ const ConversationInput = () => {
     const wasEditing = prev?.mode === "edit";
     if (composer?.mode === "edit") {
       if (!wasEditing) draftBeforeEdit.current = message;
-      setMessage(composer.target.message ?? "");
+      replaceText(composer.target.message ?? "");
     } else if (wasEditing) {
       // Left edit mode (saved, cancelled, target deleted, or switched to a
       // reply): put the earlier draft back
-      setMessage(draftBeforeEdit.current ?? "");
+      replaceText(draftBeforeEdit.current ?? "");
       draftBeforeEdit.current = null;
     }
     if (composer) inputRef.current?.focus();
@@ -83,12 +95,13 @@ const ConversationInput = () => {
     if (!sent.trim()) return;
 
     // Clear immediately so the composer feels responsive
-    setMessage("");
+    replaceText("");
 
     const ok = await sendMessage(sent, replyTarget?._id);
     if (ok) {
       if (replyTarget) clearComposer();
     } else {
+      pendingEcho.current = null;
       // Restore the unsent text, unless the user already started typing again
       setMessage((current) => (current === "" ? sent : current));
     }
@@ -96,6 +109,20 @@ const ConversationInput = () => {
 
   // Handle text change
   const handleTextChange = (text: string) => {
+    // Tapping a button while the IME still has uncommitted text (e.g. kanji
+    // just picked from the conversion candidates, still underlined) makes
+    // iOS commit it right after the tap. That commit bumps the native event
+    // count, so a replaceText() made by the tap (send's clear, entering or
+    // leaving edit mode) is dropped as stale, and the commit's change event
+    // then arrives carrying the old text -- which made a sent message
+    // reappear in the box as if it had never gone out.
+    // Swallow that echo: with `message` left at the new value, TextInput
+    // re-pushes it against the new event count and the field updates.
+    const echo = pendingEcho.current;
+    if (echo) {
+      if (text === echo.text && Date.now() - echo.at < 1500) return;
+      pendingEcho.current = null;
+    }
     setMessage(text);
   };
 
