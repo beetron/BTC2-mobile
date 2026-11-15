@@ -98,7 +98,7 @@ Create a `.env` file in the root directory:
 EXPO_PUBLIC_ENV=development
 EXPO_PUBLIC_API_URL=https://your-api-url.com
 EXPO_PUBLIC_API_DEV_URL=http://192.168.1.2:3000
-EXPO_PUBLIC_APP_VERSION=1.2.4
+EXPO_PUBLIC_APP_VERSION=1.3.0
 ```
 
 **Important:** For production builds, comment out `EXPO_PUBLIC_ENV=development` so the app uses `EXPO_PUBLIC_API_URL` instead of the development URL.
