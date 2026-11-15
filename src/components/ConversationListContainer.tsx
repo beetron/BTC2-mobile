@@ -183,20 +183,12 @@ const ConversationListContainer = () => {
           />
         }
         actions={
-          <>
-            <IconCircleButton
-              icon="qrcode-scan"
-              accessibilityLabel={t("friends.scanQr.title")}
-              iconSize={20}
-              onPress={() => router.push("/members/scanFriendQr")}
-            />
-            <IconCircleButton
-              icon="plus"
-              variant="primary"
-              accessibilityLabel={t("home.newGroupButton")}
-              onPress={() => router.push("/members/createGroup")}
-            />
-          </>
+          <IconCircleButton
+            icon="plus"
+            variant="primary"
+            accessibilityLabel={t("home.newGroupButton")}
+            onPress={() => router.push("/members/createGroup")}
+          />
         }
       />
       <View className="px-5 gap-3 pb-3">

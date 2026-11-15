@@ -86,8 +86,8 @@ const Login = () => {
 
   return (
     <AuthScreen
-      title={t("auth.login.title")}
-      subtitle={t("auth.login.subtitle")}
+      // App name, not translated
+      title="bTChatty2"
       topRight={languageToggle}
       footer={
         // flex-wrap: in Japanese the prompt + link can exceed one line

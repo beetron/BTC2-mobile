@@ -257,9 +257,7 @@
       "loginButton": "Login",
       "needAccount": "Need an account?",
       "signUpHere": "Sign up here",
-      "failedTitle": "Login failed",
-      "title": "Welcome back",
-      "subtitle": "Sign in to keep the conversation going."
+      "failedTitle": "Login failed"
     },
     "signup": {
       "emailLabel": "Email",

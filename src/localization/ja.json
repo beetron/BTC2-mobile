@@ -257,9 +257,7 @@
       "loginButton": "ログイン",
       "needAccount": "アカウントをお持ちでないですか?",
       "signUpHere": "こちらから登録",
-      "failedTitle": "ログインに失敗しました",
-      "title": "おかえりなさい",
-      "subtitle": "ログインして会話を続けましょう。"
+      "failedTitle": "ログインに失敗しました"
     },
     "signup": {
       "emailLabel": "メールアドレス",
