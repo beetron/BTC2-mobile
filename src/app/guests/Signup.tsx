@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { View, Text, Alert, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 import { useAuth } from "../../context/AuthContext";
@@ -9,6 +9,7 @@ import CustomInput from "../../components/CustomInput";
 import profileValidator from "@/src/utils/profileValidator";
 import { useTranslation } from "../../hooks/useTranslation";
 import { useTypeScale } from "../../hooks/useTypeScale";
+import { serverErrorMessage } from "../../utils/serverError";
 
 interface FormData {
   email: string;
@@ -24,11 +25,6 @@ interface LoginData {
 }
 
 const Signup = () => {
-  const {
-    checkLengthUsername,
-    checkLengthPassword,
-    checkEmailRegex,
-  } = profileValidator();
   const [formData, setFormData] = useState<FormData>({
     email: "",
     username: "",
@@ -40,10 +36,33 @@ const Signup = () => {
   const { onSignup, onLogin } = useAuth();
   const router = useRouter();
   const { t } = useTranslation();
+  const {
+    checkLengthUsername,
+    checkLengthPassword,
+    checkEmailRegex,
+  } = profileValidator(t);
   const ts = useTypeScale();
   const colors = useThemeColors();
 
+  // A second tap while signing up sent a second signup, which then failed
+  // with "Username is taken" right after the success message
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const submitting = useRef(false);
+
+  // Logs in with the account just created. If that fails (timeout, rate
+  // limit), the account still exists: send the user to Login instead of
+  // leaving them on a form whose next tap says "Username is taken".
+  const loginAfterSignup = async () => {
+    try {
+      if (onLogin) await onLogin(formData.username, formData.password);
+    } catch {
+      Alert.alert(t("auth.signup.loginAfterSignupFailed"));
+      router.replace("/guests/Login");
+    }
+  };
+
   const onSubmit = async () => {
+    if (submitting.current) return;
     // Check if any fields are empty
     if (
       formData.email === "" ||
@@ -70,6 +89,9 @@ const Signup = () => {
     else if (formData.password !== formData.passwordConfirm) {
       Alert.alert(t("auth.signup.passwordsMismatch"));
     } else {
+      submitting.current = true;
+      setIsSubmitting(true);
+      let created = false;
       try {
         if (onSignup) {
           const result = await onSignup(
@@ -81,6 +103,8 @@ const Signup = () => {
 
           // If signup & login was successful, redirect
           if (result && (result.status === 200 || result.status === 201)) {
+            // Stays disabled: the account exists, Continue logs in
+            created = true;
             Alert.alert(
               t("auth.signup.successTitle"),
               t("auth.signup.successMessage"),
@@ -88,11 +112,7 @@ const Signup = () => {
                 {
                   text: t("auth.signup.continueButton"),
                   onPress: () => {
-                    setTimeout(async () => {
-                      if (onLogin) {
-                        await onLogin(formData.username, formData.password);
-                      }
-                    }, 500); // 500ms delay
+                    setTimeout(loginAfterSignup, 500); // 500ms delay
                   },
                 },
               ]
@@ -106,8 +126,16 @@ const Signup = () => {
             !e.message.includes("internet") &&
             !e.message.includes("timeout")
           ) {
-            Alert.alert(t("auth.signup.failedTitle"), e.message);
+            Alert.alert(
+              t("auth.signup.failedTitle"),
+              serverErrorMessage(e.message, t, "errors.generic")
+            );
           }
+        }
+      } finally {
+        if (!created) {
+          submitting.current = false;
+          setIsSubmitting(false);
         }
       }
     }
@@ -178,6 +206,7 @@ const Signup = () => {
         title={t("auth.signup.signupButton")}
         containerStyles="mt-2"
         handlePress={onSubmit}
+        isLoading={isSubmitting}
       />
 
       {/* EULA disclaimer -- inline pieces wrap together in either language */}

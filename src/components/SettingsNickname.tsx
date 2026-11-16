@@ -27,12 +27,9 @@ const SettingsNickname = () => {
   const handleOnPress = async () => {
     Keyboard.dismiss();
     // Send to backend API
+    // Failures are already explained by the hook's own alert
     const success = await updateNickname(nickname);
-    if (success) {
-      Alert.alert(t("settings.nickname.updatedSuccess"));
-    } else {
-      Alert.alert(t("settings.nickname.updateError"));
-    }
+    if (success) Alert.alert(t("settings.nickname.updatedSuccess"));
   };
 
   return (

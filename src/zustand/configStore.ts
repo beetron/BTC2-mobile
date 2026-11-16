@@ -8,7 +8,8 @@ export type ServerFeature =
   | "reply"
   | "edit"
   | "delete"
-  | "messageChanges";
+  | "messageChanges"
+  | "markRead";
 
 interface ConfigStore {
   features: string[] | null; // null: never fetched and nothing stored

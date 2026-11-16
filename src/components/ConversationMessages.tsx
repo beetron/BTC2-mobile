@@ -14,6 +14,8 @@ import IconCircleButton from "./IconCircleButton";
 import { useThemeColors } from "../context/ThemeContext";
 import { useTypeScale } from "../hooks/useTypeScale";
 import useSetBadgeCount from "../hooks/useSetBadgeCount";
+import useMarkConversationRead from "../hooks/useMarkConversationRead";
+import { useHasFeature } from "../zustand/configStore";
 import { useTranslation } from "../hooks/useTranslation";
 import MessageBubble from "./MessageBubble";
 import MessageActionSheet from "./MessageActionSheet";
@@ -48,6 +50,11 @@ const ConversationMessages = () => {
   // Using getMyFriends-derived unread total to update BadgeCount (temporary solution)
   const { setBadgeCount } = useSetBadgeCount();
   const myUserId = authState?.user?._id;
+  const canMarkRead = useHasFeature("markRead");
+
+  // Messages that arrive while this chat is open come in through the
+  // changes feed, which doesn't mark them read on the server
+  useMarkConversationRead({ myUserId, enabled: !isLoading && !isSyncing });
 
   // A message in THIS conversation was created, edited or deleted. The
   // payload only carries ids, so pull just the changed messages from the
@@ -58,10 +65,18 @@ const ConversationMessages = () => {
       if (payload?.conversationId === selectedConversation?.conversationId) {
         if (payload.action) syncChanges();
         else getMessages();
-        setBadgeCount();
+        // With markRead the badge comes back with the mark itself; counting
+        // now would still include the message that just came in
+        if (!canMarkRead) setBadgeCount();
       }
     },
-    [selectedConversation?.conversationId, getMessages, syncChanges, setBadgeCount]
+    [
+      selectedConversation?.conversationId,
+      getMessages,
+      syncChanges,
+      setBadgeCount,
+      canMarkRead,
+    ]
   );
   useSocketListener("conversation:message", onConversationMessage);
 

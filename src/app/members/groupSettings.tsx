@@ -96,7 +96,9 @@ const GroupSettingsScreen = () => {
         style: "destructive",
         onPress: async () => {
           if (!myUserId) return;
+          conversationStore.getState().setLeavingConversationId(conversationId);
           const success = await removeGroupMember(conversationId, myUserId);
+          conversationStore.getState().setLeavingConversationId(null);
           if (success) {
             setMessages([]);
             setSelectedConversation(null);

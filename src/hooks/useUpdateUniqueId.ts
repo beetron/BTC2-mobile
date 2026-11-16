@@ -5,6 +5,7 @@ import axiosClient from "@/src/utils/axiosClient";
 import { Alert } from "react-native";
 import { useNetwork } from "@/src/context/NetworkContext";
 import { useTranslation } from "@/src/hooks/useTranslation";
+import { serverErrorMessage } from "@/src/utils/serverError";
 
 const useUpdateUniqueId = () => {
   const { authState, setAuthState } = useAuth();
@@ -27,28 +28,25 @@ const useUpdateUniqueId = () => {
       // Convert unique ID to lowercase
       const lowercaseUniqueId = newUniqueId.toLowerCase();
 
+      // 4xx now rejects like every other request, so an expired access
+      // token goes through axiosClient's refresh-and-retry instead of
+      // resolving as a plain 401 here
       const response = await axiosClient.put(
-        `/users/updateuniqueid/${lowercaseUniqueId}`,
-        {},
-        {
-          validateStatus: (status) => status < 500, // Resolve on 2xx and 4xx, reject on 5xx
-        }
+        `/users/updateuniqueid/${encodeURIComponent(lowercaseUniqueId)}`
       );
 
       if (response.status === 200) {
-        Alert.alert(response.data.message || t("settings.uniqueId.updatedFallback"));
+        Alert.alert(t("settings.uniqueId.updatedFallback"));
         console.log("Unique ID updated via useUpdateUniqueId hook");
         if (authState?.user && setAuthState) {
-          // Update the user object in authState with the new uniqueId
+          // Stored lowercased, as the server does
           const updatedUser = {
             ...authState?.user,
-            uniqueId: newUniqueId,
+            uniqueId: lowercaseUniqueId,
           };
 
-          setAuthState({
-            ...authState,
-            user: updatedUser,
-          });
+          // Functional update: don't put back a token refreshed meanwhile
+          setAuthState((prev) => ({ ...prev, user: updatedUser }));
 
           console.log("Updating user via hook: ", updatedUser);
 
@@ -56,9 +54,6 @@ const useUpdateUniqueId = () => {
           await SecureStore.setItemAsync(USER_KEY, JSON.stringify(updatedUser));
           return true;
         }
-        return false;
-      } else if (response.status === 400) {
-        Alert.alert(t("common.error"), response.data.error || t("settings.uniqueId.badRequest"));
         return false;
       } else {
         Alert.alert(t("common.error"), t("errors.generic"));
@@ -74,6 +69,11 @@ const useUpdateUniqueId = () => {
         );
       } else if (error.networkError === "NO_INTERNET") {
         // Already alerted in pre-flight check
+      } else if (error.response?.status === 400) {
+        Alert.alert(
+          t("common.error"),
+          serverErrorMessage(error, t, "settings.uniqueId.badRequest")
+        );
       } else {
         Alert.alert(t("common.error"), t("errors.generic"));
       }

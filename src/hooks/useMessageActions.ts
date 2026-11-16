@@ -14,7 +14,7 @@ const useMessageActions = () => {
   const { authState } = useAuth();
   const { isConnected } = useNetwork();
   const { t } = useTranslation();
-  const { selectedConversation, upsertMessages } = conversationStore();
+  const { selectedConversation, upsertMessages, clearComposer } = conversationStore();
   const [isLoading, setIsLoading] = useState(false);
 
   const run = async (
@@ -47,6 +47,14 @@ const useMessageActions = () => {
           t("errors.connectionTimeoutTitle"),
           t("errors.connectionTimeoutMessage")
         );
+      } else if (
+        e.response?.status === 400 &&
+        e.response?.data?.error === "Cannot edit a deleted message"
+      ) {
+        // Deleted for everyone from another device meanwhile: leave edit
+        // mode instead of retrying a save that can't succeed
+        clearComposer();
+        Alert.alert(t("common.error"), t("conversation.messageActions.editTargetDeleted"));
       } else if (e.networkError !== "NO_INTERNET") {
         console.log("Message action failed: ", e.response?.data?.error || e.message);
         Alert.alert(t("common.error"), t(failedKey));

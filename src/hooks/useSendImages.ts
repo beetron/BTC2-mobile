@@ -7,6 +7,7 @@ import conversationStore, { isConversationOpen } from "../zustand/conversationSt
 import { saveCurrentMessagesToCache } from "../utils/messageCache";
 import { isReplyTargetGone } from "./useSendMessage";
 import { useTranslation } from "./useTranslation";
+import useClientMessageId from "./useClientMessageId";
 
 // Several photos over a slow connection take well over axiosClient's 10s
 const UPLOAD_TIMEOUT_MS = 120000;
@@ -25,6 +26,7 @@ export const useSendImages = () => {
   const { t } = useTranslation();
   const { selectedConversation, bumpRefreshSignal, upsertMessages, clearComposer } =
     conversationStore();
+  const { idFor, settle } = useClientMessageId();
 
   // replyToId makes the upload a quote reply
   const sendImages = useCallback(
@@ -44,6 +46,14 @@ export const useSendImages = () => {
         return false;
       }
 
+      // The same photos to the same chat after an unclear failure reuse the
+      // clientMessageId, so a retried upload isn't stored twice
+      const retryKey = [
+        selectedConversation.conversationId,
+        replyToId ?? "",
+        ...images.map((image) => `${image.name}:${image.size}`),
+      ].join("|");
+
       try {
         setIsLoading(true);
 
@@ -57,6 +67,8 @@ export const useSendImages = () => {
           } as any);
         });
         if (replyToId) formData.append("replyToId", replyToId);
+        const clientMessageId = idFor(retryKey);
+        if (clientMessageId) formData.append("clientMessageId", clientMessageId);
 
         // Through axiosClient (auth header, X-Socket-Id, and refresh-and-
         // retry on an expired access token, which plain axios skipped so
@@ -70,6 +82,7 @@ export const useSendImages = () => {
             timeout: UPLOAD_TIMEOUT_MS,
           }
         );
+        settle(retryKey);
 
         if (response.data?.success) {
           // Left the chat during the upload: the photos were still sent and
@@ -93,10 +106,13 @@ export const useSendImages = () => {
           return false;
         }
       } catch (error: any) {
+        settle(retryKey, error);
         if (replyToId && isReplyTargetGone(error)) {
           clearComposer();
           Alert.alert(t("common.error"), t("conversation.composer.replyTargetGone"));
         } else if (error?.networkError === "TIMEOUT") {
+          // The upload may have finished anyway: reload to show it if so
+          if (isConversationOpen(selectedConversation.conversationId)) bumpRefreshSignal();
           Alert.alert(
             t("errors.connectionTimeoutTitle"),
             t("errors.connectionTimeoutMessage")
@@ -117,6 +133,8 @@ export const useSendImages = () => {
       bumpRefreshSignal,
       upsertMessages,
       clearComposer,
+      idFor,
+      settle,
       t,
     ]
   );

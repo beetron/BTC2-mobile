@@ -50,12 +50,14 @@ const EditAddFriend = () => {
 
   // Handle onPress
   const handleOnPress = async () => {
-    if (!friendUniqueId) {
+    if (!friendUniqueId.trim()) {
       Alert.alert(t("friends.addFriend.missingIdTitle"));
       return;
     }
     Keyboard.dismiss();
-    const success = await addFriend(friendUniqueId);
+    // Pasted IDs often carry a trailing space; the button already checks
+    // the trimmed value
+    const success = await addFriend(friendUniqueId.trim());
     if (success) {
       setFriendUniqueId("");
     }

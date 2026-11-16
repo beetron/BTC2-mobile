@@ -13,8 +13,8 @@ const SettingsUniqueId = () => {
   const currentUniqueId = authState?.user?.uniqueId;
   const [uniqueId, setUniqueId] = useState(currentUniqueId || "");
   const { updateUniqueId, isLoading } = useUpdateUniqueId();
-  const { checkLengthUsername, checkAlphanumeric } = profileValidator();
   const { t } = useTranslation();
+  const { checkLengthUsername, checkAlphanumeric } = profileValidator(t);
 
   // Reset current unique ID when switching tabs
   useFocusEffect(

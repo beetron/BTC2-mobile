@@ -69,6 +69,10 @@ const useLinkPreview = (url: string | null | undefined) => {
       return;
     }
 
+    // A different link (e.g. after an edit): don't keep showing the last
+    // one's card while this one loads, or at all while offline
+    setData(null);
+
     if (!isConnected) {
       setIsLoading(false);
       return;

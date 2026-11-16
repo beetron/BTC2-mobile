@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { View, Text, Alert, TouchableOpacity } from "react-native";
 import { useAuth } from "../../context/AuthContext";
 import { useLocale } from "../../context/LocaleContext";
@@ -9,6 +9,7 @@ import CustomInput from "../../components/CustomInput";
 import { useRouter } from "expo-router";
 import { useTranslation } from "../../hooks/useTranslation";
 import { useTypeScale } from "../../hooks/useTypeScale";
+import { serverErrorMessage } from "../../utils/serverError";
 
 interface FormData {
   username: string;
@@ -27,11 +28,17 @@ const Login = () => {
   const { setLocale } = useLocale();
   const colors = useThemeColors();
   const ts = useTypeScale();
+  // A second tap while logging in sent a second login
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const submitting = useRef(false);
 
   const onSubmit = async () => {
+    if (submitting.current) return;
     if (formData.username === "" || formData.password === "") {
       Alert.alert(t("auth.fillAllFieldsTitle"));
     } else {
+      submitting.current = true;
+      setIsSubmitting(true);
       try {
         if (onLogin) {
           await onLogin(formData.username, formData.password);
@@ -43,9 +50,15 @@ const Login = () => {
             !e.message.includes("internet") &&
             !e.message.includes("timeout")
           ) {
-            Alert.alert(t("auth.login.failedTitle"), e.message);
+            Alert.alert(
+              t("auth.login.failedTitle"),
+              serverErrorMessage(e.message, t, "errors.generic")
+            );
           }
         }
+      } finally {
+        submitting.current = false;
+        setIsSubmitting(false);
       }
     }
   };
@@ -150,6 +163,7 @@ const Login = () => {
         title={t("auth.login.loginButton")}
         handlePress={onSubmit}
         containerStyles="mt-2"
+        isLoading={isSubmitting}
       />
     </AuthScreen>
   );

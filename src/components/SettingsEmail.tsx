@@ -1,3 +1,5 @@
+import * as SecureStore from "expo-secure-store";
+import { USER_KEY } from "@/src/utils/axiosClient";
 import { useState, useCallback } from "react";
 import { Text, View } from "react-native";
 import { useFocusEffect } from "expo-router";
@@ -15,8 +17,8 @@ const SettingsEmail = () => {
   const [currentPassword, setCurrentPassword] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const { updateEmail, isLoading } = useUpdateEmail();
-  const { checkEmailRegex } = profileValidator();
   const { t } = useTranslation();
+  const { checkEmailRegex } = profileValidator(t);
   const ts = useTypeScale();
 
   // Clear fields when switching tabs
@@ -33,13 +35,23 @@ const SettingsEmail = () => {
     if (!currentPassword || !checkEmailRegex(email)) return;
 
     // Send to backend API
-    const success = await updateEmail(email, currentPassword);
+    // Stored lowercased, as the server now does
+    const newEmail = email.trim().toLowerCase();
+    const success = await updateEmail(newEmail, currentPassword);
     if (success) {
       if (setAuthState) {
         setAuthState((prev) => ({
           ...prev,
-          user: prev.user ? { ...prev.user, email } : null,
+          user: prev.user ? { ...prev.user, email: newEmail } : null,
         }));
+      }
+      // Saved too: launch restores the user from SecureStore, so the old
+      // address came back after a restart
+      if (authState?.user) {
+        await SecureStore.setItemAsync(
+          USER_KEY,
+          JSON.stringify({ ...authState.user, email: newEmail })
+        ).catch(() => {});
       }
       setCurrentPassword("");
       setEmail("");

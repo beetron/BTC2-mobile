@@ -40,7 +40,8 @@
       "direct": "Direct",
       "groups": "Groups"
     },
-    "newCountShort": "{{count}} new"
+    "newCountShort": "{{count}} new",
+    "openChatFailed": "Failed to open chat"
   },
   "conversation": {
     "chatFallbackTitle": "Chat",
@@ -78,7 +79,8 @@
       "selectMemberToReport": "Select a member to report",
       "noMembersToReport": "There are no other members in this group to report.",
       "blockUnavailableInGroupMessage": "Blocking isn't available in group chats. If you're having a bad experience, you can leave the group instead.",
-      "openMenu": "Chat options"
+      "openMenu": "Chat options",
+      "deleteFailed": "Could not delete messages"
     },
     "linkPreview": {
       "loading": "Loading preview…",
@@ -101,7 +103,8 @@
       "copied": "Copied",
       "copyFailed": "Couldn't copy the text",
       "editFailed": "Couldn't edit the message",
-      "deleteFailed": "Couldn't delete the message"
+      "deleteFailed": "Couldn't delete the message",
+      "editTargetDeleted": "This message was deleted and can no longer be edited"
     },
     "quote": {
       "deleted": "Message deleted",
@@ -239,7 +242,9 @@
     "addMembersFailed": "Failed to add members",
     "removeMemberFailed": "Failed to remove member",
     "updateFailed": "Failed to update group",
-    "removeMemberA11y": "Remove {{name}} from the group"
+    "removeMemberA11y": "Remove {{name}} from the group",
+    "removedFromGroupTitle": "Removed from group",
+    "removedFromGroupMessage": "You are no longer a member of this group"
   },
   "eula": {
     "welcomeTitle": "Welcome to bTChatty2",
@@ -278,7 +283,8 @@
       "eulaPrefix": "By signing up, you agree to our ",
       "eulaLink": "EULA",
       "eulaSuffix": ".",
-      "title": "Create your account"
+      "title": "Create your account",
+      "loginAfterSignupFailed": "Your account was created, but logging in failed. Please log in."
     },
     "forgotPassword": {
       "subtitle": "Matching username and email required for password reset.",
@@ -288,7 +294,8 @@
       "backToLogin": "Back to Login",
       "forgotUsernameLink": "Forgot Username?",
       "validationErrorTitle": "Validation Error",
-      "validationErrorMessage": "Please fill in all fields"
+      "validationErrorMessage": "Please fill in all fields",
+      "sentSuccess": "A temporary password has been sent to your email"
     },
     "forgotUsername": {
       "subtitle": "Enter your email address and we'll send you your username",
@@ -298,8 +305,10 @@
       "forgotPasswordLink": "Forgot Password?",
       "validationErrorTitle": "Validation Error",
       "validationErrorMessage": "Please enter your email address",
-      "title": "Find your username"
-    }
+      "title": "Find your username",
+      "sentSuccess": "Your username has been sent to your email"
+    },
+    "recoveryFailed": "Error, please try again later"
   },
   "settings": {
     "sections": {
@@ -356,7 +365,8 @@
       "confirmMessage": "Are you sure you want to delete your account? This action cannot be undone.",
       "userIdNotFoundError": "Unable to delete account. User ID not found.",
       "deletedTitle": "Account Deleted",
-      "deletedMessage": "Your account has been deleted successfully."
+      "deletedMessage": "Your account has been deleted successfully.",
+      "failed": "Failed to delete account"
     },
     "changeIcon": {
       "rowLabel": "App icon",
@@ -395,6 +405,42 @@
     "noInternetLoadRequests": "Please check your connection to load friend requests",
     "noInternetDeleteMessages": "Please check your connection to delete messages",
     "noInternetReportUsers": "Please check your connection to report users",
-    "noInternetSendMessages": "Please check your connection to send messages"
+    "noInternetSendMessages": "Please check your connection to send messages",
+    "server": {
+      "userNotFound": "User not found",
+      "cannotAddYourself": "You can't add yourself",
+      "requestAlreadySent": "Friend request already sent",
+      "alreadyFriends": "You're already friends",
+      "unblockFirst": "Unblock this user first",
+      "noFriendRequest": "This friend request is no longer available",
+      "notInFriendList": "This user is not in your friend list",
+      "alreadyBlocked": "This user is already blocked",
+      "notBlocked": "This user is not blocked",
+      "cannotBlockYourself": "You can't block yourself",
+      "cannotReportYourself": "You can't report yourself",
+      "onlyMessageFriends": "You can only message friends",
+      "cannotStartConversation": "You can't start a chat with this user",
+      "onlyAddOwnFriends": "You can only add your own friends to a group",
+      "ownerOnly": "Only the group owner can do this",
+      "notAMember": "You're not a member of this chat",
+      "conversationNotFound": "This chat no longer exists",
+      "usernameTaken": "This username is already taken",
+      "uniqueIdTaken": "This ID is already taken",
+      "emailTaken": "This email address is already in use",
+      "inviterIdIncorrect": "Your friend's ID is incorrect",
+      "invalidLogin": "Incorrect username or password",
+      "passwordIncorrect": "Password is incorrect",
+      "samePassword": "The new password must be different from the current one",
+      "emailNotFound": "Email not found",
+      "usernameOrEmailNotFound": "Username or email not found",
+      "tooManyRequests": "Too many requests. Please try again later"
+    }
+  },
+  "validation": {
+    "passwordsMismatch": "Passwords do not match",
+    "usernameLength": "Username must be between 6 and 20 characters",
+    "passwordLength": "Password must be between 6 and 72 characters",
+    "alphanumericOnly": "Only letters and numbers are allowed",
+    "invalidEmail": "Invalid email format"
   }
 }

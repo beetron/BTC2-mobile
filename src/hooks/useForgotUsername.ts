@@ -30,7 +30,7 @@ export const useForgotUsername = () => {
 
       return {
         success: false,
-        error: response.data.error || "Failed to retrieve username",
+        error: response.data.error || "",
       };
     } catch (error: any) {
       setIsLoading(false);
@@ -39,14 +39,13 @@ export const useForgotUsername = () => {
       if (error.response?.status === 404) {
         return {
           success: false,
-          error: "Error, please try again later",
+          // Not revealed: whether an account has this email
+          error: "",
         };
       }
 
       const errorMessage =
-        error.response?.data?.error ||
-        error.message ||
-        "Error, please try again later";
+        error.response?.data?.error || "";
 
       return {
         success: false,

@@ -3,6 +3,7 @@ import axiosClient from "../utils/axiosClient";
 import { useState } from "react";
 import { useNetwork } from "@/src/context/NetworkContext";
 import { useTranslation } from "@/src/hooks/useTranslation";
+import { serverErrorMessage } from "@/src/utils/serverError";
 
 const useRemoveFriend = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -33,16 +34,9 @@ const useRemoveFriend = () => {
         );
       } else if (error.networkError === "NO_INTERNET") {
         // Already alerted in pre-flight check
-      } else if (
-        error.response &&
-        error.response.data &&
-        error.response.data.error
-      ) {
-        Alert.alert(t("common.error"), error.response.data.error);
-        console.error("Error in useRemoveFriend: ", error);
       } else {
-        Alert.alert(t("common.error"), t("errors.generic"));
-        console.error("Unexpected error in useRemoveFriend: ", error);
+        Alert.alert(t("common.error"), serverErrorMessage(error, t, "errors.generic"));
+        console.error("Error in useRemoveFriend: ", error);
       }
       return false;
     } finally {

@@ -13,12 +13,12 @@ import useGetMyFriends from "../hooks/useGetMyFriends";
 import useGetGroupConversations from "../hooks/useGetGroupConversations";
 import ConversationListItem from "./ConversationListItem";
 import GroupConversationListItem from "./GroupConversationListItem";
-import { useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect, useIsFocused } from "@react-navigation/native";
 import { useAppStateListener } from "@/src/context/AppStateContext";
 import conversationStore from "../zustand/conversationStore";
 import unreadStore from "../zustand/unreadStore";
 import useFcmToken from "../hooks/useFcmToken";
-import useSetBadgeCount from "../hooks/useSetBadgeCount";
+import { applyBadgeCount } from "../hooks/useSetBadgeCount";
 import useSocketListener from "../hooks/useSocketListener";
 import { useTranslation } from "../hooks/useTranslation";
 
@@ -39,12 +39,14 @@ const ConversationListContainer = () => {
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<ListFilter>("all");
   const { setMessages, setSelectedConversation } = conversationStore();
-  const { myFriends, isInitialLoad, getMyFriends } = useGetMyFriends();
-  const { groupConversations, getGroupConversations } =
+  const { myFriends, isInitialLoad, hasLoaded: friendsLoaded, getMyFriends } =
+    useGetMyFriends();
+  const { groupConversations, hasLoaded: groupsLoaded, getGroupConversations } =
     useGetGroupConversations();
   const { manageFcmToken } = useFcmToken();
-  const { setBadgeCountFromFriends } = useSetBadgeCount();
   const { setTotalUnreadCount } = unreadStore();
+  const readSignal = unreadStore((s) => s.readSignal);
+  const isFocused = useIsFocused();
 
   // Run Effect when screen is back in focus. getMyFriends/getGroupConversations
   // aren't called here -- useGetMyFriends/useGetGroupConversations already
@@ -69,14 +71,6 @@ const ConversationListContainer = () => {
     console.log("App state changed, refreshing friend list and FCM token");
   });
 
-  // Badge count is derived from myFriends (already has unreadCount per
-  // friend) whenever it changes, instead of setBadgeCount making its own
-  // redundant /users/friendlist call on top of the one useGetMyFriends
-  // already just made.
-  useEffect(() => {
-    setBadgeCountFromFriends(myFriends);
-  }, [myFriends, setBadgeCountFromFriends]);
-
   // Home tab badge -- direct-chat unread (myFriends) plus group-chat unread
   // (groupConversations), recomputed whenever either list changes so it
   // stays live across socket-driven refreshes and focus refetches.
@@ -90,7 +84,11 @@ const ConversationListContainer = () => {
       0
     );
     setTotalUnreadCount(friendsUnread + groupsUnread);
-  }, [myFriends, groupConversations, setTotalUnreadCount]);
+    // App icon too, with no extra request -- but only once both lists have
+    // loaded: on launch they start empty, and setting 0 then wiped the
+    // count the last push put there
+    if (friendsLoaded && groupsLoaded) applyBadgeCount(friendsUnread + groupsUnread);
+  }, [myFriends, groupConversations, friendsLoaded, groupsLoaded, setTotalUnreadCount]);
 
   // Refresh unread counts / ordering on any conversation activity -- any of
   // these can change what /users/friendlist or /conversations reports.
@@ -106,6 +104,16 @@ const ConversationListContainer = () => {
   useSocketListener("conversation:memberAdded", refreshList);
   useSocketListener("conversation:memberRemoved", refreshList);
   useSocketListener("newMessageSignal", refreshList);
+
+  // A chat was just marked read on the server. Leaving a chat sends that
+  // mark at the same moment this screen refetches on focus, so the focus
+  // fetch can still see the old count: fetch again once the mark is done.
+  // While a chat is open this screen isn't focused and its focus fetch
+  // covers it later, so marks made then don't cost a refetch.
+  useEffect(() => {
+    if (readSignal > 0 && isFocused) refreshList();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [readSignal]);
 
   // Merge friends + groups into one list, sorted the same way
   // GET /users/friendlist already sorts itself: unread count desc, then

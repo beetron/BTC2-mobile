@@ -6,6 +6,8 @@ import ChatRow from "./ChatRow";
 import Avatar from "./Avatar";
 import { useLocale } from "../context/LocaleContext";
 import { formatConversationTimestamp } from "../utils/formatConversationTimestamp";
+import { useTranslation } from "../hooks/useTranslation";
+import { serverErrorMessage } from "../utils/serverError";
 
 interface FriendProps {
   _id: string;
@@ -24,6 +26,7 @@ const ConversationListItem = ({ friend }: { friend: FriendProps }) => {
   const [isOpening, setIsOpening] = useState(false);
   const router = useRouter();
   const { locale } = useLocale();
+  const { t } = useTranslation();
   const timestamp = formatConversationTimestamp(friend.updatedAt, locale);
 
   const handleOnPress = async () => {
@@ -37,10 +40,13 @@ const ConversationListItem = ({ friend }: { friend: FriendProps }) => {
         `/members/conversation?conversationId=${res.data.conversationId}`
       );
     } catch (error: any) {
-      Alert.alert(
-        "Error",
-        error.response?.data?.error || "Failed to open chat"
-      );
+      if (error.networkError === "NO_INTERNET") {
+        Alert.alert(t("errors.noInternetTitle"), t("errors.noInternetOpenChat"));
+      } else if (error.networkError === "TIMEOUT") {
+        Alert.alert(t("errors.connectionTimeoutTitle"), t("errors.connectionTimeoutMessage"));
+      } else {
+        Alert.alert(t("common.error"), serverErrorMessage(error, t, "home.openChatFailed"));
+      }
     } finally {
       setIsOpening(false);
     }

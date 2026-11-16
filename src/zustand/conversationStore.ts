@@ -151,6 +151,21 @@ interface ConversationStore {
   changesSince: string | null;
   changesCursor: string | null;
   setChangesPosition: (pos: { since?: string | null; cursor?: string | null }) => void;
+  // Newest message the server has as read for the open conversation:
+  // loading the newest page marks it, then useMarkConversationRead moves
+  // it forward as messages arrive while the chat is open.
+  markedReadId: string | null;
+  setMarkedReadId: (id: string | null) => void;
+  // Set while the user is leaving this group themselves, so the
+  // conversation:memberRemoved that comes back isn't shown as "you were
+  // removed"
+  leavingConversationId: string | null;
+  setLeavingConversationId: (id: string | null) => void;
+  // A direct conversation the server deleted because both sides cleared
+  // it (from this device's own clear-history response). The open chat
+  // moves to a fresh conversation, as it does on conversation:deleted.
+  deletedConversationId: string | null;
+  setDeletedConversationId: (id: string | null) => void;
   // Reply / edit mode of the composer
   composer: ComposerState;
   startReply: (target: Message) => void;
@@ -181,6 +196,7 @@ const conversationStore = create<ConversationStore>((set) => ({
             composer: null,
             changesSince: null,
             changesCursor: null,
+            markedReadId: null,
           }
     ),
   messages: [],
@@ -214,6 +230,12 @@ const conversationStore = create<ConversationStore>((set) => ({
       changesSince: since !== undefined ? since : state.changesSince,
       changesCursor: cursor !== undefined ? cursor : state.changesCursor,
     })),
+  markedReadId: null,
+  setMarkedReadId: (markedReadId) => set({ markedReadId }),
+  leavingConversationId: null,
+  setLeavingConversationId: (leavingConversationId) => set({ leavingConversationId }),
+  deletedConversationId: null,
+  setDeletedConversationId: (deletedConversationId) => set({ deletedConversationId }),
   composer: null,
   startReply: (target) => set({ composer: { mode: "reply", target } }),
   startEdit: (target) => set({ composer: { mode: "edit", target } }),

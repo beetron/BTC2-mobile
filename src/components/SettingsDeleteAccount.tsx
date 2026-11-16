@@ -4,6 +4,7 @@ import { useDeleteAccount } from "../hooks/useDeleteAccount";
 import { useRouter } from "expo-router";
 import CustomButton from "./CustomButton";
 import { useTranslation } from "../hooks/useTranslation";
+import { serverErrorMessage } from "@/src/utils/serverError";
 
 const SettingsDeleteAccount = () => {
   const { authState, onLogout } = useAuth();
@@ -53,8 +54,11 @@ const SettingsDeleteAccount = () => {
                   },
                 ]
               );
-            } else if (result.error) {
-              Alert.alert(t("common.error"), result.error);
+            } else {
+              Alert.alert(
+                t("common.error"),
+                serverErrorMessage(result.error, t, "settings.deleteAccount.failed")
+              );
             }
           },
           style: "destructive",

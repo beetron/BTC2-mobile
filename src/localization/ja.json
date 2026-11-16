@@ -40,7 +40,8 @@
       "direct": "個人",
       "groups": "グループ"
     },
-    "newCountShort": "新着{{count}}件"
+    "newCountShort": "新着{{count}}件",
+    "openChatFailed": "チャットを開けませんでした"
   },
   "conversation": {
     "chatFallbackTitle": "チャット",
@@ -78,7 +79,8 @@
       "selectMemberToReport": "報告するメンバーを選択してください",
       "noMembersToReport": "このグループには報告できる他のメンバーがいません。",
       "blockUnavailableInGroupMessage": "グループチャットではブロック機能は利用できません。嫌な思いをしている場合は、グループから退出してください。",
-      "openMenu": "チャットのオプション"
+      "openMenu": "チャットのオプション",
+      "deleteFailed": "メッセージを削除できませんでした"
     },
     "linkPreview": {
       "loading": "プレビューを読み込み中…",
@@ -101,7 +103,8 @@
       "copied": "コピーしました",
       "copyFailed": "テキストをコピーできませんでした",
       "editFailed": "メッセージを編集できませんでした",
-      "deleteFailed": "メッセージを削除できませんでした"
+      "deleteFailed": "メッセージを削除できませんでした",
+      "editTargetDeleted": "このメッセージは削除されたため編集できません"
     },
     "quote": {
       "deleted": "削除されたメッセージ",
@@ -239,7 +242,9 @@
     "addMembersFailed": "メンバーの追加に失敗しました",
     "removeMemberFailed": "メンバーの削除に失敗しました",
     "updateFailed": "グループの更新に失敗しました",
-    "removeMemberA11y": "{{name}}をグループから削除"
+    "removeMemberA11y": "{{name}}をグループから削除",
+    "removedFromGroupTitle": "グループから削除されました",
+    "removedFromGroupMessage": "このグループのメンバーではなくなりました"
   },
   "eula": {
     "welcomeTitle": "bTChatty2へようこそ",
@@ -278,7 +283,8 @@
       "eulaPrefix": "登録することで、",
       "eulaLink": "EULA",
       "eulaSuffix": "に同意したものとみなされます。",
-      "title": "アカウントを作成"
+      "title": "アカウントを作成",
+      "loginAfterSignupFailed": "アカウントは作成されましたが、ログインできませんでした。ログインしてください"
     },
     "forgotPassword": {
       "subtitle": "パスワードのリセットには、一致するユーザー名とメールアドレスが必要です。",
@@ -288,7 +294,8 @@
       "backToLogin": "ログインに戻る",
       "forgotUsernameLink": "ユーザー名をお忘れですか?",
       "validationErrorTitle": "入力エラー",
-      "validationErrorMessage": "すべての項目を入力してください"
+      "validationErrorMessage": "すべての項目を入力してください",
+      "sentSuccess": "仮パスワードをメールで送信しました"
     },
     "forgotUsername": {
       "subtitle": "メールアドレスを入力すると、ユーザー名をお送りします",
@@ -298,8 +305,10 @@
       "forgotPasswordLink": "パスワードをお忘れですか?",
       "validationErrorTitle": "入力エラー",
       "validationErrorMessage": "メールアドレスを入力してください",
-      "title": "ユーザー名の確認"
-    }
+      "title": "ユーザー名の確認",
+      "sentSuccess": "ユーザー名をメールで送信しました"
+    },
+    "recoveryFailed": "エラーが発生しました。しばらくしてからもう一度お試しください"
   },
   "settings": {
     "sections": {
@@ -356,7 +365,8 @@
       "confirmMessage": "本当にアカウントを削除しますか?この操作は取り消せません。",
       "userIdNotFoundError": "アカウントを削除できません。ユーザーIDが見つかりません。",
       "deletedTitle": "アカウントを削除しました",
-      "deletedMessage": "アカウントの削除が完了しました。"
+      "deletedMessage": "アカウントの削除が完了しました。",
+      "failed": "アカウントの削除に失敗しました"
     },
     "changeIcon": {
       "rowLabel": "アプリアイコン",
@@ -395,6 +405,42 @@
     "noInternetLoadRequests": "友達リクエストを読み込むには接続を確認してください",
     "noInternetDeleteMessages": "メッセージを削除するには接続を確認してください",
     "noInternetReportUsers": "ユーザーを報告するには接続を確認してください",
-    "noInternetSendMessages": "メッセージを送信するには接続を確認してください"
+    "noInternetSendMessages": "メッセージを送信するには接続を確認してください",
+    "server": {
+      "userNotFound": "ユーザーが見つかりません",
+      "cannotAddYourself": "自分自身を追加することはできません",
+      "requestAlreadySent": "友達リクエストは送信済みです",
+      "alreadyFriends": "すでに友達です",
+      "unblockFirst": "先にこのユーザーのブロックを解除してください",
+      "noFriendRequest": "この友達リクエストは無効になっています",
+      "notInFriendList": "このユーザーは友達リストにいません",
+      "alreadyBlocked": "このユーザーはすでにブロックされています",
+      "notBlocked": "このユーザーはブロックされていません",
+      "cannotBlockYourself": "自分自身をブロックすることはできません",
+      "cannotReportYourself": "自分自身を報告することはできません",
+      "onlyMessageFriends": "友達にのみメッセージを送信できます",
+      "cannotStartConversation": "このユーザーとはチャットを開始できません",
+      "onlyAddOwnFriends": "グループに追加できるのは自分の友達のみです",
+      "ownerOnly": "この操作はグループのオーナーのみ可能です",
+      "notAMember": "このチャットのメンバーではありません",
+      "conversationNotFound": "このチャットは存在しません",
+      "usernameTaken": "このユーザー名はすでに使用されています",
+      "uniqueIdTaken": "このIDはすでに使用されています",
+      "emailTaken": "このメールアドレスはすでに使用されています",
+      "inviterIdIncorrect": "友達のIDが正しくありません",
+      "invalidLogin": "ユーザー名またはパスワードが正しくありません",
+      "passwordIncorrect": "パスワードが正しくありません",
+      "samePassword": "新しいパスワードは現在のパスワードと異なるものにしてください",
+      "emailNotFound": "メールアドレスが見つかりません",
+      "usernameOrEmailNotFound": "ユーザー名またはメールアドレスが見つかりません",
+      "tooManyRequests": "リクエストが多すぎます。しばらくしてからもう一度お試しください"
+    }
+  },
+  "validation": {
+    "passwordsMismatch": "パスワードが一致しません",
+    "usernameLength": "ユーザー名は6〜20文字で入力してください",
+    "passwordLength": "パスワードは6〜72文字で入力してください",
+    "alphanumericOnly": "半角英数字のみ使用できます",
+    "invalidEmail": "メールアドレスの形式が正しくありません"
   }
 }

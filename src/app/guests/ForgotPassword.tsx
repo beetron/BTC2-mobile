@@ -7,6 +7,7 @@ import CustomInput from "../../components/CustomInput";
 import { useForgotPassword } from "../../hooks/useForgotPassword";
 import profileValidator from "../../utils/profileValidator";
 import { useTranslation } from "../../hooks/useTranslation";
+import { serverErrorMessage } from "@/src/utils/serverError";
 import { useTypeScale } from "../../hooks/useTypeScale";
 import { useThemeColors } from "../../context/ThemeContext";
 
@@ -23,8 +24,8 @@ const ForgotPassword = () => {
 
   const router = useRouter();
   const { forgotPassword, isLoading } = useForgotPassword();
-  const { checkEmailRegex } = profileValidator();
   const { t } = useTranslation();
+  const { checkEmailRegex } = profileValidator(t);
   const ts = useTypeScale();
   const colors = useThemeColors();
 
@@ -44,15 +45,16 @@ const ForgotPassword = () => {
 
     const result = await forgotPassword(formData);
 
-    if (result.success && result.message) {
-      Alert.alert(t("common.success"), result.message, [
+    // Shown in the app's language; the server's own text is English
+    if (result.success) {
+      Alert.alert(t("common.success"), t("auth.forgotPassword.sentSuccess"), [
         {
           text: t("common.ok"),
           onPress: () => router.push("./Login"),
         },
       ]);
-    } else if (result.error) {
-      Alert.alert(t("common.error"), result.error);
+    } else {
+      Alert.alert(t("common.error"), serverErrorMessage(result.error, t, "auth.recoveryFailed"));
     }
   };
 

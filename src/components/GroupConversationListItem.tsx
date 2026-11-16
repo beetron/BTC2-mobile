@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { useRouter } from "expo-router";
 import ChatRow from "./ChatRow";
 import Avatar from "./Avatar";
@@ -18,6 +18,15 @@ const GroupConversationListItem = ({
   const { t } = useTranslation();
   const { locale } = useLocale();
   const timestamp = formatConversationTimestamp(group.lastMessageAt, locale);
+  // A quick double tap pushed the chat twice, leaving a duplicate screen
+  // to back out of. Direct rows already guard this while they open.
+  const lastPress = useRef(0);
+  const open = () => {
+    const now = Date.now();
+    if (now - lastPress.current < 1000) return;
+    lastPress.current = now;
+    router.push(`/members/conversation?conversationId=${group.conversationId}`);
+  };
 
   return (
     <ChatRow
@@ -26,9 +35,7 @@ const GroupConversationListItem = ({
       subtitle={t("home.memberCount", { count: group.memberCount })}
       timestamp={timestamp}
       unreadCount={group.unreadCount || 0}
-      onPress={() =>
-        router.push(`/members/conversation?conversationId=${group.conversationId}`)
-      }
+      onPress={open}
     />
   );
 };

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { useColorScheme } from "react-native";
+import { Appearance, useColorScheme } from "react-native";
 import * as SecureStore from "expo-secure-store";
 import { vars } from "nativewind";
 import {
@@ -60,6 +60,15 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
         ? "dark"
         : "light"
       : resolvedPreference;
+
+  // Native UI (alerts, keyboard, pickers, action sheets) follows the OS
+  // appearance, not this context. Point it at the chosen theme so a light
+  // app on a phone in dark mode doesn't get dark alerts and keyboard (and
+  // the other way round); "system" hands it back to the OS.
+  useEffect(() => {
+    if (preference === null) return;
+    Appearance.setColorScheme(preference === "system" ? "unspecified" : preference);
+  }, [preference]);
 
   const value = useMemo(
     () => ({

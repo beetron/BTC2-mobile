@@ -32,7 +32,7 @@ export const useForgotPassword = () => {
 
       return {
         success: false,
-        error: response.data.error || "Failed to reset password",
+        error: response.data.error || "",
       };
     } catch (error: any) {
       setIsLoading(false);
@@ -41,14 +41,13 @@ export const useForgotPassword = () => {
       if (error.response?.status === 404) {
         return {
           success: false,
-          error: "Error, please try again later",
+          // Not revealed: whether an account has this email
+          error: "",
         };
       }
 
       const errorMessage =
-        error.response?.data?.error ||
-        error.message ||
-        "Error, please try again later";
+        error.response?.data?.error || "";
 
       return {
         success: false,

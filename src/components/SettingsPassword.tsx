@@ -12,8 +12,8 @@ const SettingsPassword = () => {
   const [password, setPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const { changePassword, isLoading } = useChangePassword();
-  const { checkLengthPassword, checkPassword } = profileValidator();
   const { t } = useTranslation();
+  const { checkLengthPassword, checkPassword } = profileValidator(t);
 
   // Clear passwords when switching tabs
   useFocusEffect(

@@ -71,7 +71,9 @@ const MessageImageModal: React.FC<MessageImageModalProps> = ({
 
   const requestPermissions = async () => {
     try {
-      const permission = await MediaLibrary.requestPermissionsAsync();
+      // writeOnly: saving only needs "add photos" access, not the whole
+      // library -- asking for full access just to save is an App Review flag
+      const permission = await MediaLibrary.requestPermissionsAsync(true);
       return permission.granted;
     } catch (error) {
       console.error("Permission error:", error);
@@ -179,10 +181,15 @@ const MessageImageModal: React.FC<MessageImageModalProps> = ({
         }
       }
 
-      Alert.alert(
-        t("common.success"),
-        t("media.savedAllSuccess", { saved: savedCount, total: uris.length })
-      );
+      // Nothing saved is a failure, not "Successfully saved 0 of 3"
+      if (savedCount === 0) {
+        Alert.alert(t("common.error"), t("media.saveAllFailed"));
+      } else {
+        Alert.alert(
+          t("common.success"),
+          t("media.savedAllSuccess", { saved: savedCount, total: uris.length })
+        );
+      }
     } catch (error) {
       console.error("Save all error:", error);
       Alert.alert(t("common.error"), t("media.saveAllFailed"));

@@ -1,6 +1,10 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import axiosClient from "../utils/axiosClient";
-import conversationStore, { Message, isConversationOpen } from "../zustand/conversationStore";
+import conversationStore, {
+  Message,
+  isConversationOpen,
+  mergeMessages,
+} from "../zustand/conversationStore";
 import { hasFeature } from "../zustand/configStore";
 import { useAuth } from "../context/AuthContext";
 import { useNetwork } from "@/src/context/NetworkContext";
@@ -17,6 +21,21 @@ const HISTORY_PARAMS = { includeDeleted: 1 };
 // A sync that still has more after this many pages has fallen far enough
 // behind that refetching the newest page is cheaper.
 const MAX_CHANGE_PAGES = 5;
+
+// Messages already on screen that are newer than a freshly loaded page:
+// sent or received while it was loading. The page was read before they
+// existed, so replacing the list with it alone would drop them.
+const arrivedSince = (current: Message[], page: Message[]): Message[] => {
+  const newest = page[0];
+  if (!newest) return [];
+  const onPage = new Set(page.map((m) => m._id));
+  return current.filter(
+    (m) =>
+      !onPage.has(m._id) &&
+      (m.createdAt > newest.createdAt ||
+        (m.createdAt === newest.createdAt && m._id > newest._id))
+  );
+};
 
 // Newest server timestamp on a page: the baseline for the changes feed.
 // Server time, so the device clock being off doesn't matter.
@@ -44,6 +63,7 @@ const useGetMessages = () => {
     setNextCursor,
     setLatestMessageId,
     setChangesPosition,
+    setMarkedReadId,
     refreshSignal,
   } = conversationStore();
   const { isConnected } = useNetwork();
@@ -95,20 +115,18 @@ const useGetMessages = () => {
           await saveMessagesToCache(userId, conversationId, freshMessages);
           return;
         }
-        setMessages(freshMessages);
+        const kept = arrivedSince(conversationStore.getState().messages, freshMessages);
+        setMessages(kept.length > 0 ? mergeMessages(freshMessages, kept) : freshMessages);
         setNextCursor(res.data.nextCursor);
         // Restart the changes feed from this page. With no messages yet
         // there is no server time to start from; the next sync then
         // refetches this page instead.
         setChangesPosition({ since: latestServerTime(freshMessages), cursor: null });
+        // Loading the newest page marked it read on the server
+        setMarkedReadId(freshMessages[0]?._id ?? null);
 
-        await saveMessagesToCache(userId, conversationId, freshMessages);
-
-        if (freshMessages.length > 0) {
-          setLatestMessageId(freshMessages[0]._id);
-        } else {
-          setLatestMessageId(null);
-        }
+        await saveCurrentMessagesToCache(userId, conversationId);
+        setLatestMessageId(conversationStore.getState().messages[0]?._id ?? null);
       } else {
         console.warn("Failed to get fresh messages, status:", res.status);
       }
@@ -136,6 +154,7 @@ const useGetMessages = () => {
     setNextCursor,
     setLatestMessageId,
     setChangesPosition,
+    setMarkedReadId,
   ]);
 
   // Catches up on messages created, edited or deleted since the last sync

@@ -84,6 +84,15 @@ const ConversationInput = () => {
     if (ok) clearComposer();
   };
 
+  // After a reply is sent, close the reply bar -- but only if it still
+  // shows that reply. A reply or edit started while the send was in flight
+  // must stay open (closing an edit also swapped its text back out).
+  const clearSentReply = (sentReplyId: string | undefined) => {
+    if (!sentReplyId) return;
+    const current = conversationStore.getState().composer;
+    if (current?.mode === "reply" && current.target._id === sentReplyId) clearComposer();
+  };
+
   // Handle send message
   const handleOnPress = async () => {
     if (isEditing) {
@@ -97,9 +106,10 @@ const ConversationInput = () => {
     // Clear immediately so the composer feels responsive
     replaceText("");
 
-    const ok = await sendMessage(sent, replyTarget?._id);
+    const sentReplyId = replyTarget?._id;
+    const ok = await sendMessage(sent, sentReplyId);
     if (ok) {
-      if (replyTarget) clearComposer();
+      clearSentReply(sentReplyId);
     } else {
       pendingEcho.current = null;
       // Restore the unsent text, unless the user already started typing again
@@ -131,8 +141,9 @@ const ConversationInput = () => {
     const images = await attachImages();
     if (images.length > 0) {
       // A reply in progress goes with the photos
-      const ok = await sendImages(images, replyTarget?._id);
-      if (ok && replyTarget) clearComposer();
+      const sentReplyId = replyTarget?._id;
+      const ok = await sendImages(images, sentReplyId);
+      if (ok) clearSentReply(sentReplyId);
     }
   };
 
