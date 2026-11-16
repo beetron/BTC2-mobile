@@ -1,7 +1,8 @@
 import React from "react";
 import { Modal, View, Text, TouchableOpacity } from "react-native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { colors } from "../constants/colors";
+import { useTheme } from "../context/ThemeContext";
+import { useTypeScale } from "../hooks/useTypeScale";
 import { useTranslation } from "../hooks/useTranslation";
 
 export interface ActionSheetOption {
@@ -16,6 +17,9 @@ interface ActionSheetProps {
   onClose: () => void;
   options: ActionSheetOption[];
   title?: string;
+  // Drawn above the options in place of the title, e.g. a preview of the
+  // message the options act on
+  header?: React.ReactNode;
 }
 
 const ActionSheet: React.FC<ActionSheetProps> = ({
@@ -23,8 +27,11 @@ const ActionSheet: React.FC<ActionSheetProps> = ({
   onClose,
   options,
   title,
+  header,
 }) => {
   const { t } = useTranslation();
+  const { colors, colorVarsStyle } = useTheme();
+  const ts = useTypeScale();
 
   const handleSelect = (option: ActionSheetOption) => {
     onClose();
@@ -38,59 +45,70 @@ const ActionSheet: React.FC<ActionSheetProps> = ({
       animationType="fade"
       onRequestClose={onClose}
     >
-      <TouchableOpacity
-        activeOpacity={1}
-        onPress={onClose}
-        style={{
-          flex: 1,
-          backgroundColor: "rgba(0,0,0,0.5)",
-          justifyContent: "center",
-        }}
-      >
-        <TouchableOpacity activeOpacity={1} className="mx-6">
-          <View className="bg-card rounded-2xl overflow-hidden">
-            {title && (
-              <View className="px-4 py-3 border-b border-btc500">
-                <Text className="text-btc200 font-funnel-regular text-sm text-center">
-                  {title}
-                </Text>
-              </View>
-            )}
-            {options.map((option, index) => {
-              const isDanger = option.variant === "danger";
-              return (
-                <TouchableOpacity
-                  key={option.label}
-                  onPress={() => handleSelect(option)}
-                  className={`flex-row items-center gap-3 px-4 py-4 ${
-                    index > 0 ? "border-t border-btc500" : ""
-                  }`}
-                >
-                  <MaterialCommunityIcons
-                    name={option.icon as any}
-                    size={22}
-                    color={isDanger ? colors.danger : colors.accent}
-                  />
-                  <Text
-                    className="font-funnel-regular text-lg"
-                    style={{ color: isDanger ? colors.danger : colors.btc100 }}
+      {/* Re-apply the theme vars: Modal content renders in its own native
+          window, so don't rely on the root View's vars reaching it. Stays
+          centered + fade (a slide-in variant was tried and was buggy). */}
+      <View style={[{ flex: 1 }, colorVarsStyle]}>
+        <TouchableOpacity
+          activeOpacity={1}
+          onPress={onClose}
+          accessibilityLabel={t("common.cancel")}
+          style={{
+            flex: 1,
+            backgroundColor: "rgba(8,20,26,0.45)",
+            justifyContent: "center",
+          }}
+        >
+          <TouchableOpacity activeOpacity={1} className="mx-6">
+            <View className="bg-surface rounded-[22px] overflow-hidden">
+              {header ? (
+                <View className="border-b border-divider">{header}</View>
+              ) : (
+                title && (
+                  <View className="px-5 py-3.5 border-b border-divider">
+                    <Text className={`${ts.label} text-inkMuted text-center`}>{title}</Text>
+                  </View>
+                )
+              )}
+              {options.map((option, index) => {
+                const isDanger = option.variant === "danger";
+                return (
+                  <TouchableOpacity
+                    key={option.label}
+                    onPress={() => handleSelect(option)}
+                    accessibilityRole="button"
+                    className={`flex-row items-center gap-3.5 px-5 py-3.5 ${
+                      index > 0 ? "border-t border-divider" : ""
+                    }`}
+                    style={{ minHeight: 54 }}
                   >
-                    {option.label}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-          <TouchableOpacity
-            onPress={onClose}
-            className="bg-card rounded-2xl mt-2 py-4 items-center"
-          >
-            <Text className="text-btc100 font-funnel-semi-bold text-lg">
-              {t("common.cancel")}
-            </Text>
+                    <MaterialCommunityIcons
+                      name={option.icon as any}
+                      size={22}
+                      color={isDanger ? colors.danger : colors.ink}
+                    />
+                    <Text
+                      className={`${isDanger ? ts.bodyStrong : ts.body} flex-1 flex-shrink`}
+                      style={{ color: isDanger ? colors.danger : colors.ink }}
+                      numberOfLines={2}
+                    >
+                      {option.label}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+            <TouchableOpacity
+              onPress={onClose}
+              accessibilityRole="button"
+              className="bg-surface rounded-[22px] mt-2 items-center justify-center"
+              style={{ minHeight: 54 }}
+            >
+              <Text className={`${ts.bodyStrong} text-ink`}>{t("common.cancel")}</Text>
+            </TouchableOpacity>
           </TouchableOpacity>
         </TouchableOpacity>
-      </TouchableOpacity>
+      </View>
     </Modal>
   );
 };

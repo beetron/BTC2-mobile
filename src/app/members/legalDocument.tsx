@@ -1,6 +1,6 @@
-import { View, Text } from "react-native";
+import { View } from "react-native";
 import { useLocalSearchParams } from "expo-router";
-import RemoveFriendHeader from "../../components/RemoveFriendHeader";
+import StackHeader from "../../components/StackHeader";
 import LegalDocumentWebView from "../../components/LegalDocumentWebView";
 import { useTranslation } from "../../hooks/useTranslation";
 
@@ -12,12 +12,9 @@ const LegalDocumentScreen = () => {
   const { t } = useTranslation();
 
   return (
-    <View className="flex-1 bg-btc500">
-      <RemoveFriendHeader />
-      <Text className="text-btc100 font-funnel-semi-bold text-2xl mx-6 my-4">
-        {t(titleKey)}
-      </Text>
-      <View className="flex-1 mx-4 mb-4 rounded-xl overflow-hidden bg-btc400">
+    <View className="flex-1 bg-bg">
+      <StackHeader title={t(titleKey)} />
+      <View className="flex-1 m-4 rounded-[20px] overflow-hidden border border-border bg-surface">
         <LegalDocumentWebView url={url} />
       </View>
     </View>

@@ -1,9 +1,12 @@
 import { View, Text, TextInput, TouchableOpacity } from "react-native";
 import { useState } from "react";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { useLocale } from "../context/LocaleContext";
+import { useThemeColors } from "../context/ThemeContext";
+import { useTypeScale } from "../hooks/useTypeScale";
+import { useTranslation } from "../hooks/useTranslation";
 
 interface CustomInputProps {
+  // Visible label; pass "" when the screen header already names the field
   title: string;
   placeholder?: string;
   placeholderColor?: string;
@@ -11,6 +14,8 @@ interface CustomInputProps {
   containerStyles?: string;
   textStyles?: string;
   isPassword?: boolean;
+  // Small helper/counter line under the field
+  helperText?: string;
   onChangeText: (text: string) => void;
   [key: string]: any;
 }
@@ -20,48 +25,74 @@ const CustomInput: React.FC<CustomInputProps> = ({
   placeholder,
   placeholderColor,
   value,
-  containerStyles,
-  textStyles,
+  containerStyles = "",
+  textStyles = "",
   isPassword,
+  helperText,
   onChangeText,
+  onFocus,
+  onBlur,
   ...props
 }) => {
   const [showPassword, setShowPassword] = useState(false);
-  // Noto Sans JP renders visibly larger than Funnel Display at the same
-  // nominal size, so Japanese uses one step down on both label and field text.
-  const { locale } = useLocale();
-  const labelSize = locale === "ja" ? "text-lg" : "text-xl";
-  const fieldSize = locale === "ja" ? "text-xl" : "text-2xl";
+  const [focused, setFocused] = useState(false);
+  const colors = useThemeColors();
+  const ts = useTypeScale();
+  const { t } = useTranslation();
 
   return (
-    <View className={`space-y-2 ${containerStyles}`}>
-      <Text className={`${labelSize} text-btc100 font-funnel-semi-bold my-2`}>
-        {title}
-      </Text>
+    <View className={`gap-2 ${containerStyles}`}>
+      {title ? <Text className={`${ts.label} text-ink`}>{title}</Text> : null}
+      {/* minHeight, not height -- Noto Sans JP's taller line box must not clip */}
       <View
-        className="w-full h-14 px-4 bg-btc100 rounded-2xl border=2
-       border-btc200 flex flex-row items-center"
+        className="w-full flex-row items-center rounded-2xl pl-4 pr-1.5"
+        style={{
+          minHeight: 52,
+          backgroundColor: colors.surface,
+          borderWidth: focused ? 1.5 : 1,
+          borderColor: focused ? colors.primary : colors.border,
+        }}
       >
         <TextInput
-          className={`flex-1 text-black ${fieldSize} justify-center font-normal ${textStyles}`}
+          className={`flex-1 ${ts.body} ${textStyles}`}
+          style={{ color: colors.ink, paddingVertical: 12, fontSize: 16 }}
           placeholder={placeholder}
-          placeholderTextColor={placeholderColor}
+          placeholderTextColor={placeholderColor ?? colors.inkSubtle}
           value={value}
           secureTextEntry={isPassword && !showPassword}
           onChangeText={onChangeText}
+          accessibilityLabel={title || placeholder}
+          onFocus={(e) => {
+            setFocused(true);
+            onFocus?.(e);
+          }}
+          onBlur={(e) => {
+            setFocused(false);
+            onBlur?.(e);
+          }}
           {...props}
         />
 
         {isPassword && (
-          <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-            {showPassword ? (
-              <MaterialCommunityIcons name="eye" size={24} color="black" />
-            ) : (
-              <MaterialCommunityIcons name="eye-off" size={24} color="black" />
-            )}
+          <TouchableOpacity
+            onPress={() => setShowPassword(!showPassword)}
+            accessibilityRole="button"
+            accessibilityLabel={
+              showPassword ? t("common.hidePassword") : t("common.showPassword")
+            }
+            style={{ width: 44, height: 44, alignItems: "center", justifyContent: "center" }}
+          >
+            <MaterialCommunityIcons
+              name={showPassword ? "eye-off-outline" : "eye-outline"}
+              size={22}
+              color={colors.inkMuted}
+            />
           </TouchableOpacity>
         )}
       </View>
+      {helperText ? (
+        <Text className={`${ts.caption} text-inkMuted text-right`}>{helperText}</Text>
+      ) : null}
     </View>
   );
 };

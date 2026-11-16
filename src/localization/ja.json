@@ -11,20 +11,37 @@
     "delete": "削除",
     "add": "追加",
     "create": "作成",
-    "unknown": "不明"
+    "unknown": "不明",
+    "back": "戻る",
+    "showPassword": "パスワードを表示",
+    "hidePassword": "パスワードを隠す"
   },
   "tabs": {
     "home": "ホーム",
     "editFriends": "友達を編集",
     "settings": "設定",
     "logout": "ログアウト",
-    "logoutConfirmTitle": "ログアウトしますか?"
+    "logoutConfirmTitle": "ログアウトしますか?",
+    "chats": "チャット",
+    "friends": "友達"
   },
   "home": {
     "newGroupButton": "新しいグループ",
     "emptyFriends": "友達を追加してチャットを始めましょう!",
     "groupFallbackName": "グループチャット",
-    "memberCount": "{{count}}人のメンバー"
+    "memberCount": "{{count}}人のメンバー",
+    "searchPlaceholder": "名前で検索",
+    "noResults": "一致するチャットはありません。",
+    "newMessageOne": "新着メッセージ1件",
+    "newMessages": "新着メッセージ{{count}}件",
+    "filter": {
+      "all": "すべて",
+      "unread": "未読",
+      "direct": "個人",
+      "groups": "グループ"
+    },
+    "newCountShort": "新着{{count}}件",
+    "openChatFailed": "チャットを開けませんでした"
   },
   "conversation": {
     "chatFallbackTitle": "チャット",
@@ -35,6 +52,7 @@
     "yourFriendFallback": "友達",
     "inputPlaceholder": "メッセージを入力...",
     "sendMessageFailed": "メッセージの送信に失敗しました",
+    "sendPhotosFailed": "写真の送信に失敗しました",
     "actionMenu": {
       "deleteMessages": "メッセージを削除",
       "reportUser": "ユーザーを報告",
@@ -60,12 +78,56 @@
       "blockConfirmMessage": "ユーザーをブロックすると、友達リストから削除され、会話も削除されます。続けますか?",
       "selectMemberToReport": "報告するメンバーを選択してください",
       "noMembersToReport": "このグループには報告できる他のメンバーがいません。",
-      "blockUnavailableInGroupMessage": "グループチャットではブロック機能は利用できません。嫌な思いをしている場合は、グループから退出してください。"
+      "blockUnavailableInGroupMessage": "グループチャットではブロック機能は利用できません。嫌な思いをしている場合は、グループから退出してください。",
+      "openMenu": "チャットのオプション",
+      "deleteFailed": "メッセージを削除できませんでした"
     },
     "linkPreview": {
       "loading": "プレビューを読み込み中…",
       "unavailable": "プレビューを利用できません"
-    }
+    },
+    "send": "送信",
+    "attachPhotos": "写真を添付",
+    "scrollToLatest": "最新のメッセージへ移動",
+    "you": "あなた",
+    "edited": "編集済み",
+    "deletedPlaceholder": "このメッセージは削除されました",
+    "messageActions": {
+      "reply": "返信",
+      "copyText": "テキストをコピー",
+      "edit": "編集",
+      "deleteForEveryone": "全員から削除",
+      "deleteConfirmTitle": "全員から削除しますか？",
+      "deleteConfirmMessage": "このメッセージはチャットの全員の画面から削除されます。元に戻すことはできません。",
+      "showActionsHint": "メッセージの操作を表示",
+      "copied": "コピーしました",
+      "copyFailed": "テキストをコピーできませんでした",
+      "editFailed": "メッセージを編集できませんでした",
+      "deleteFailed": "メッセージを削除できませんでした",
+      "editTargetDeleted": "このメッセージは削除されたため編集できません"
+    },
+    "quote": {
+      "deleted": "削除されたメッセージ",
+      "unavailable": "元のメッセージは表示できません",
+      "photo": "写真",
+      "photoExpired": "写真は期限切れです"
+    },
+    "composer": {
+      "replyingTo": "{{name}}さんに返信",
+      "replyingToSelf": "自分のメッセージに返信",
+      "editing": "メッセージを編集中",
+      "cancelReply": "返信をやめる",
+      "cancelEdit": "編集をやめる",
+      "saveEdit": "編集を保存",
+      "replyTargetGone": "返信先のメッセージは削除されました。"
+    },
+    "a11y": {
+      "replyTo": "{{name}}への返信：{{text}}",
+      "photos": "写真{{count}}枚",
+      "viewPhotos": "写真を見る",
+      "openLink": "リンクを開く"
+    },
+    "photosExpired": "写真{{count}}枚は期限切れです"
   },
   "media": {
     "shareImageTitle": "画像を共有",
@@ -99,13 +161,18 @@
       "placeholder": "固有ID",
       "missingIdTitle": "固有IDが入力されていません",
       "scanQrButton": "QRコードをスキャン",
-      "myQrLabel": "あなたのQRコード"
+      "myQrLabel": "あなたのQRコード",
+      "idLabel": "友達の固有ID",
+      "yourIdLabel": "あなたのID",
+      "copyIdA11y": "あなたのID {{id}} をコピー",
+      "copyUnavailable": "コピーするには最新のアプリが必要です。IDを長押ししてコピーすることもできます。"
     },
     "scanQr": {
       "title": "QRコードをスキャン",
       "instructions": "友達のQRコードにカメラを向けてください",
       "permissionMessage": "QRコードをスキャンするにはカメラへのアクセスが必要です。",
       "permissionButton": "カメラへのアクセスを許可",
+      "openSettingsButton": "設定を開く",
       "invalidQrTitle": "無効なQRコード",
       "invalidQrMessage": "有効なbTC2の友達コードではないようです。"
     },
@@ -113,11 +180,16 @@
     "removeRow": "友達を削除/ブロック",
     "requests": {
       "title": "保留中の友達リクエスト",
-      "empty": "保留中の友達リクエストはありません"
+      "empty": "保留中の友達リクエストはありません",
+      "accept": "承認",
+      "acceptA11y": "{{name}}からのリクエストを承認",
+      "decline": "{{name}}からのリクエストを拒否"
     },
     "blockedScreen": {
       "notice": "ここでユーザーのブロックを解除できます。\nブロックを解除すると、再度フレンドリクエストを送信できるようになります。",
-      "empty": "ブロックしたユーザーはいません"
+      "empty": "ブロックしたユーザーはいません",
+      "unblock": "ブロック解除",
+      "unblockA11y": "{{name}}のブロックを解除"
     },
     "removeScreen": {
       "notice": "友達を削除すると、相手の友達リストからも削除されます。\nブロックすると、完全に連絡が取れなくなります。",
@@ -131,7 +203,23 @@
     "rejectedSuccess": "友達リクエストを拒否しました",
     "removedSuccess": "友達を削除しました",
     "unblockedSuccess": "ユーザーのブロックを解除しました",
-    "blockedSuccess": "ユーザーをブロックしました"
+    "blockedSuccess": "ユーザーをブロックしました",
+    "swipeHint": "友達を左にスワイプするかタップすると、削除またはブロックできます。",
+    "hub": {
+      "addById": "IDで追加",
+      "addByIdSubtitle": "友達の固有IDを入力",
+      "scanQr": "QRコード",
+      "scanQrSubtitle": "自分のコードを表示・友達のコードをスキャン",
+      "requestsTitle": "友達リクエスト",
+      "manageTitle": "管理",
+      "allFriends": "すべての友達",
+      "idPrefix": "ID · {{id}}"
+    },
+    "qr": {
+      "hint": "友達がこのコードをスキャンすると、あなたを追加できます。",
+      "scanButton": "友達のコードをスキャン",
+      "a11y": "ID {{id}} の友達追加用QRコード"
+    }
   },
   "group": {
     "createTitle": "新しいグループ",
@@ -153,7 +241,10 @@
     "createFailed": "グループの作成に失敗しました",
     "addMembersFailed": "メンバーの追加に失敗しました",
     "removeMemberFailed": "メンバーの削除に失敗しました",
-    "updateFailed": "グループの更新に失敗しました"
+    "updateFailed": "グループの更新に失敗しました",
+    "removeMemberA11y": "{{name}}をグループから削除",
+    "removedFromGroupTitle": "グループから削除されました",
+    "removedFromGroupMessage": "このグループのメンバーではなくなりました"
   },
   "eula": {
     "welcomeTitle": "bTChatty2へようこそ",
@@ -191,7 +282,9 @@
       "failedTitle": "登録に失敗しました",
       "eulaPrefix": "登録することで、",
       "eulaLink": "EULA",
-      "eulaSuffix": "に同意したものとみなされます。"
+      "eulaSuffix": "に同意したものとみなされます。",
+      "title": "アカウントを作成",
+      "loginAfterSignupFailed": "アカウントは作成されましたが、ログインできませんでした。ログインしてください"
     },
     "forgotPassword": {
       "subtitle": "パスワードのリセットには、一致するユーザー名とメールアドレスが必要です。",
@@ -201,7 +294,8 @@
       "backToLogin": "ログインに戻る",
       "forgotUsernameLink": "ユーザー名をお忘れですか?",
       "validationErrorTitle": "入力エラー",
-      "validationErrorMessage": "すべての項目を入力してください"
+      "validationErrorMessage": "すべての項目を入力してください",
+      "sentSuccess": "仮パスワードをメールで送信しました"
     },
     "forgotUsername": {
       "subtitle": "メールアドレスを入力すると、ユーザー名をお送りします",
@@ -210,8 +304,11 @@
       "backToLogin": "ログインに戻る",
       "forgotPasswordLink": "パスワードをお忘れですか?",
       "validationErrorTitle": "入力エラー",
-      "validationErrorMessage": "メールアドレスを入力してください"
-    }
+      "validationErrorMessage": "メールアドレスを入力してください",
+      "title": "ユーザー名の確認",
+      "sentSuccess": "ユーザー名をメールで送信しました"
+    },
+    "recoveryFailed": "エラーが発生しました。しばらくしてからもう一度お試しください"
   },
   "settings": {
     "sections": {
@@ -219,7 +316,8 @@
       "preferences": "環境設定",
       "legal": "法的情報",
       "version": "バージョン",
-      "dangerZone": "危険な操作"
+      "dangerZone": "危険な操作",
+      "about": "このアプリについて"
     },
     "languageRow": "言語",
     "language": {
@@ -247,7 +345,8 @@
       "currentLabel": "現在のメールアドレス",
       "currentPasswordLabel": "現在のパスワード",
       "newLabel": "メールアドレス",
-      "updatedFallback": "メールアドレスを更新しました"
+      "updatedFallback": "メールアドレスを更新しました",
+      "rowLabel": "メールアドレス"
     },
     "password": {
       "title": "パスワードを変更",
@@ -257,7 +356,8 @@
       "changedSuccess": "パスワードを変更しました"
     },
     "profileImage": {
-      "updateFailed": "プロフィール画像の更新に失敗しました"
+      "updateFailed": "プロフィール画像の更新に失敗しました",
+      "change": "プロフィール写真を変更"
     },
     "deleteAccount": {
       "buttonLabel": "アカウントを削除",
@@ -265,16 +365,31 @@
       "confirmMessage": "本当にアカウントを削除しますか?この操作は取り消せません。",
       "userIdNotFoundError": "アカウントを削除できません。ユーザーIDが見つかりません。",
       "deletedTitle": "アカウントを削除しました",
-      "deletedMessage": "アカウントの削除が完了しました。"
+      "deletedMessage": "アカウントの削除が完了しました。",
+      "failed": "アカウントの削除に失敗しました"
     },
     "changeIcon": {
-      "rowLabel": "アプリのアイコンを変更",
+      "rowLabel": "アプリアイコン",
       "subtitle": "ホーム画面のアイコンを選んでください",
-      "resetButton": "デフォルトアイコンに戻す"
+      "chooseLabel": "アイコンを選択",
+      "systemNote": "変更時にiOSの確認メッセージが表示されます。",
+      "names": {
+        "default": "デフォルト",
+        "icon1": "コネクト",
+        "icon2": "スパーク",
+        "icon3": "リーフ",
+        "icon4": "フライト"
+      }
     },
     "legal": {
       "privacyPolicy": "プライバシーポリシー",
       "eula": "利用規約"
+    },
+    "appearance": {
+      "title": "外観",
+      "light": "ライト",
+      "dark": "ダーク",
+      "system": "システム"
     }
   },
   "errors": {
@@ -290,6 +405,42 @@
     "noInternetLoadRequests": "友達リクエストを読み込むには接続を確認してください",
     "noInternetDeleteMessages": "メッセージを削除するには接続を確認してください",
     "noInternetReportUsers": "ユーザーを報告するには接続を確認してください",
-    "noInternetSendMessages": "メッセージを送信するには接続を確認してください"
+    "noInternetSendMessages": "メッセージを送信するには接続を確認してください",
+    "server": {
+      "userNotFound": "ユーザーが見つかりません",
+      "cannotAddYourself": "自分自身を追加することはできません",
+      "requestAlreadySent": "友達リクエストは送信済みです",
+      "alreadyFriends": "すでに友達です",
+      "unblockFirst": "先にこのユーザーのブロックを解除してください",
+      "noFriendRequest": "この友達リクエストは無効になっています",
+      "notInFriendList": "このユーザーは友達リストにいません",
+      "alreadyBlocked": "このユーザーはすでにブロックされています",
+      "notBlocked": "このユーザーはブロックされていません",
+      "cannotBlockYourself": "自分自身をブロックすることはできません",
+      "cannotReportYourself": "自分自身を報告することはできません",
+      "onlyMessageFriends": "友達にのみメッセージを送信できます",
+      "cannotStartConversation": "このユーザーとはチャットを開始できません",
+      "onlyAddOwnFriends": "グループに追加できるのは自分の友達のみです",
+      "ownerOnly": "この操作はグループのオーナーのみ可能です",
+      "notAMember": "このチャットのメンバーではありません",
+      "conversationNotFound": "このチャットは存在しません",
+      "usernameTaken": "このユーザー名はすでに使用されています",
+      "uniqueIdTaken": "このIDはすでに使用されています",
+      "emailTaken": "このメールアドレスはすでに使用されています",
+      "inviterIdIncorrect": "友達のIDが正しくありません",
+      "invalidLogin": "ユーザー名またはパスワードが正しくありません",
+      "passwordIncorrect": "パスワードが正しくありません",
+      "samePassword": "新しいパスワードは現在のパスワードと異なるものにしてください",
+      "emailNotFound": "メールアドレスが見つかりません",
+      "usernameOrEmailNotFound": "ユーザー名またはメールアドレスが見つかりません",
+      "tooManyRequests": "リクエストが多すぎます。しばらくしてからもう一度お試しください"
+    }
+  },
+  "validation": {
+    "passwordsMismatch": "パスワードが一致しません",
+    "usernameLength": "ユーザー名は6〜20文字で入力してください",
+    "passwordLength": "パスワードは6〜72文字で入力してください",
+    "alphanumericOnly": "半角英数字のみ使用できます",
+    "invalidEmail": "メールアドレスの形式が正しくありません"
   }
 }

@@ -4,6 +4,7 @@ import { WebView, WebViewMessageEvent } from "react-native-webview";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useNetwork } from "../context/NetworkContext";
 import { useTranslation } from "../hooks/useTranslation";
+import { useThemeColors } from "../context/ThemeContext";
 
 interface ScrollState {
   atBottom: boolean;
@@ -42,6 +43,7 @@ const LegalDocumentWebView: React.FC<LegalDocumentWebViewProps> = ({
 }) => {
   const { isConnected } = useNetwork();
   const { t } = useTranslation();
+  const colors = useThemeColors();
   const [hasError, setHasError] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
 
@@ -66,8 +68,8 @@ const LegalDocumentWebView: React.FC<LegalDocumentWebViewProps> = ({
   if (!isConnected) {
     return (
       <View className="flex-1 justify-center items-center p-8">
-        <MaterialCommunityIcons name="wifi-off" size={40} color="#D4F1F4" />
-        <Text className="text-btc200 font-funnel-regular text-center text-lg mt-4">
+        <MaterialCommunityIcons name="wifi-off" size={40} color={colors.inkMuted} />
+        <Text className="text-inkMuted font-funnel-regular text-center text-lg mt-4">
           {t("legalDocument.offlineMessage")}
         </Text>
       </View>
@@ -80,16 +82,18 @@ const LegalDocumentWebView: React.FC<LegalDocumentWebViewProps> = ({
         <MaterialCommunityIcons
           name="alert-circle-outline"
           size={40}
-          color="#f0c987"
+          color={colors.warning}
         />
-        <Text className="text-btc200 font-funnel-regular text-center text-lg mt-4 mb-4">
+        <Text className="text-inkMuted font-funnel-regular text-center text-lg mt-4 mb-4">
           {t("legalDocument.loadErrorMessage")}
         </Text>
         <TouchableOpacity
           onPress={handleRetry}
-          className="bg-btc300 rounded-xl px-6 py-3"
+          accessibilityRole="button"
+          className="bg-primary rounded-2xl px-6 py-3"
+          style={{ minHeight: 48, justifyContent: "center" }}
         >
-          <Text className="text-btc100 font-funnel-regular text-lg">
+          <Text className="text-onPrimary font-funnel-semi-bold text-base">
             {t("legalDocument.retryButton")}
           </Text>
         </TouchableOpacity>
@@ -108,8 +112,8 @@ const LegalDocumentWebView: React.FC<LegalDocumentWebViewProps> = ({
       onHttpError={() => setHasError(true)}
       startInLoadingState
       renderLoading={() => (
-        <View className="absolute inset-0 justify-center items-center bg-btc500">
-          <ActivityIndicator size="large" color="#D4F1F4" />
+        <View className="absolute inset-0 justify-center items-center bg-bg">
+          <ActivityIndicator size="large" color={colors.primary} />
         </View>
       )}
     />

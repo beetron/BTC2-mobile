@@ -1,20 +1,42 @@
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { Alert, View } from "react-native";
+import { View } from "react-native";
 import { Tabs, useFocusEffect } from "expo-router";
-import { useAuth } from "../../../context/AuthContext";
 import React, { useCallback } from "react";
-import HeaderPrimary from "../../../components/HeaderPrimary";
-import TabBarBadge from "../../../components/TabBarBadge";
+import Badge from "../../../components/Badge";
+import FloatingTabBar from "../../../components/FloatingTabBar";
 import { useTranslation } from "../../../hooks/useTranslation";
-import { colors } from "../../../constants/colors";
+import { useThemeColors } from "../../../context/ThemeContext";
 import { useAppStateListener } from "../../../context/AppStateContext";
 import useFriendRequestsCount from "../../../hooks/useFriendRequestsCount";
 import friendRequestsStore from "../../../zustand/friendRequestsStore";
 import unreadStore from "../../../zustand/unreadStore";
 
+type IconName = React.ComponentProps<typeof MaterialCommunityIcons>["name"];
+
+const TabIcon = ({
+  name,
+  color,
+  count,
+  ringColor,
+}: {
+  name: IconName;
+  color: string;
+  count?: number;
+  ringColor: string;
+}) => (
+  <View>
+    <MaterialCommunityIcons size={22} name={name} color={color} />
+    {count ? (
+      <View style={{ position: "absolute", top: -7, left: 13 }}>
+        <Badge count={count} small ringColor={ringColor} />
+      </View>
+    ) : null}
+  </View>
+);
+
 const TabsLayout = () => {
-  const { onLogout } = useAuth();
   const { t } = useTranslation();
+  const colors = useThemeColors();
   const { pendingCount } = friendRequestsStore();
   const { totalUnreadCount } = unreadStore();
   const { refreshFriendRequestsCount } = useFriendRequestsCount();
@@ -34,99 +56,57 @@ const TabsLayout = () => {
     refreshFriendRequestsCount();
   });
 
-  const handleLogout = () => {
-    Alert.alert(
-      t("tabs.logoutConfirmTitle"),
-      "",
-      [
-        {
-          text: t("common.cancel"),
-          style: "cancel",
-        },
-        {
-          text: t("common.ok"),
-          onPress: async () => {
-            try {
-              if (onLogout) {
-                await onLogout();
-              }
-            } catch (e) {
-              console.log(e);
-            }
-          },
-        },
-      ],
-      { cancelable: false }
-    );
-  };
-
+  // Log out lives at the bottom of Settings now (SettingsContainer).
   return (
-    <>
-      <HeaderPrimary />
-      <Tabs
-        screenOptions={{
-          headerShown: false,
-          tabBarActiveTintColor: colors.accent,
-          tabBarInactiveTintColor: colors.btc100,
-          tabBarStyle: {
-            backgroundColor: "#1f1f2e",
-          },
-          tabBarLabelStyle: {
-            fontFamily: "funnel-regular",
-            fontSize: 11,
-          },
+    <Tabs
+      tabBar={(props) => <FloatingTabBar {...props} />}
+      screenOptions={{
+        headerShown: false,
+        sceneStyle: { backgroundColor: colors.bg },
+      }}
+    >
+      <Tabs.Screen
+        name="index"
+        options={{
+          title: t("tabs.chats"),
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon
+              name={focused ? "chat" : "chat-outline"}
+              color={color}
+              count={totalUnreadCount}
+              ringColor={focused ? colors.bg : colors.ink}
+            />
+          ),
         }}
-      >
-        <Tabs.Screen
-          name="index"
-          options={{
-            title: t("tabs.home"),
-            tabBarIcon: ({ color }) => (
-              <View>
-                <MaterialCommunityIcons size={24} name="account-group" color={color} />
-                <TabBarBadge count={totalUnreadCount} />
-              </View>
-            ),
-          }}
-        />
-        <Tabs.Screen
-          name="editFriends"
-          options={{
-            title: t("tabs.editFriends"),
-            tabBarIcon: ({ color }) => (
-              <View>
-                <MaterialCommunityIcons size={24} name="account-edit" color={color} />
-                <TabBarBadge count={pendingCount} />
-              </View>
-            ),
-          }}
-        />
-        <Tabs.Screen
-          name="settings"
-          options={{
-            title: t("tabs.settings"),
-            tabBarIcon: ({ color }) => (
-              <MaterialCommunityIcons name="cog-outline" size={24} color={color} />
-            ),
-          }}
-        />
-        <Tabs.Screen
-          name="logout"
-          listeners={{
-            tabPress: (e) => {
-              e.preventDefault();
-              handleLogout();
-            },
-          }}
-          options={{
-            title: t("tabs.logout"),
-            tabBarIcon: ({ color }) => (
-              <MaterialCommunityIcons name="logout" size={24} color={color} />
-            ),
-          }}
-        />
-      </Tabs>
-    </>
+      />
+      <Tabs.Screen
+        name="editFriends"
+        options={{
+          title: t("tabs.friends"),
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon
+              name={focused ? "account-multiple" : "account-multiple-outline"}
+              color={color}
+              count={pendingCount}
+              ringColor={focused ? colors.bg : colors.ink}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="settings"
+        options={{
+          title: t("tabs.settings"),
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon
+              name={focused ? "cog" : "cog-outline"}
+              color={color}
+              ringColor={focused ? colors.bg : colors.ink}
+            />
+          ),
+        }}
+      />
+    </Tabs>
   );
 };
 

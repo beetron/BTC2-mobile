@@ -1,0 +1,7 @@
+{
+  "ios": {
+    "NSCameraUsageDescription": "友達のQRコードを読み取って友達に追加するために、カメラを使用します。",
+    "NSPhotoLibraryUsageDescription": "プロフィール画像の選択とアップロード、およびチャットで写真を送信するために、写真ライブラリにアクセスします。",
+    "NSPhotoLibraryAddUsageDescription": "チャットの画像を保存するときに、写真ライブラリに画像を保存します。"
+  }
+}

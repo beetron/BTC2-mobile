@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Alert } from "react-native";
 import { useNetwork } from "@/src/context/NetworkContext";
 import { useTranslation } from "@/src/hooks/useTranslation";
+import { serverErrorMessage } from "@/src/utils/serverError";
 
 const useAddFriend = () => {
   const [loading, setLoading] = useState(false);
@@ -37,14 +38,8 @@ const useAddFriend = () => {
         );
       } else if (error.networkError === "NO_INTERNET") {
         // Already alerted in pre-flight check
-      } else if (
-        error.response &&
-        error.response.data &&
-        error.response.data.error
-      ) {
-        Alert.alert(t("common.error"), error.response.data.error);
       } else {
-        Alert.alert(t("common.error"), t("friends.addFriendGenericError"));
+        Alert.alert(t("common.error"), serverErrorMessage(error, t, "friends.addFriendGenericError"));
       }
       return false;
     } finally {

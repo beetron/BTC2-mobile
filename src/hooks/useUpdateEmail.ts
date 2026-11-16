@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Alert } from "react-native";
 import { useNetwork } from "@/src/context/NetworkContext";
 import { useTranslation } from "@/src/hooks/useTranslation";
+import { serverErrorMessage } from "@/src/utils/serverError";
 
 const useUpdateEmail = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -31,7 +32,7 @@ const useUpdateEmail = () => {
       });
 
       if (response.status === 200) {
-        Alert.alert(response.data.message || t("settings.email.updatedFallback"));
+        Alert.alert(t("settings.email.updatedFallback"));
         console.log("Email updated via useUpdateEmail hook");
         return true;
       }
@@ -47,14 +48,8 @@ const useUpdateEmail = () => {
         );
       } else if (error.networkError === "NO_INTERNET") {
         // Already alerted in pre-flight check
-      } else if (error.response && error.response.data) {
-        if (error.response.data.error) {
-          Alert.alert(t("common.error"), error.response.data.error);
-        } else if (error.response.data.message) {
-          Alert.alert(error.response.data.message);
-        } else {
-          Alert.alert(t("common.error"), t("errors.generic"));
-        }
+      } else if (error.response) {
+        Alert.alert(t("common.error"), serverErrorMessage(error, t, "errors.generic"));
       } else {
         Alert.alert(t("common.error"), t("errors.generic"));
       }

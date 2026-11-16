@@ -62,11 +62,9 @@ const useUpdateProfileImage = () => {
             profileImage: newFileName,
           };
 
-          // Update authState
-          setAuthState({
-            ...authState,
-            user: updatedUser,
-          });
+          // Functional update: don't put back a token refreshed during the
+          // upload
+          setAuthState((prev) => ({ ...prev, user: updatedUser }));
 
           // Update SecureStore
           await SecureStore.setItemAsync(USER_KEY, JSON.stringify(updatedUser));

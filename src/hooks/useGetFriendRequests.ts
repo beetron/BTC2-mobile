@@ -3,6 +3,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import axiosClient from "../utils/axiosClient";
 import { useAuth } from "../context/AuthContext";
 import { Alert } from "react-native";
+import { alertOnce } from "../utils/alertOnce";
 import useGetProfileImage from "./useGetProfileImage";
 import { useNetwork } from "@/src/context/NetworkContext";
 import { useTranslation } from "./useTranslation";
@@ -30,7 +31,7 @@ const useGetFriendRequests = () => {
       setIsLoading(true);
 
       if (!isConnected) {
-        Alert.alert(t("errors.noInternetTitle"), t("errors.noInternetLoadRequests"));
+        alertOnce("noInternet", t("errors.noInternetTitle"), t("errors.noInternetLoadRequests"));
         setIsLoading(false);
         return;
       }

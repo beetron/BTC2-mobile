@@ -15,6 +15,7 @@ import {
   useBackgroundStateListener,
 } from "./AppStateContext";
 import socketService from "../services/socketService";
+import { useNetwork } from "./NetworkContext";
 
 interface SocketContextProps {
   socket: Socket | null;
@@ -160,6 +161,20 @@ export const SocketProvider: FC<{ children: ReactNode }> = ({ children }) => {
       unsubConnection();
     };
   }, [authState?.authenticated]);
+
+  // Coming back online: reconnect straight away instead of waiting out the
+  // reconnect backoff. The conversation screen syncs missed messages on
+  // the socket's "connect" (connectionChange).
+  const { isConnected: isOnline } = useNetwork();
+  const wasOnline = useRef(isOnline);
+  useEffect(() => {
+    const cameBack = isOnline && !wasOnline.current;
+    wasOnline.current = isOnline;
+    if (cameBack && authState?.authenticated && !socketService.isConnected()) {
+      console.log("Network is back - reconnecting socket");
+      reconnect();
+    }
+  }, [isOnline, authState?.authenticated, reconnect]);
 
   // Handle app state changes
   useAppStateListener(() => {

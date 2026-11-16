@@ -50,6 +50,14 @@ const useDeleteMessages = () => {
           console.warn("Failed to update message cache after delete:", err);
         }
 
+        // The other side had cleared it too, so the conversation is gone
+        // on the server; the open chat moves to a fresh one
+        if (response.data?.conversationDeleted && selectedConversation?.conversationId) {
+          conversationStore
+            .getState()
+            .setDeletedConversationId(selectedConversation.conversationId);
+        }
+
         return true;
       }
       return false;
@@ -61,9 +69,9 @@ const useDeleteMessages = () => {
         );
       } else if (error.networkError === "NO_INTERNET") {
         // Already alerted in pre-flight check
-      } else if (error.data && error.data.error) {
-        console.error("Error deleting message:", error.data.message);
-        Alert.alert(t("common.error"), error.data.message);
+      } else {
+        console.log("Error deleting messages:", error.response?.data?.error || error.message);
+        Alert.alert(t("common.error"), t("conversation.actionMenu.deleteFailed"));
       }
       return false;
     } finally {

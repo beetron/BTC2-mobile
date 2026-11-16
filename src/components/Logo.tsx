@@ -1,38 +1,37 @@
 import React from "react";
-import { Image, StyleSheet } from "react-native";
+import { View } from "react-native";
+import { Image } from "expo-image";
 import { images } from "../constants/images";
 
 interface LogoProps {
   size?: number;
 }
 
-const Logo = ({ size = 200 }: LogoProps) => {
-  const imageLogo = images.btc2LogoLogin;
-  const isDefaultSize = size === 200;
-  return (
+// App mark on its own white tile, so the teal artwork reads on both the
+// light and dark backgrounds (the old white-to-blue logo vanished on light).
+const Logo = ({ size = 88 }: LogoProps) => (
+  <View
+    accessibilityRole="image"
+    accessibilityLabel="bTC2"
+    style={{
+      width: size,
+      height: size,
+      borderRadius: Math.round(size * 0.29),
+      backgroundColor: "#FFFFFF",
+      overflow: "hidden",
+      shadowColor: "#1B7A9E",
+      shadowOpacity: 0.16,
+      shadowRadius: 18,
+      shadowOffset: { width: 0, height: 8 },
+      elevation: 4,
+    }}
+  >
     <Image
-      source={imageLogo}
-      style={[
-        styles.image,
-        { width: size, height: size },
-        !isDefaultSize && styles.inlineImage,
-      ]}
-      resizeMode="contain"
+      source={images.appMark}
+      style={{ width: "100%", height: "100%", borderRadius: Math.round(size * 0.29) }}
+      contentFit="contain"
     />
-  );
-};
-
-const styles = StyleSheet.create({
-  image: {
-    width: 200,
-    height: 200,
-    margin: 10,
-    bottom: 50,
-  },
-  inlineImage: {
-    margin: 0,
-    bottom: 0,
-  },
-});
+  </View>
+);
 
 export default Logo;

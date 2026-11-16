@@ -1,12 +1,12 @@
 import { useRef, useCallback } from "react";
-import { View, Text, Alert } from "react-native";
+import { View, Text, Alert, Linking } from "react-native";
 import {
   CameraView,
   useCameraPermissions,
   BarcodeScanningResult,
 } from "expo-camera";
 import { useRouter, useFocusEffect } from "expo-router";
-import RemoveFriendHeader from "../../components/RemoveFriendHeader";
+import StackHeader from "../../components/StackHeader";
 import CustomButton from "../../components/CustomButton";
 import useAddFriend from "../../hooks/useAddFriend";
 import { useTranslation } from "../../hooks/useTranslation";
@@ -36,9 +36,15 @@ const ScanFriendQr = () => {
       /^[a-zA-Z0-9]+$/.test(scannedId);
 
     if (!isValidFormat) {
+      // onBarcodeScanned fires for every camera frame: hold further scans
+      // until this alert is dismissed, or a non-friend QR code queued a
+      // new alert per frame
+      hasScannedRef.current = true;
       Alert.alert(
         t("friends.scanQr.invalidQrTitle"),
-        t("friends.scanQr.invalidQrMessage")
+        t("friends.scanQr.invalidQrMessage"),
+        [{ text: t("common.ok"), onPress: () => { hasScannedRef.current = false; } }],
+        { cancelable: false }
       );
       return;
     }
@@ -49,21 +55,26 @@ const ScanFriendQr = () => {
   };
 
   return (
-    <View className="flex-1 bg-btc500">
-      <RemoveFriendHeader />
-      <View className="flex-1 m-6">
-        <Text className="text-btc100 font-funnel-semi-bold text-2xl mb-4">
-          {t("friends.scanQr.title")}
-        </Text>
+    <View className="flex-1 bg-bg">
+      <StackHeader title={t("friends.scanQr.title")} />
+      <View className="flex-1 mx-4 my-5">
 
         {!permission ? null : !permission.granted ? (
           <View className="flex-1 items-center justify-center">
-            <Text className="text-btc100 font-funnel-regular text-lg text-center mb-4">
+            <Text className="text-ink font-funnel-regular text-lg text-center mb-4">
               {t("friends.scanQr.permissionMessage")}
             </Text>
+            {/* Denied before: iOS won't show the prompt again, so the
+                button has to send the user to Settings instead */}
             <CustomButton
-              title={t("friends.scanQr.permissionButton")}
-              handlePress={requestPermission}
+              title={
+                permission.canAskAgain
+                  ? t("friends.scanQr.permissionButton")
+                  : t("friends.scanQr.openSettingsButton")
+              }
+              handlePress={
+                permission.canAskAgain ? requestPermission : () => Linking.openSettings()
+              }
               containerStyles="px-8"
             />
           </View>
@@ -77,7 +88,7 @@ const ScanFriendQr = () => {
                 onBarcodeScanned={handleBarcodeScanned}
               />
             </View>
-            <Text className="text-btc200 font-funnel-regular text-sm text-center mt-3">
+            <Text className="text-inkMuted font-funnel-regular text-sm text-center mt-3">
               {t("friends.scanQr.instructions")}
             </Text>
           </View>

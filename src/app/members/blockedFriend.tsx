@@ -1,13 +1,13 @@
-import { View, Text, ActivityIndicator } from "react-native";
+import { View, Text, ActivityIndicator, ScrollView, TouchableOpacity } from "react-native";
 import { useState, useEffect } from "react";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { Image } from "expo-image";
-import { images } from "../../constants/images";
 import useGetBlockedFriends from "@/src/hooks/useGetBlockedFriends";
 import useUnblockUser from "@/src/hooks/useUnblockUser";
-import RemoveFriendHeader from "../../components/RemoveFriendHeader";
+import StackHeader from "../../components/StackHeader";
+import Avatar from "../../components/Avatar";
+import { useTypeScale } from "../../hooks/useTypeScale";
 import { useTranslation } from "../../hooks/useTranslation";
-import { colors } from "../../constants/colors";
+import { useThemeColors } from "../../context/ThemeContext";
 
 interface Friend {
   _id: string;
@@ -18,7 +18,7 @@ interface Friend {
 }
 
 const BlockedFriend = () => {
-  const placeholderProfileImage = images.placeholderProfileImage;
+  const colors = useThemeColors();
   const [shouldRender, setShouldRender] = useState(false);
   const { blockedFriends, getBlockedFriends, isLoading } =
     useGetBlockedFriends();
@@ -29,6 +29,7 @@ const BlockedFriend = () => {
 
   const { unblockUser } = useUnblockUser();
   const { t } = useTranslation();
+  const ts = useTypeScale();
 
   const handleOnPress = async (friendId: string) => {
     try {
@@ -42,75 +43,68 @@ const BlockedFriend = () => {
   };
 
   return (
-    <View className="flex-1 bg-btc500">
-      <RemoveFriendHeader />
-      <View className="bg-btc500 m-6">
-        <View className="flex-row items-start max-w-[90%]">
-          <MaterialCommunityIcons
-            name="alert-circle-outline"
-            size={28}
-            color={colors.warning}
-            className="m-2"
-          />
-          <Text className="text-btc100 font-funnel-regular text-xl">
+    <View className="flex-1 bg-bg">
+      <StackHeader title={t("friends.blockedRow")} />
+      <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 32 }}>
+        <View className="flex-row items-start gap-2.5 p-3.5 mb-4 rounded-2xl bg-surfaceMuted">
+          <MaterialCommunityIcons name="information-outline" size={20} color={colors.inkMuted} />
+          <Text className={`${ts.label} text-inkMuted flex-1`}>
             {t("friends.blockedScreen.notice")}
           </Text>
         </View>
 
-        {isLoading ? (
-          <View className="mt-2 items-center jusitfy-center">
-            <ActivityIndicator size="large" color={colors.btc100} />
+        {isLoading && (!blockedFriends || blockedFriends.length === 0) ? (
+          <View className="mt-6 items-center">
+            <ActivityIndicator size="large" color={colors.primary} />
           </View>
+        ) : !blockedFriends || blockedFriends.length === 0 ? (
+          <Text className={`${ts.body} text-inkMuted text-center mt-8`}>
+            {t("friends.blockedScreen.empty")}
+          </Text>
         ) : (
-          <>
-            <View className="mt-2 flex-col items-start w-full">
-              {!blockedFriends || blockedFriends.length === 0 ? (
-                <Text className="text-btc100 font-funnel-regular text-2xl mt-4">
-                  {t("friends.blockedScreen.empty")}
+          <View className="bg-surface border border-border rounded-[20px] overflow-hidden">
+            {blockedFriends.map((friend: Friend, index: number) => (
+              <View
+                key={friend._id}
+                className={`flex-row items-center px-4 py-2.5 gap-3 ${
+                  index > 0 ? "border-t border-divider" : ""
+                }`}
+                style={{ minHeight: 64 }}
+              >
+                <Avatar uri={friend.profileImageData} size={44} />
+                <Text className={`${ts.bodyStrong} text-ink flex-1`} numberOfLines={1}>
+                  {friend.nickname}
                 </Text>
-              ) : (
-                blockedFriends.map((friend: Friend) => (
-                  <View
-                    key={friend._id}
-                    className="flex-row items-center justify-between w-full m-2"
+                <TouchableOpacity
+                  onPress={() => handleOnPress(friend._id)}
+                  accessibilityRole="button"
+                  accessibilityLabel={t("friends.blockedScreen.unblockA11y", {
+                    name: friend.nickname,
+                  })}
+                  style={{
+                    minHeight: 36,
+                    maxWidth: 140,
+                    paddingHorizontal: 14,
+                    borderRadius: 18,
+                    justifyContent: "center",
+                    backgroundColor: colors.primarySoft,
+                  }}
+                >
+                  <Text
+                    className={ts.label}
+                    style={{ color: colors.primary }}
+                    numberOfLines={1}
+                    adjustsFontSizeToFit
+                    minimumFontScale={0.8}
                   >
-                    <View className="flex-row items-center gap-4 flex-1 min-w-0">
-                      {friend.profileImageData ? (
-                        <Image
-                          source={{ uri: friend.profileImageData }}
-                          style={{ width: 50, height: 50, borderRadius: 50 }}
-                          className="bg-btc100 flex-shrink-0"
-                        />
-                      ) : (
-                        <Image
-                          source={placeholderProfileImage}
-                          style={{ width: 50, height: 50, borderRadius: 50 }}
-                          className="bg-btc100"
-                        />
-                      )}
-                      <Text
-                        className="text-btc200 font-funnel-regular text-2xl flex-1"
-                        numberOfLines={2}
-                        ellipsizeMode="tail"
-                      >
-                        {friend.nickname}
-                      </Text>
-                    </View>
-                    <View className="flex-row justify-end">
-                      <MaterialCommunityIcons
-                        name="lock-open-variant-outline"
-                        size={28}
-                        color={colors.accent}
-                        onPress={() => handleOnPress(friend._id)}
-                      />
-                    </View>
-                  </View>
-                ))
-              )}
-            </View>
-          </>
+                    {t("friends.blockedScreen.unblock")}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            ))}
+          </View>
         )}
-      </View>
+      </ScrollView>
     </View>
   );
 };

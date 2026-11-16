@@ -15,8 +15,11 @@ const useGetConversationDetail = () => {
   const { setSelectedConversation } = conversationStore();
   const { t } = useTranslation();
 
+  // isCurrent: checked before the result is stored. Opening a chat, going
+  // back and opening another can let the first (slower) response land
+  // last; without the check it replaced the chat now on screen.
   const getConversationDetail = useCallback(
-    async (conversationId: string): Promise<boolean> => {
+    async (conversationId: string, isCurrent: () => boolean = () => true): Promise<boolean> => {
       if (!conversationId) return false;
 
       try {
@@ -68,7 +71,7 @@ const useGetConversationDetail = () => {
           members,
         };
 
-        setSelectedConversation(selected);
+        if (isCurrent()) setSelectedConversation(selected);
         return true;
       } catch (error: any) {
         if (error.networkError === "TIMEOUT") {

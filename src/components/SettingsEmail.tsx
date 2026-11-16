@@ -1,23 +1,25 @@
+import * as SecureStore from "expo-secure-store";
+import { USER_KEY } from "@/src/utils/axiosClient";
 import { useState, useCallback } from "react";
-import { Text, TextInput, View, TouchableOpacity } from "react-native";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { Text, View } from "react-native";
 import { useFocusEffect } from "expo-router";
 import profileValidator from "@/src/utils/profileValidator";
 import useUpdateEmail from "@/src/hooks/useUpdateEmail";
 import { useAuth } from "@/src/context/AuthContext";
 import { useTranslation } from "@/src/hooks/useTranslation";
-import { colors } from "@/src/constants/colors";
 import CustomButton from "./CustomButton";
+import CustomInput from "./CustomInput";
+import { useTypeScale } from "@/src/hooks/useTypeScale";
 
 const SettingsEmail = () => {
   const { authState, setAuthState } = useAuth();
   const currentEmail = authState?.user?.email;
-  const [showPassword, setShowPassword] = useState<boolean>(false);
   const [currentPassword, setCurrentPassword] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const { updateEmail, isLoading } = useUpdateEmail();
-  const { checkEmailRegex } = profileValidator();
   const { t } = useTranslation();
+  const { checkEmailRegex } = profileValidator(t);
+  const ts = useTypeScale();
 
   // Clear fields when switching tabs
   useFocusEffect(
@@ -33,13 +35,23 @@ const SettingsEmail = () => {
     if (!currentPassword || !checkEmailRegex(email)) return;
 
     // Send to backend API
-    const success = await updateEmail(email, currentPassword);
+    // Stored lowercased, as the server now does
+    const newEmail = email.trim().toLowerCase();
+    const success = await updateEmail(newEmail, currentPassword);
     if (success) {
       if (setAuthState) {
         setAuthState((prev) => ({
           ...prev,
-          user: prev.user ? { ...prev.user, email } : null,
+          user: prev.user ? { ...prev.user, email: newEmail } : null,
         }));
+      }
+      // Saved too: launch restores the user from SecureStore, so the old
+      // address came back after a restart
+      if (authState?.user) {
+        await SecureStore.setItemAsync(
+          USER_KEY,
+          JSON.stringify({ ...authState.user, email: newEmail })
+        ).catch(() => {});
       }
       setCurrentPassword("");
       setEmail("");
@@ -54,67 +66,40 @@ const SettingsEmail = () => {
 
   return (
     <View>
-      <View className="bg-card rounded-xl p-4 gap-4">
-        <View>
-          <Text className="font-funnel-regular text-btc200 text-sm mb-1">
-            {t("settings.email.currentLabel")}
-          </Text>
-          <Text className="text-btc100 font-funnel-regular text-lg bg-btc400 rounded-lg px-3 py-3">
+      <View className="gap-4">
+        <View className="gap-2">
+          <Text className={`${ts.label} text-ink`}>{t("settings.email.currentLabel")}</Text>
+          <Text
+            className={`${ts.body} text-inkMuted bg-surfaceMuted rounded-2xl px-4 py-3.5`}
+            numberOfLines={2}
+          >
             {currentEmail}
           </Text>
         </View>
-
-        <View>
-          <Text className="font-funnel-regular text-btc200 text-sm mb-1">
-            {t("settings.email.currentPasswordLabel")}
-          </Text>
-          <View className="flex-row items-center bg-btc400 rounded-lg px-3">
-            <TextInput
-              value={currentPassword}
-              multiline={false}
-              maxLength={20}
-              secureTextEntry={!showPassword}
-              onChangeText={(text) => setCurrentPassword(text)}
-              style={{
-                height: 44,
-                textAlignVertical: "center",
-              }}
-              className="flex-1 text-btc100 font-funnel-regular text-lg"
-            />
-            <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-              <MaterialCommunityIcons
-                name={showPassword ? "eye" : "eye-off"}
-                size={20}
-                color={colors.btc200}
-              />
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        <View>
-          <Text className="font-funnel-regular text-btc200 text-sm mb-1">
-            {t("settings.email.newLabel")}
-          </Text>
-          <TextInput
-            value={email}
-            multiline={false}
-            maxLength={50}
-            autoCapitalize="none"
-            onChangeText={(text) => setEmail(text)}
-            style={{
-              height: 44,
-              textAlignVertical: "center",
-            }}
-            className="text-btc100 font-funnel-regular text-lg bg-btc400 rounded-lg px-3"
-          />
-        </View>
+        <CustomInput
+          title={t("settings.email.currentPasswordLabel")}
+          value={currentPassword}
+          onChangeText={setCurrentPassword}
+          isPassword
+          maxLength={72}
+          autoCapitalize="none"
+        />
+        <CustomInput
+          title={t("settings.email.newLabel")}
+          value={email}
+          onChangeText={setEmail}
+          maxLength={50}
+          autoCapitalize="none"
+          keyboardType="email-address"
+          autoComplete="email"
+        />
       </View>
       <CustomButton
         title={t("common.save")}
         handlePress={handleOnPress}
         isLoading={isLoading}
         disabled={!isValidFormat}
-        containerStyles="mt-4"
+        containerStyles="mt-6"
       />
     </View>
   );

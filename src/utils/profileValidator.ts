@@ -1,6 +1,9 @@
 import { Alert } from "react-native";
 
-export const profileValidator = () => {
+type Translate = (key: string) => string;
+
+// Alerts are shown in the app's language, so callers pass their t()
+export const profileValidator = (t: Translate) => {
   // Check if passwords are matching
   const checkPassword = (
     password: string,
@@ -8,7 +11,7 @@ export const profileValidator = () => {
   ): boolean => {
     if (password !== confirmPassword) {
       console.log("Passwords do not match");
-      Alert.alert("Error", "Passwords do not match");
+      Alert.alert(t("common.error"), t("validation.passwordsMismatch"));
       return false;
     }
     return true;
@@ -18,7 +21,7 @@ export const profileValidator = () => {
   const checkLengthUsername = (data: string): boolean => {
     if (data.length < 6 || data.length > 20) {
       console.log("Username must be between 6 and 20 characters");
-      Alert.alert("Error", "Username must be between 6 and 20 characters");
+      Alert.alert(t("common.error"), t("validation.usernameLength"));
       return false;
     }
     return true;
@@ -28,7 +31,7 @@ export const profileValidator = () => {
   const checkLengthPassword = (data: string): boolean => {
     if (data.length < 6 || data.length > 72) {
       console.log("Password must be between 6 and 72 characters");
-      Alert.alert("Error", "Password must be between 6 and 72 characters");
+      Alert.alert(t("common.error"), t("validation.passwordLength"));
       return false;
     }
     return true;
@@ -39,7 +42,7 @@ export const profileValidator = () => {
     const regex = /^[a-zA-Z0-9]+$/;
     if (!regex.test(data)) {
       console.log("Only letters and numbers are allowed");
-      Alert.alert("Error", "Only letters and numbers are allowed");
+      Alert.alert(t("common.error"), t("validation.alphanumericOnly"));
       return false;
     }
     return true;
@@ -50,7 +53,7 @@ export const profileValidator = () => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!regex.test(email)) {
       console.log("Invalid email format");
-      Alert.alert("Error", "Invalid email format");
+      Alert.alert(t("common.error"), t("validation.invalidEmail"));
       return false;
     }
     return true;

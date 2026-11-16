@@ -1,17 +1,24 @@
-import { View, ScrollView, ActivityIndicator, Text, TouchableOpacity } from "react-native";
-import { useCallback, useEffect, useMemo } from "react";
+import { View, ScrollView, ActivityIndicator, Text, TextInput } from "react-native";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "expo-router";
+import { Image } from "expo-image";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import ScreenHeader from "./ScreenHeader";
+import IconCircleButton from "./IconCircleButton";
+import Chip from "./Chip";
+import { images } from "../constants/images";
+import { useThemeColors } from "../context/ThemeContext";
+import { useTypeScale } from "../hooks/useTypeScale";
 import useGetMyFriends from "../hooks/useGetMyFriends";
 import useGetGroupConversations from "../hooks/useGetGroupConversations";
 import ConversationListItem from "./ConversationListItem";
 import GroupConversationListItem from "./GroupConversationListItem";
-import { useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect, useIsFocused } from "@react-navigation/native";
 import { useAppStateListener } from "@/src/context/AppStateContext";
 import conversationStore from "../zustand/conversationStore";
 import unreadStore from "../zustand/unreadStore";
 import useFcmToken from "../hooks/useFcmToken";
-import useSetBadgeCount from "../hooks/useSetBadgeCount";
+import { applyBadgeCount } from "../hooks/useSetBadgeCount";
 import useSocketListener from "../hooks/useSocketListener";
 import { useTranslation } from "../hooks/useTranslation";
 
@@ -19,16 +26,27 @@ type ListRow =
   | { kind: "direct"; key: string; friend: any }
   | { kind: "group"; key: string; group: any };
 
+type ListFilter = "all" | "unread" | "direct" | "groups";
+
+const rowUnread = (row: ListRow): number =>
+  (row.kind === "direct" ? row.friend.unreadCount : row.group.unreadCount) || 0;
+
 const ConversationListContainer = () => {
   const router = useRouter();
   const { t } = useTranslation();
+  const colors = useThemeColors();
+  const ts = useTypeScale();
+  const [query, setQuery] = useState("");
+  const [filter, setFilter] = useState<ListFilter>("all");
   const { setMessages, setSelectedConversation } = conversationStore();
-  const { myFriends, isInitialLoad, getMyFriends } = useGetMyFriends();
-  const { groupConversations, getGroupConversations } =
+  const { myFriends, isInitialLoad, hasLoaded: friendsLoaded, getMyFriends } =
+    useGetMyFriends();
+  const { groupConversations, hasLoaded: groupsLoaded, getGroupConversations } =
     useGetGroupConversations();
   const { manageFcmToken } = useFcmToken();
-  const { setBadgeCountFromFriends } = useSetBadgeCount();
   const { setTotalUnreadCount } = unreadStore();
+  const readSignal = unreadStore((s) => s.readSignal);
+  const isFocused = useIsFocused();
 
   // Run Effect when screen is back in focus. getMyFriends/getGroupConversations
   // aren't called here -- useGetMyFriends/useGetGroupConversations already
@@ -53,14 +71,6 @@ const ConversationListContainer = () => {
     console.log("App state changed, refreshing friend list and FCM token");
   });
 
-  // Badge count is derived from myFriends (already has unreadCount per
-  // friend) whenever it changes, instead of setBadgeCount making its own
-  // redundant /users/friendlist call on top of the one useGetMyFriends
-  // already just made.
-  useEffect(() => {
-    setBadgeCountFromFriends(myFriends);
-  }, [myFriends, setBadgeCountFromFriends]);
-
   // Home tab badge -- direct-chat unread (myFriends) plus group-chat unread
   // (groupConversations), recomputed whenever either list changes so it
   // stays live across socket-driven refreshes and focus refetches.
@@ -74,7 +84,11 @@ const ConversationListContainer = () => {
       0
     );
     setTotalUnreadCount(friendsUnread + groupsUnread);
-  }, [myFriends, groupConversations, setTotalUnreadCount]);
+    // App icon too, with no extra request -- but only once both lists have
+    // loaded: on launch they start empty, and setting 0 then wiped the
+    // count the last push put there
+    if (friendsLoaded && groupsLoaded) applyBadgeCount(friendsUnread + groupsUnread);
+  }, [myFriends, groupConversations, friendsLoaded, groupsLoaded, setTotalUnreadCount]);
 
   // Refresh unread counts / ordering on any conversation activity -- any of
   // these can change what /users/friendlist or /conversations reports.
@@ -90,6 +104,16 @@ const ConversationListContainer = () => {
   useSocketListener("conversation:memberAdded", refreshList);
   useSocketListener("conversation:memberRemoved", refreshList);
   useSocketListener("newMessageSignal", refreshList);
+
+  // A chat was just marked read on the server. Leaving a chat sends that
+  // mark at the same moment this screen refetches on focus, so the focus
+  // fetch can still see the old count: fetch again once the mark is done.
+  // While a chat is open this screen isn't focused and its focus fetch
+  // covers it later, so marks made then don't cost a refetch.
+  useEffect(() => {
+    if (readSignal > 0 && isFocused) refreshList();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [readSignal]);
 
   // Merge friends + groups into one list, sorted the same way
   // GET /users/friendlist already sorts itself: unread count desc, then
@@ -119,6 +143,101 @@ const ConversationListContainer = () => {
     });
   }, [myFriends, groupConversations]);
 
+  // Search + filter chips are purely client-side over the rows already
+  // fetched -- no extra requests, and the server-side sort order is kept.
+  const unreadRowCount = useMemo(
+    () => rows.filter((row) => rowUnread(row) > 0).length,
+    [rows]
+  );
+
+  const visibleRows = useMemo(() => {
+    const needle = query.trim().toLowerCase();
+    return rows.filter((row) => {
+      if (filter === "unread" && rowUnread(row) === 0) return false;
+      if (filter === "direct" && row.kind !== "direct") return false;
+      if (filter === "groups" && row.kind !== "group") return false;
+      if (!needle) return true;
+      const name =
+        row.kind === "direct"
+          ? row.friend.nickname
+          : row.group.name || t("home.groupFallbackName");
+      return (name || "").toLowerCase().includes(needle);
+    });
+  }, [rows, filter, query, t]);
+
+  const filters: { value: ListFilter; label: string }[] = [
+    { value: "all", label: t("home.filter.all") },
+    {
+      value: "unread",
+      label:
+        unreadRowCount > 0
+          ? `${t("home.filter.unread")} · ${unreadRowCount}`
+          : t("home.filter.unread"),
+    },
+    { value: "direct", label: t("home.filter.direct") },
+    { value: "groups", label: t("home.filter.groups") },
+  ];
+
+  const header = (
+    <View>
+      <ScreenHeader
+        title={t("tabs.chats")}
+        leading={
+          <Image
+            source={images.appMark}
+            style={{ width: 34, height: 34, borderRadius: 10, backgroundColor: "#FFFFFF" }}
+            contentFit="contain"
+            accessibilityIgnoresInvertColors
+          />
+        }
+        actions={
+          <IconCircleButton
+            icon="plus"
+            variant="primary"
+            accessibilityLabel={t("home.newGroupButton")}
+            onPress={() => router.push("/members/createGroup")}
+          />
+        }
+      />
+      <View className="px-5 gap-3 pb-3">
+        <View
+          className="flex-row items-center rounded-full bg-surface border border-border px-4 gap-2.5"
+          style={{ minHeight: 44 }}
+        >
+          <MaterialCommunityIcons name="magnify" size={20} color={colors.inkMuted} />
+          <TextInput
+            value={query}
+            onChangeText={setQuery}
+            placeholder={t("home.searchPlaceholder")}
+            placeholderTextColor={colors.inkMuted}
+            accessibilityLabel={t("home.searchPlaceholder")}
+            autoCapitalize="none"
+            autoCorrect={false}
+            returnKeyType="search"
+            clearButtonMode="while-editing"
+            className={`flex-1 ${ts.body}`}
+            style={{ color: colors.ink, paddingVertical: 10, fontSize: 16 }}
+          />
+        </View>
+      </View>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{ paddingHorizontal: 20, gap: 8, paddingBottom: 12 }}
+        keyboardShouldPersistTaps="handled"
+      >
+        {filters.map((f) => (
+          <Chip
+            key={f.value}
+            label={f.label}
+            selected={filter === f.value}
+            onPress={() => setFilter(f.value)}
+          />
+        ))}
+      </ScrollView>
+    </View>
+  );
+
   // Only on the very first load -- a refresh keeps the current rows on screen
   // and swaps them out when it resolves. Row keys are stable (friend._id /
   // conversationId) so React updates in place rather than remounting, and
@@ -126,40 +245,46 @@ const ConversationListContainer = () => {
   // ConversationMessages.tsx's `isLoading && messages.length === 0`.
   if (isInitialLoad) {
     return (
-      <View className="flex-1 justify-center items-center">
-        <ActivityIndicator size="large" color="white" />
+      <View className="flex-1">
+        {header}
+        <View className="flex-1 justify-center items-center">
+          <ActivityIndicator size="large" color={colors.primary} />
+        </View>
       </View>
     );
   }
 
-  return (
-    <ScrollView className="flex-1 p-4">
-      <View className="w-full">
-        <TouchableOpacity
-          onPress={() => router.push("/members/createGroup")}
-          className="flex-row items-center justify-center bg-btc400 rounded-xl py-3 mb-2"
-        >
-          <MaterialCommunityIcons name="account-group" size={22} color="#75E6DA" />
-          <Text className="text-btc100 font-funnel-semi-bold text-lg ml-2">
-            {t("home.newGroupButton")}
-          </Text>
-        </TouchableOpacity>
+  const emptyMessage =
+    rows.length === 0 ? t("home.emptyFriends") : t("home.noResults");
 
-        {rows.length === 0 ? (
-          <Text className="font-funnel-regular text-btc100 text-xl text-center mt-14">
-            {t("home.emptyFriends")}
+  return (
+    <View className="flex-1">
+      {header}
+      <ScrollView
+        className="flex-1"
+        contentContainerStyle={{ paddingHorizontal: 14, paddingTop: 4, paddingBottom: 24 }}
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
+      >
+        {visibleRows.length === 0 ? (
+          <Text className={`${ts.body} text-inkMuted text-center mt-14 mx-6`}>
+            {emptyMessage}
           </Text>
         ) : (
-          rows.map((row) =>
-            row.kind === "direct" ? (
-              <ConversationListItem key={row.key} friend={row.friend} />
-            ) : (
-              <GroupConversationListItem key={row.key} group={row.group} />
-            )
-          )
+          // Capsules float on the page with a gap between each -- no shared
+          // container card.
+          <View style={{ gap: 10 }}>
+            {visibleRows.map((row) =>
+              row.kind === "direct" ? (
+                <ConversationListItem key={row.key} friend={row.friend} />
+              ) : (
+                <GroupConversationListItem key={row.key} group={row.group} />
+              )
+            )}
+          </View>
         )}
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 };
 

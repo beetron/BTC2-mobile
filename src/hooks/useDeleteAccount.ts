@@ -25,15 +25,13 @@ export const useDeleteAccount = () => {
 
       return {
         success: false,
-        error: response.data.error || "Failed to delete account",
+        error: response.data.error || "",
       };
     } catch (error: any) {
       setIsLoading(false);
 
       const errorMessage =
-        error.response?.data?.error ||
-        error.message ||
-        "Error, please try again later";
+        error.response?.data?.error || "";
 
       return {
         success: false,

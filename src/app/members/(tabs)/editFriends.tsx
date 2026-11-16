@@ -3,7 +3,7 @@ import EditContainer from "../../../components/EditContainer";
 
 const EditFriends = () => {
   return (
-    <View className="flex-1 bg-btc500">
+    <View className="flex-1 bg-bg">
       <EditContainer />
     </View>
   );

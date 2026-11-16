@@ -1,8 +1,10 @@
-import { View, Text, TextInput, ScrollView, TouchableOpacity, Alert, ActivityIndicator } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, Alert, ActivityIndicator } from "react-native";
 import { useState } from "react";
 import { useRouter } from "expo-router";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import RemoveFriendHeader from "../../components/RemoveFriendHeader";
+import StackHeader from "../../components/StackHeader";
+import CustomInput from "../../components/CustomInput";
+import Avatar from "../../components/Avatar";
 import FriendSelectList from "../../components/FriendSelectList";
 import CustomButton from "../../components/CustomButton";
 import conversationStore from "../../zustand/conversationStore";
@@ -12,16 +14,14 @@ import useUpdateGroupInfo from "../../hooks/useUpdateGroupInfo";
 import useAddGroupMembers from "../../hooks/useAddGroupMembers";
 import useRemoveGroupMember from "../../hooks/useRemoveGroupMember";
 import { useTranslation } from "../../hooks/useTranslation";
-import { colors } from "../../constants/colors";
+import { useThemeColors } from "../../context/ThemeContext";
+import { useTypeScale } from "../../hooks/useTypeScale";
 
 const MAX_NAME_LENGTH = 60;
 
-const roleBadgeColor = (role: string) => {
-  if (role === "owner") return colors.accent;
-  return colors.btc100;
-};
-
 const GroupSettingsScreen = () => {
+  const colors = useThemeColors();
+  const ts = useTypeScale();
   const router = useRouter();
   const { t } = useTranslation();
   const { authState } = useAuth();
@@ -96,7 +96,9 @@ const GroupSettingsScreen = () => {
         style: "destructive",
         onPress: async () => {
           if (!myUserId) return;
+          conversationStore.getState().setLeavingConversationId(conversationId);
           const success = await removeGroupMember(conversationId, myUserId);
+          conversationStore.getState().setLeavingConversationId(null);
           if (success) {
             setMessages([]);
             setSelectedConversation(null);
@@ -111,64 +113,79 @@ const GroupSettingsScreen = () => {
   };
 
   return (
-    <View className="flex-1 bg-btc500">
-      <RemoveFriendHeader />
-      <ScrollView className="m-6">
-        <Text className="text-btc100 font-funnel-semi-bold text-2xl mb-4">
-          {t("group.settingsTitle")}
-        </Text>
+    <View className="flex-1 bg-bg">
+      <StackHeader title={t("group.settingsTitle")} />
+      <ScrollView
+        contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 20 }}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View className="flex-row items-center gap-4 mb-6">
+          <Avatar group size={56} />
+          {canManage ? (
+            <View className="flex-1 flex-row items-center gap-2">
+              <CustomInput
+                title=""
+                containerStyles="flex-1"
+                value={nameDraft}
+                onChangeText={(text) => setNameDraft(text.slice(0, MAX_NAME_LENGTH))}
+                onBlur={handleRename}
+                placeholder={t("group.namePlaceholder")}
+                editable={!isRenaming}
+              />
+              {isRenaming && <ActivityIndicator size="small" color={colors.primary} />}
+            </View>
+          ) : (
+            <Text className={`${ts.title} text-ink flex-1`} numberOfLines={2}>
+              {selectedConversation.name || t("conversation.groupFallbackTitle")}
+            </Text>
+          )}
+        </View>
 
-        {canManage ? (
-          <View className="flex-row items-center mb-6">
-            <TextInput
-              value={nameDraft}
-              onChangeText={(text) => setNameDraft(text.slice(0, MAX_NAME_LENGTH))}
-              onBlur={handleRename}
-              placeholder={t("group.namePlaceholder")}
-              placeholderTextColor="#7a7a8c"
-              editable={!isRenaming}
-              className="text-btc100 font-funnel-regular text-xl border-b-hairline border-btc100 pb-2 flex-1"
-            />
-            {isRenaming && <ActivityIndicator size="small" color={colors.btc200} className="ml-2" />}
-          </View>
-        ) : (
-          <Text className="text-btc100 font-funnel-semi-bold text-xl mb-6">
-            {selectedConversation.name || t("conversation.groupFallbackTitle")}
-          </Text>
-        )}
-
-        <Text className="text-btc200 font-funnel-regular text-lg mb-2">
+        <Text className={`${ts.sectionHeader} text-inkMuted mx-1 mb-2`}>
           {t("group.membersLabel", { count: members.length })}
         </Text>
-        {members.map((member) => (
-          <View
-            key={member.userId}
-            className="flex-row items-center justify-between w-full py-2"
-          >
-            <View className="flex-row items-center flex-1 min-w-0">
-              <Text
-                className="text-btc100 font-funnel-regular text-xl flex-shrink"
-                numberOfLines={1}
-              >
-                {member.nickname || t("common.unknown")}
-              </Text>
-              <Text
-                className="font-funnel-regular text-sm ml-2"
-                style={{ color: roleBadgeColor(member.role) }}
-              >
-                {member.role === "owner" ? t("group.roleOwner") : t("group.roleMember")}
-              </Text>
+        <View className="bg-surface border border-border rounded-[20px] overflow-hidden">
+          {members.map((member, index) => (
+            <View
+              key={member.userId}
+              className={`flex-row items-center w-full px-4 py-2.5 gap-3 ${
+                index > 0 ? "border-t border-divider" : ""
+              }`}
+              style={{ minHeight: 56 }}
+            >
+              <Avatar uri={member.profileImageData} size={36} />
+              <View className="flex-1 min-w-0 flex-row items-center gap-2">
+                <Text className={`${ts.body} text-ink flex-shrink`} numberOfLines={1}>
+                  {member.nickname || t("common.unknown")}
+                </Text>
+                {member.role === "owner" ? (
+                  <View className="rounded-full px-2 py-0.5 bg-primarySoft">
+                    <Text className={ts.caption} style={{ color: colors.primary }}>
+                      {t("group.roleOwner")}
+                    </Text>
+                  </View>
+                ) : null}
+              </View>
+              {canManage && member.userId !== myUserId && (
+                <TouchableOpacity
+                  onPress={() => handleRemoveMember(member.userId, member.nickname)}
+                  disabled={isRemoving}
+                  accessibilityRole="button"
+                  accessibilityLabel={t("group.removeMemberA11y", {
+                    name: member.nickname || t("common.unknown"),
+                  })}
+                  style={{ width: 44, height: 44, alignItems: "center", justifyContent: "center" }}
+                >
+                  <MaterialCommunityIcons
+                    name="account-remove-outline"
+                    size={22}
+                    color={colors.danger}
+                  />
+                </TouchableOpacity>
+              )}
             </View>
-            {canManage && member.userId !== myUserId && (
-              <TouchableOpacity
-                onPress={() => handleRemoveMember(member.userId, member.nickname)}
-                disabled={isRemoving}
-              >
-                <MaterialCommunityIcons name="account-remove" size={24} color={colors.danger} />
-              </TouchableOpacity>
-            )}
-          </View>
-        ))}
+          ))}
+        </View>
 
         <View className="mt-6">
           {showAddMembers ? (
@@ -186,9 +203,8 @@ const GroupSettingsScreen = () => {
                     setShowAddMembers(false);
                     setSelectedNewMemberIds([]);
                   }}
-                  variant="secondary"
+                  variant="soft"
                   containerStyles="flex-1"
-                  textStyles="text-xl"
                 />
                 <CustomButton
                   title={t("common.add")}
@@ -196,20 +212,15 @@ const GroupSettingsScreen = () => {
                   disabled={selectedNewMemberIds.length === 0}
                   isLoading={isAdding}
                   containerStyles="flex-1"
-                  textStyles="text-xl"
                 />
               </View>
             </>
           ) : (
-            <TouchableOpacity
-              onPress={() => setShowAddMembers(true)}
-              className="flex-row items-center justify-center bg-btc400 rounded-xl py-3"
-            >
-              <MaterialCommunityIcons name="account-plus" size={22} color={colors.btc200} />
-              <Text className="text-btc100 font-funnel-semi-bold text-lg ml-2">
-                {t("group.addMembersButton")}
-              </Text>
-            </TouchableOpacity>
+            <CustomButton
+              title={t("group.addMembersButton")}
+              handlePress={() => setShowAddMembers(true)}
+              variant="soft"
+            />
           )}
         </View>
 
@@ -217,7 +228,7 @@ const GroupSettingsScreen = () => {
           <CustomButton
             title={t("group.leaveGroupTitle")}
             handlePress={handleLeaveGroup}
-            variant="danger"
+            variant="dangerSoft"
             containerStyles="w-full"
           />
         </View>

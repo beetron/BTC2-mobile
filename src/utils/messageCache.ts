@@ -1,15 +1,9 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export interface Message {
-  _id: string;
-  senderId: string;
-  nickname?: string; // from conversationStore for display
-  message?: string;
-  imageFiles?: string[];
-  createdAt: string;
-  conversationId?: string;
-  updatedAt?: string;
-}
+import conversationStore, { type Message } from "../zustand/conversationStore";
+
+// One message shape for the store and the cache
+export type { Message };
 
 export interface CachedMessages {
   ts: number; // timestamp when cached
@@ -18,13 +12,15 @@ export interface CachedMessages {
 
 const CACHE_PREFIX = "msg_cache";
 // v2: keyed by conversationId instead of friendId, following the backend's
-// migration to a unified Conversation model. v1 entries are intentionally
-// never read again rather than migrated.
-const CACHE_VERSION = "v2";
+// migration to a unified Conversation model.
+// v3: API 2.0 messages (tombstones, replyTo, editedAt). A v2 entry would
+// still show the text of messages deleted for everyone, so older entries
+// are never read again rather than migrated.
+const CACHE_VERSION = "v3";
 
 /**
  * Generate a unique cache key for a user+conversation pair
- * Format: msg_cache:v2:{userId}:{conversationId}
+ * Format: msg_cache:v3:{userId}:{conversationId}
  */
 export const makeCacheKey = (
   userId: string,
@@ -56,6 +52,21 @@ export const saveMessagesToCache = async (
     console.warn("saveMessagesToCache failed:", error);
     // Silently fail; caching is optional
   }
+};
+
+/**
+ * Save `conversationId`'s messages as the store holds them right now, e.g.
+ * after an upsert from a send, edit, delete or change sync. Skipped when
+ * that conversation is no longer the open one: the store then holds
+ * another chat's messages, which must not be written under this id.
+ */
+export const saveCurrentMessagesToCache = async (
+  userId: string | undefined,
+  conversationId: string
+): Promise<void> => {
+  const { selectedConversation, messages } = conversationStore.getState();
+  if (!userId || selectedConversation?.conversationId !== conversationId) return;
+  await saveMessagesToCache(userId, conversationId, messages);
 };
 
 /**
@@ -99,22 +110,22 @@ export const removeMessagesCache = async (
 };
 
 /**
- * Clear all message caches for a user
- * Useful when user logs out
+ * Delete every cached message on the device, for every user and every
+ * cache version (old v1 entries included). Called on logout: AsyncStorage
+ * is not encrypted, so cached conversations must not outlive the session,
+ * especially on a device someone else may sign in to next.
  */
-export const clearAllUserMessageCaches = async (
-  userId: string
-): Promise<void> => {
+export const clearAllMessageCaches = async (): Promise<void> => {
   try {
     const allKeys = await AsyncStorage.getAllKeys();
-    const userCacheKeys = allKeys.filter((key) =>
-      key.startsWith(`${CACHE_PREFIX}:${CACHE_VERSION}:${userId}:`)
+    const cacheKeys = allKeys.filter((key) =>
+      key.startsWith(`${CACHE_PREFIX}:`)
     );
-    if (userCacheKeys.length > 0) {
-      await AsyncStorage.multiRemove(userCacheKeys);
+    if (cacheKeys.length > 0) {
+      await AsyncStorage.multiRemove(cacheKeys);
     }
   } catch (error) {
-    console.warn("clearAllUserMessageCaches failed:", error);
+    console.warn("clearAllMessageCaches failed:", error);
   }
 };
 

@@ -3,6 +3,7 @@ import axiosClient from "../utils/axiosClient";
 import { useState } from "react";
 import { useNetwork } from "@/src/context/NetworkContext";
 import { useTranslation } from "@/src/hooks/useTranslation";
+import { serverErrorMessage } from "@/src/utils/serverError";
 
 const useAddGroupMembers = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -33,10 +34,8 @@ const useAddGroupMembers = () => {
         );
       } else if (error.networkError === "NO_INTERNET") {
         // already alerted above
-      } else if (error.response?.data?.error) {
-        Alert.alert(t("common.error"), error.response.data.error);
       } else {
-        Alert.alert(t("common.error"), t("group.addMembersFailed"));
+        Alert.alert(t("common.error"), serverErrorMessage(error, t, "group.addMembersFailed"));
       }
       console.error("Error in useAddGroupMembers:", error);
       return false;

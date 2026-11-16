@@ -2,6 +2,7 @@ import { useState, useCallback, useRef } from "react";
 import axiosClient from "../utils/axiosClient";
 import { useFocusEffect } from "expo-router";
 import { Alert } from "react-native";
+import { alertOnce } from "../utils/alertOnce";
 import { useNetwork } from "@/src/context/NetworkContext";
 import { useTranslation } from "@/src/hooks/useTranslation";
 
@@ -21,21 +22,31 @@ const useGetGroupConversations = () => {
     GroupConversationSummary[]
   >([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  // True once a fetch has succeeded (see useGetMyFriends)
+  const [hasLoaded, setHasLoaded] = useState(false);
   const { isConnected } = useNetwork();
   const { t } = useTranslation();
   // Guards against overlapping requests -- rapidly switching tabs re-fires
   // the focus effect below before a previous /conversations call has
   // resolved, otherwise stacking more of the same request on every switch.
   const isFetchingRef = useRef(false);
+  // A call that arrives while one is in flight runs once more afterwards
+  // instead of being dropped: the one in flight may have been answered
+  // before the change that triggered this call (e.g. the chat being marked
+  // read on the way back to the list), leaving a stale unread count.
+  const refetchRef = useRef(false);
 
   const getGroupConversations = useCallback(async () => {
-    if (isFetchingRef.current) return;
+    if (isFetchingRef.current) {
+      refetchRef.current = true;
+      return;
+    }
     isFetchingRef.current = true;
     try {
       setIsLoading(true);
 
       if (!isConnected) {
-        Alert.alert(t("errors.noInternetTitle"), t("errors.noInternetLoadGroups"));
+        alertOnce("noInternet", t("errors.noInternetTitle"), t("errors.noInternetLoadGroups"));
         setIsLoading(false);
         return;
       }
@@ -45,6 +56,7 @@ const useGetGroupConversations = () => {
         (c: any) => c.type === "group"
       );
       setGroupConversations(groups);
+      setHasLoaded(true);
     } catch (error: any) {
       if (error.networkError === "TIMEOUT") {
         Alert.alert(
@@ -59,6 +71,10 @@ const useGetGroupConversations = () => {
     } finally {
       setIsLoading(false);
       isFetchingRef.current = false;
+      if (refetchRef.current) {
+        refetchRef.current = false;
+        getGroupConversations();
+      }
     }
   }, [isConnected, t]);
 
@@ -68,7 +84,7 @@ const useGetGroupConversations = () => {
     }, [getGroupConversations])
   );
 
-  return { groupConversations, isLoading, getGroupConversations };
+  return { groupConversations, isLoading, hasLoaded, getGroupConversations };
 };
 
 export default useGetGroupConversations;

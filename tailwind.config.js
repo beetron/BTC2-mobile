@@ -1,6 +1,15 @@
+const { TOKEN_NAMES } = require("./src/constants/themeTokens");
+
+// Every app color resolves through a CSS var set at the root by
+// ThemeProvider (src/context/ThemeContext.tsx) from src/constants/theme.ts,
+// so one class (`bg-surface`, `text-ink`) works in both light and dark, and
+// opacity modifiers (`bg-ink/40`) keep working via <alpha-value>.
+const themeColors = Object.fromEntries(
+  TOKEN_NAMES.map((token) => [token, `rgb(var(--c-${token}) / <alpha-value>)`])
+);
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  // content: [".src/app/**/*.{js,jsx,ts,tsx}", ".src/**/**/*.{js,jsx,ts,tsx}"],
   content: ["src/**/*.{js,jsx,ts,tsx}"],
   presets: [require("nativewind/preset")],
   theme: {
@@ -8,21 +17,7 @@ module.exports = {
       width: {
         "7/10": "70%",
       },
-      colors: {
-        btc100: "#D4F1F4",
-        btc200: "#75E6DA",
-        btc300: "#189AB4",
-        btc400: "#05445E",
-        btc500: "#2a2a3c",
-        accent: "#4A90D9",
-        accentLight: "#B5D4F4",
-        danger: "#C0494D",
-        dangerBg: "#3A2E30",
-        dangerBorder: "#6B3A3A",
-        success: "#7BC96F",
-        warning: "#f0c987",
-        card: "#34344A",
-      },
+      colors: themeColors,
     },
     // Each resolves through a CSS var (set per-locale in FontVarsProvider,
     // src/app/_layout.tsx) to the actual registered family name, so

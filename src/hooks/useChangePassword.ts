@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Alert } from "react-native";
 import { useNetwork } from "@/src/context/NetworkContext";
 import { useTranslation } from "@/src/hooks/useTranslation";
+import { serverErrorMessage } from "@/src/utils/serverError";
 
 const useChangePassword = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -45,14 +46,8 @@ const useChangePassword = () => {
         );
       } else if (error.networkError === "NO_INTERNET") {
         // Already alerted in pre-flight check
-      } else if (
-        error.response &&
-        error.response.data &&
-        error.response.data.error
-      ) {
-        Alert.alert(t("common.error"), error.response.data.error);
       } else {
-        Alert.alert(t("common.error"), t("errors.generic"));
+        Alert.alert(t("common.error"), serverErrorMessage(error, t, "errors.generic"));
       }
       return false;
     } finally {

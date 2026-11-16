@@ -1,8 +1,10 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import RemoveFriendHeader from "../../components/RemoveFriendHeader";
+import StackHeader from "../../components/StackHeader";
 import { useLocale, Locale } from "../../context/LocaleContext";
+import { useThemeColors } from "../../context/ThemeContext";
 import { useTranslation } from "../../hooks/useTranslation";
+import { useTypeScale } from "../../hooks/useTypeScale";
 
 const OPTIONS: { locale: Locale; labelKey: string }[] = [
   { locale: "en", labelKey: "settings.language.english" },
@@ -12,29 +14,31 @@ const OPTIONS: { locale: Locale; labelKey: string }[] = [
 const SettingsLanguageScreen = () => {
   const { locale, setLocale } = useLocale();
   const { t } = useTranslation();
+  const ts = useTypeScale();
+  const colors = useThemeColors();
 
   return (
-    <View className="flex-1 bg-btc500">
-      <RemoveFriendHeader />
-      <View className="m-6">
-        <Text className="text-btc100 font-funnel-semi-bold text-2xl mb-4">
-          {t("settings.language.title")}
-        </Text>
-        {OPTIONS.map((option) => {
+    <View className="flex-1 bg-bg">
+      <StackHeader title={t("settings.language.title")} />
+      <View className="mx-4 my-5 bg-surface border border-border rounded-[20px] overflow-hidden">
+        {OPTIONS.map((option, index) => {
           const isSelected = option.locale === locale;
           return (
             <TouchableOpacity
               key={option.locale}
               onPress={() => setLocale(option.locale)}
-              className="flex-row items-center justify-between py-3"
+              accessibilityRole="radio"
+              accessibilityState={{ checked: isSelected }}
+              className={`flex-row items-center justify-between px-4 py-3 gap-3 ${
+                index > 0 ? "border-t border-divider" : ""
+              }`}
+              style={{ minHeight: 54 }}
             >
-              <Text className="text-btc100 font-funnel-regular text-xl">
-                {t(option.labelKey)}
-              </Text>
+              <Text className={`${ts.body} text-ink flex-1`}>{t(option.labelKey)}</Text>
               <MaterialCommunityIcons
-                name={isSelected ? "radiobox-marked" : "radiobox-blank"}
-                size={26}
-                color={isSelected ? "#75E6DA" : "#D4F1F4"}
+                name={isSelected ? "check-circle" : "circle-outline"}
+                size={24}
+                color={isSelected ? colors.primary : colors.inkSubtle}
               />
             </TouchableOpacity>
           );

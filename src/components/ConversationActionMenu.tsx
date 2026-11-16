@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import { View, TouchableOpacity, Alert } from "react-native";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { colors } from "@/src/constants/colors";
+import { View, Alert } from "react-native";
+import IconCircleButton from "./IconCircleButton";
 import useDeleteMessages from "@/src/hooks/useDeleteMessages";
 import useReportUser from "@/src/hooks/useReportUser";
 import useBlockUser from "@/src/hooks/useBlockUser";
@@ -64,14 +63,8 @@ const ConversationActionMenu = () => {
   // targetUserId: the direct-chat partner by default, or (for groups) the
   // member picked from the member-select sheet below.
   const handleReport = (targetUserId?: string) => {
-    if (!latestMessageId) {
-      Alert.alert(
-        t("conversation.actionMenu.noMessageSelectedTitle"),
-        t("conversation.actionMenu.noMessageSelectedMessage")
-      );
-      return;
-    }
-
+    // No message needed: a user can be reported for their name or photo,
+    // or from a chat that has no messages (or was cleared)
     const reportTargetId = targetUserId ?? selectedConversation?.partnerId;
     if (!reportTargetId) {
       Alert.alert(t("common.error"), t("conversation.actionMenu.unableToIdentifyReport"));
@@ -137,14 +130,6 @@ const ConversationActionMenu = () => {
   // partnerId to report -- picking a member re-enters the same
   // reason-selection flow used for direct chats.
   const openGroupReportPicker = () => {
-    if (!latestMessageId) {
-      Alert.alert(
-        t("conversation.actionMenu.noMessageSelectedTitle"),
-        t("conversation.actionMenu.noMessageSelectedMessage")
-      );
-      return;
-    }
-
     const reportableMembers = (selectedConversation?.members ?? []).filter(
       (member) => member.userId !== myUserId
     );
@@ -260,9 +245,13 @@ const ConversationActionMenu = () => {
 
   return (
     <View>
-      <TouchableOpacity onPress={() => setMenuVisible(true)}>
-        <MaterialCommunityIcons name="cog-outline" size={32} color={colors.btc100} />
-      </TouchableOpacity>
+      <IconCircleButton
+        icon="dots-vertical"
+        variant="plain"
+        iconSize={24}
+        accessibilityLabel={t("conversation.actionMenu.openMenu")}
+        onPress={() => setMenuVisible(true)}
+      />
       <ActionSheet
         visible={menuVisible}
         onClose={() => setMenuVisible(false)}

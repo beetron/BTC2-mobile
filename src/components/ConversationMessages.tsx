@@ -3,31 +3,38 @@ import {
   Text,
   FlatList,
   ActivityIndicator,
-  TouchableOpacity,
 } from "react-native";
-import { Image } from "expo-image";
 import React, { useCallback, useRef, useState } from "react";
 import { useAppStateListener } from "../context/AppStateContext";
-import conversationStore from "../zustand/conversationStore";
+import conversationStore, { Message } from "../zustand/conversationStore";
 import { useAuth } from "../context/AuthContext";
 import useGetMessages from "../hooks/useGetMessages";
-import useGetMessageImages from "../hooks/useGetMessageImages";
 import useSocketListener from "../hooks/useSocketListener";
-import formatDate from "../utils/formatDate";
-import Autolink from "react-native-autolink";
-import { images } from "../constants/images";
+import IconCircleButton from "./IconCircleButton";
+import { useThemeColors } from "../context/ThemeContext";
+import { useTypeScale } from "../hooks/useTypeScale";
 import useSetBadgeCount from "../hooks/useSetBadgeCount";
-import MessageImageGallery from "./MessageImageGallery";
-import LinkPreviewCard from "./LinkPreviewCard";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import useMarkConversationRead from "../hooks/useMarkConversationRead";
+import { useHasFeature } from "../zustand/configStore";
 import { useTranslation } from "../hooks/useTranslation";
-import { extractFirstUrl } from "../utils/extractFirstUrl";
+import MessageBubble from "./MessageBubble";
+import MessageActionSheet from "./MessageActionSheet";
+import useMessageActionHandlers, { haptic } from "../hooks/useMessageActionHandlers";
 
 const ConversationMessages = () => {
   const { authState } = useAuth();
   const { t } = useTranslation();
-  const { isLoading, isSyncing, isLoadingMore, hasMore, getMessages, loadMore } =
-    useGetMessages();
+  const colors = useThemeColors();
+  const ts = useTypeScale();
+  const {
+    isLoading,
+    isSyncing,
+    isLoadingMore,
+    hasMore,
+    getMessages,
+    syncChanges,
+    loadMore,
+  } = useGetMessages();
   const { messages, selectedConversation } = conversationStore();
   const flatListRef = useRef<FlatList<any> | null>(null);
   const [showScrollToLatest, setShowScrollToLatest] = useState(false);
@@ -37,23 +44,51 @@ const ConversationMessages = () => {
   // sidesteps the native scrollTo path entirely, since a freshly mounted
   // inverted list always starts at offset 0 (the newest message).
   const [listResetKey, setListResetKey] = useState(0);
-  const { getMessageImageSource } = useGetMessageImages();
+  // The message whose action sheet is open
+  const [actionMessage, setActionMessage] = useState<Message | null>(null);
+  const { available, perform, labelFor } = useMessageActionHandlers();
   // Using getMyFriends-derived unread total to update BadgeCount (temporary solution)
   const { setBadgeCount } = useSetBadgeCount();
-  const placeholderProfileImage = images.placeholderProfileImage;
   const myUserId = authState?.user?._id;
+  const canMarkRead = useHasFeature("markRead");
 
-  // Refresh when a new message arrives for THIS conversation specifically.
+  // Messages that arrive while this chat is open come in through the
+  // changes feed, which doesn't mark them read on the server
+  useMarkConversationRead({ myUserId, enabled: !isLoading && !isSyncing });
+
+  // A message in THIS conversation was created, edited or deleted. The
+  // payload only carries ids, so pull just the changed messages from the
+  // changes feed. No `action` means a bulk change (an admin deleting a
+  // user's messages): refetch the thread instead.
   const onConversationMessage = useCallback(
-    (payload: { conversationId?: string }) => {
+    (payload: { conversationId?: string; action?: string }) => {
       if (payload?.conversationId === selectedConversation?.conversationId) {
-        getMessages();
-        setBadgeCount();
+        if (payload.action) syncChanges();
+        else getMessages();
+        // With markRead the badge comes back with the mark itself; counting
+        // now would still include the message that just came in
+        if (!canMarkRead) setBadgeCount();
       }
     },
-    [selectedConversation?.conversationId, getMessages, setBadgeCount]
+    [
+      selectedConversation?.conversationId,
+      getMessages,
+      syncChanges,
+      setBadgeCount,
+      canMarkRead,
+    ]
   );
   useSocketListener("conversation:message", onConversationMessage);
+
+  // Edits and deletes made while the socket was down never reach us as
+  // events, so catch up once it reconnects
+  const onConnectionChange = useCallback(
+    (connected: boolean) => {
+      if (connected) syncChanges();
+    },
+    [syncChanges]
+  );
+  useSocketListener("connectionChange", onConnectionChange);
 
   // Rollout-safety fallback for peers still sending via legacy /messages/*
   const onLegacySignal = useCallback(() => {
@@ -62,11 +97,17 @@ const ConversationMessages = () => {
   }, [getMessages, setBadgeCount]);
   useSocketListener("newMessageSignal", onLegacySignal);
 
-  // Refresh messages when app becomes active
-  useAppStateListener(() => {
-    getMessages();
+  // Catch up when the app becomes active
+  const onAppActive = useCallback(() => {
+    syncChanges();
     setBadgeCount();
-  });
+  }, [syncChanges, setBadgeCount]);
+  useAppStateListener(onAppActive);
+
+  const openActions = useCallback((message: Message) => {
+    haptic("light");
+    setActionMessage(message);
+  }, []);
 
   if (isLoading && messages.length === 0) {
     // flex-1 here matters: without it this placeholder is only as tall as
@@ -76,9 +117,7 @@ const ConversationMessages = () => {
     // real (flex-1) FlatList swaps in below.
     return (
       <View className="flex-1 justify-center items-center mt-14">
-        <Text className="font-funnel-regular text-btc100 text-2xl">
-          {t("common.loading")}
-        </Text>
+        <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
   }
@@ -87,9 +126,9 @@ const ConversationMessages = () => {
     <View className="flex-1">
       {/* Subtle syncing indicator when fetching fresh messages but cache is displayed */}
       {isSyncing && messages.length > 0 && (
-        <View className="flex-row items-center justify-center py-1 bg-btc400">
-          <ActivityIndicator size="small" color="#75E6DA" />
-          <Text className="font-funnel-regular text-btc100 text-xs ml-2">
+        <View className="flex-row items-center justify-center py-1.5 bg-primarySoft">
+          <ActivityIndicator size="small" color={colors.primary} />
+          <Text className={`${ts.caption} text-ink ml-2`}>
             {t("conversation.syncing")}
           </Text>
         </View>
@@ -98,6 +137,7 @@ const ConversationMessages = () => {
       <FlatList
         key={listResetKey}
         className="flex-1"
+        contentContainerStyle={{ paddingHorizontal: 14, paddingVertical: 12 }}
         ref={flatListRef}
         data={messages}
         inverted={true}
@@ -119,13 +159,13 @@ const ConversationMessages = () => {
         ListFooterComponent={
           isLoadingMore ? (
             <View className="py-4 items-center">
-              <ActivityIndicator size="small" color="#75E6DA" />
+              <ActivityIndicator size="small" color={colors.primary} />
             </View>
           ) : null
         }
         ListEmptyComponent={
-          <View className="justify-center items-center mt-64">
-            <Text className="font-funnel-regular text-btc100 text-2xl">
+          <View className="justify-center items-center mt-64 mx-8">
+            <Text className={`${ts.body} text-inkMuted text-center`}>
               {t("conversation.noMessagesWith", {
                 name: selectedConversation?.name ?? t("conversation.yourFriendFallback"),
               })}
@@ -134,106 +174,36 @@ const ConversationMessages = () => {
         }
         renderItem={({ item: message }) => {
           // "Mine vs. not-mine" rather than comparing against a single known
-          // partner id -- the direct-chat case where the other sender is
-          // always the same person is a special case of this, and this is
-          // the shape a group thread (multiple possible senders) needs.
+          // partner id -- the direct-chat case is a special case of this.
           const isMine = message.senderId === myUserId;
-
-          // Direct chats: the "other" avatar is always the conversation
-          // partner's, already resolved on selectedConversation. Group
-          // chats: resolve per-sender since there are multiple possible
-          // "other" senders.
           const isGroup = selectedConversation?.type === "group";
+          // Direct chats: the "other" avatar is always the partner's.
+          // Group chats: resolved per sender.
           const sender = isGroup
-            ? selectedConversation?.members.find(
-                (m) => m.userId === message.senderId
-              )
+            ? selectedConversation?.members.find((m) => m.userId === message.senderId)
             : null;
-          const otherAvatarData = isGroup
-            ? sender?.profileImageData
-            : selectedConversation?.avatarData;
-
-          const firstUrl = extractFirstUrl(message.message);
-
           return (
-            <View>
-              {!isMine ? (
-                <View className="items-start mb-5 mr-auto max-w-[80%]">
-                  {isGroup && (
-                    <Text className="font-funnel-regular text-btc200 text-xs ml-2 mb-1">
-                      {sender?.nickname || t("common.unknown")}
-                    </Text>
-                  )}
-                  <View className="flex-row bg-btc400 rounded-e-2xl pl-2 p-4">
-                    {otherAvatarData ? (
-                      <Image
-                        source={{ uri: otherAvatarData }}
-                        style={{ width: 50, height: 50, borderRadius: 50 }}
-                        className="bg-btc100"
-                      />
-                    ) : (
-                      <Image
-                        source={placeholderProfileImage}
-                        style={{ width: 50, height: 50, borderRadius: 50 }}
-                        className="bg-btc100"
-                      />
-                    )}
-                    <View className="flex-1 pl-2">
-                      <Autolink
-                        text={message.message}
-                        className="text-btc100 text-lg"
-                        linkStyle={{ color: "#75E6DA" }}
-                      />
-                      {message.imageFiles && message.imageFiles.length > 0 && (
-                        <MessageImageGallery
-                          imageFilenames={message.imageFiles}
-                          imageSources={message.imageFiles.map(
-                            (filename: string) =>
-                              getMessageImageSource(filename)
-                          )}
-                        />
-                      )}
-                      {firstUrl && <LinkPreviewCard url={firstUrl} />}
-                    </View>
-                  </View>
-                  <Text className="font-funnel-regular text-btc100 text-sm ml-2">
-                    {formatDate(message.createdAt)}
-                  </Text>
-                </View>
-              ) : (
-                <View className="item-end mb-5 ml-auto max-w-[80%]">
-                  <View className="flex bg-btc300 rounded-s-2xl pl-3 p-4">
-                    <Autolink
-                      text={message.message}
-                      className="text-btc400 text-lg"
-                      linkStyle={{ color: "#D4F1F4" }}
-                    />
-                    {message.imageFiles && message.imageFiles.length > 0 && (
-                      <MessageImageGallery
-                        imageFilenames={message.imageFiles}
-                        imageSources={message.imageFiles.map(
-                          (filename: string) =>
-                            getMessageImageSource(filename)
-                        )}
-                      />
-                    )}
-                    {firstUrl && <LinkPreviewCard url={firstUrl} />}
-                  </View>
-                  <Text className="font-funnel-regular text-btc100 text-sm mr-2">
-                    {formatDate(message.createdAt)}
-                  </Text>
-                </View>
-              )}
-            </View>
+            <MessageBubble
+              message={message}
+              isMine={isMine}
+              isGroup={isGroup}
+              sender={sender}
+              otherAvatarData={isGroup ? sender?.profileImageData : selectedConversation?.avatarData}
+              actions={available(message)}
+              actionLabel={labelFor}
+              onOpenActions={openActions}
+              onAction={perform}
+            />
           );
         }}
       />
 
       {/* Floating scroll-to-latest button */}
       {messages.length > 0 && showScrollToLatest && (
-        <View className="absolute right-4 bottom-24 z-50">
-          <TouchableOpacity
-            className="rounded-full bg-btc300 p-2 shadow-lg"
+        <View className="absolute right-4 bottom-4 z-50" style={{ elevation: 4 }}>
+          <IconCircleButton
+            icon="arrow-down"
+            accessibilityLabel={t("conversation.scrollToLatest")}
             onPress={() => {
               setShowScrollToLatest(false);
               // Remount instead of scrollToOffset/scrollToIndex -- both are
@@ -241,15 +211,11 @@ const ConversationMessages = () => {
               // fresh mount always renders starting at the newest message.
               setListResetKey((k) => k + 1);
             }}
-          >
-            <MaterialCommunityIcons
-              name="arrow-down-circle"
-              size={28}
-              color="#D4F1F4"
-            />
-          </TouchableOpacity>
+          />
         </View>
       )}
+
+      <MessageActionSheet message={actionMessage} onClose={() => setActionMessage(null)} />
     </View>
   );
 };

@@ -3,7 +3,7 @@ import { getMessaging, getToken } from "@react-native-firebase/messaging";
 import * as Notifications from "expo-notifications";
 import * as SecureStore from "expo-secure-store";
 import * as Device from "expo-device";
-import axiosClient from "@/src/utils/axiosClient";
+import axiosClient, { waitForFcmTokenDeletion } from "@/src/utils/axiosClient";
 import { useAuth } from "@/src/context/AuthContext";
 import { Alert } from "react-native";
 import { useNetwork } from "@/src/context/NetworkContext";
@@ -116,7 +116,8 @@ export default function useFcmToken() {
       const { status } = await Notifications.requestPermissionsAsync();
       console.log("Notification permission status: ", status);
 
-      // Get FCM token
+      // Get FCM token -- after any deletion from a previous logout settles
+      await waitForFcmTokenDeletion();
       const token = await getToken(messagingInstance);
 
       if (token) {

@@ -3,6 +3,7 @@ import axiosClient from "../utils/axiosClient";
 import { useState } from "react";
 import { useNetwork } from "@/src/context/NetworkContext";
 import { useTranslation } from "@/src/hooks/useTranslation";
+import { serverErrorMessage } from "@/src/utils/serverError";
 
 const useBlockUser = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -21,17 +22,8 @@ const useBlockUser = () => {
       const response = await axiosClient.put(`/users/blockuser/${friendId}`);
 
       if (response.status === 200) {
-        if (response.data && response.data.message) {
-          Alert.alert(t("common.success"), response.data.message);
-        } else {
-          Alert.alert(t("common.success"), t("friends.blockedSuccess"));
-        }
+        Alert.alert(t("common.success"), t("friends.blockedSuccess"));
         return true;
-      }
-
-      // Non-200 fallback
-      if (response.data && response.data.error) {
-        Alert.alert(t("common.error"), response.data.error);
       }
 
       return false;
@@ -43,14 +35,8 @@ const useBlockUser = () => {
         );
       } else if (error.networkError === "NO_INTERNET") {
         // already alerted above
-      } else if (
-        error.response &&
-        error.response.data &&
-        error.response.data.error
-      ) {
-        Alert.alert(t("common.error"), error.response.data.error);
       } else {
-        Alert.alert(t("common.error"), t("errors.generic"));
+        Alert.alert(t("common.error"), serverErrorMessage(error, t, "errors.generic"));
       }
       console.error("Error in useBlockUser:", error);
       return false;

@@ -32,6 +32,8 @@ interface AuthUser {
 interface AuthState {
   token: string | null;
   refreshToken: string | null;
+  // null = still restoring the saved session at launch, so screens must not
+  // treat it as logged out (that is what briefly showed the Login screen)
   authenticated: boolean | null;
   user?: AuthUser | null;
 }
@@ -56,10 +58,11 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }: any) => {
+  // Starts as null (checking) until restoreAuthState settles it to true/false
   const [authState, setAuthState] = useState<AuthState>({
     token: null,
     refreshToken: null,
-    authenticated: false,
+    authenticated: null,
     user: null,
   });
 
@@ -117,18 +120,25 @@ export const AuthProvider = ({ children }: any) => {
         console.log(
           "Access token expired during restore - attempting silent refresh"
         );
-        const refreshed = await attemptTokenRefresh();
-        if (!refreshed) {
-          console.log("Silent refresh failed - logging out");
+        const result = await attemptTokenRefresh();
+        if (result === "rejected") {
+          console.log("Silent refresh rejected - logging out");
           await logout();
           return;
         }
-        const freshToken = await SecureStore.getItemAsync(JWT_KEY);
-        if (!freshToken) {
-          await logout();
-          return;
+        if (result === "refreshed") {
+          const freshToken = await SecureStore.getItemAsync(JWT_KEY);
+          if (!freshToken) {
+            await logout();
+            return;
+          }
+          activeToken = freshToken;
+        } else {
+          // Offline / server unreachable: restore the session with the
+          // stale token so cached chats stay usable. The first request
+          // that gets a 401 retries the refresh once the network is back.
+          console.log("Silent refresh unavailable - keeping session for now");
         }
-        activeToken = freshToken;
       }
 
       const currentRefreshToken = await SecureStore.getItemAsync(REFRESH_KEY);

@@ -1,7 +1,8 @@
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
-import { colors } from "../constants/colors";
+import { useThemeColors } from "../context/ThemeContext";
+import { useTranslation } from "../hooks/useTranslation";
 
 interface HeaderBackButtonProps {
   routerOption: "back" | "home";
@@ -9,6 +10,8 @@ interface HeaderBackButtonProps {
 
 const HeaderBackButton = ({ routerOption }: HeaderBackButtonProps) => {
   const router = useRouter();
+  const colors = useThemeColors();
+  const { t } = useTranslation();
 
   const handleOnPress = () => {
     if (routerOption === "back") {
@@ -31,13 +34,12 @@ const HeaderBackButton = ({ routerOption }: HeaderBackButtonProps) => {
   return (
     <TouchableOpacity
       onPress={handleOnPress}
-      hitSlop={{ top: 12, bottom: 12, left: 12, right: 28 }}
+      hitSlop={{ top: 6, bottom: 6, left: 6, right: 12 }}
+      accessibilityRole="button"
+      accessibilityLabel={t("common.back")}
+      style={{ width: 44, height: 44, alignItems: "center", justifyContent: "center" }}
     >
-      <MaterialCommunityIcons
-        name="chevron-left"
-        size={40}
-        color={colors.btc100}
-      />
+      <MaterialCommunityIcons name="chevron-left" size={32} color={colors.ink} />
     </TouchableOpacity>
   );
 };

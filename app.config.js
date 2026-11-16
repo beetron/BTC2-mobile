@@ -4,12 +4,19 @@ module.exports = {
   expo: {
     name: IS_DEV_VARIANT ? "bTC2 Dev" : "bTC2",
     slug: "btc2",
-    version: "1.2.4",
+    version: "1.3.0",
     orientation: "portrait",
     icon: "",
     scheme: "myapp",
     userInterfaceStyle: "automatic",
     newArchEnabled: true,
+    // Japanese text for the iOS permission prompts (camera, photo library).
+    // iOS picks these by the device language, not the in-app language
+    // setting; other languages fall back to the English strings below.
+    // Keep the keys in sync with the usage strings in infoPlist / plugins.
+    locales: {
+      ja: "./locales/ja.json",
+    },
     ios: {
       useFrameworks: "static",
       googleServicesFile: IS_DEV_VARIANT

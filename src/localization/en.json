@@ -11,20 +11,37 @@
     "delete": "Delete",
     "add": "Add",
     "create": "Create",
-    "unknown": "Unknown"
+    "unknown": "Unknown",
+    "back": "Back",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password"
   },
   "tabs": {
     "home": "Home",
     "editFriends": "Edit Friends",
     "settings": "Settings",
-    "logout": "Logout",
-    "logoutConfirmTitle": "Logout?"
+    "logout": "Log out",
+    "logoutConfirmTitle": "Log out?",
+    "chats": "Chats",
+    "friends": "Friends"
   },
   "home": {
     "newGroupButton": "New Group",
     "emptyFriends": "Add a friend to start chatting!",
     "groupFallbackName": "Group chat",
-    "memberCount": "{{count}} members"
+    "memberCount": "{{count}} members",
+    "searchPlaceholder": "Search by name",
+    "noResults": "No chats match your search.",
+    "newMessageOne": "1 new message",
+    "newMessages": "{{count}} new messages",
+    "filter": {
+      "all": "All",
+      "unread": "Unread",
+      "direct": "Direct",
+      "groups": "Groups"
+    },
+    "newCountShort": "{{count}} new",
+    "openChatFailed": "Failed to open chat"
   },
   "conversation": {
     "chatFallbackTitle": "Chat",
@@ -35,6 +52,7 @@
     "yourFriendFallback": "your friend",
     "inputPlaceholder": "Start typing...",
     "sendMessageFailed": "Failed to send message",
+    "sendPhotosFailed": "Failed to send photos",
     "actionMenu": {
       "deleteMessages": "Delete Messages",
       "reportUser": "Report User",
@@ -60,12 +78,56 @@
       "blockConfirmMessage": "Blocking a user will remove them from your friend list and delete conversations. Continue?",
       "selectMemberToReport": "Select a member to report",
       "noMembersToReport": "There are no other members in this group to report.",
-      "blockUnavailableInGroupMessage": "Blocking isn't available in group chats. If you're having a bad experience, you can leave the group instead."
+      "blockUnavailableInGroupMessage": "Blocking isn't available in group chats. If you're having a bad experience, you can leave the group instead.",
+      "openMenu": "Chat options",
+      "deleteFailed": "Could not delete messages"
     },
     "linkPreview": {
       "loading": "Loading preview…",
       "unavailable": "Preview unavailable"
-    }
+    },
+    "send": "Send",
+    "attachPhotos": "Attach photos",
+    "scrollToLatest": "Jump to latest message",
+    "you": "You",
+    "edited": "Edited",
+    "deletedPlaceholder": "This message was deleted",
+    "messageActions": {
+      "reply": "Reply",
+      "copyText": "Copy text",
+      "edit": "Edit",
+      "deleteForEveryone": "Delete for everyone",
+      "deleteConfirmTitle": "Delete for everyone?",
+      "deleteConfirmMessage": "This removes the message for everyone in this chat. It can't be undone.",
+      "showActionsHint": "Shows message actions",
+      "copied": "Copied",
+      "copyFailed": "Couldn't copy the text",
+      "editFailed": "Couldn't edit the message",
+      "deleteFailed": "Couldn't delete the message",
+      "editTargetDeleted": "This message was deleted and can no longer be edited"
+    },
+    "quote": {
+      "deleted": "Message deleted",
+      "unavailable": "Original message unavailable",
+      "photo": "Photo",
+      "photoExpired": "Photo expired"
+    },
+    "composer": {
+      "replyingTo": "Replying to {{name}}",
+      "replyingToSelf": "Replying to yourself",
+      "editing": "Editing message",
+      "cancelReply": "Cancel reply",
+      "cancelEdit": "Cancel editing",
+      "saveEdit": "Save edit",
+      "replyTargetGone": "The message you're replying to was deleted."
+    },
+    "a11y": {
+      "replyTo": "Reply to {{name}}: {{text}}",
+      "photos": "{{count}} photos",
+      "viewPhotos": "View photos",
+      "openLink": "Open link"
+    },
+    "photosExpired": "{{count}} photos expired"
   },
   "media": {
     "shareImageTitle": "Share Image",
@@ -99,13 +161,18 @@
       "placeholder": "Unique ID",
       "missingIdTitle": "Missing Unique ID",
       "scanQrButton": "Scan QR",
-      "myQrLabel": "Your QR Code"
+      "myQrLabel": "Your QR Code",
+      "idLabel": "Friend's unique ID",
+      "yourIdLabel": "Your ID",
+      "copyIdA11y": "Copy your ID {{id}}",
+      "copyUnavailable": "Copying needs the latest app build. You can long-press the ID to copy it."
     },
     "scanQr": {
       "title": "Scan QR Code",
       "instructions": "Point your camera at a friend's QR code",
       "permissionMessage": "Camera access is needed to scan QR codes.",
       "permissionButton": "Grant Camera Access",
+      "openSettingsButton": "Open Settings",
       "invalidQrTitle": "Invalid QR Code",
       "invalidQrMessage": "This doesn't look like a valid bTC2 friend code."
     },
@@ -113,11 +180,16 @@
     "removeRow": "Remove / Block Friend",
     "requests": {
       "title": "Pending Friend Requests",
-      "empty": "You have no pending friend requests"
+      "empty": "You have no pending friend requests",
+      "accept": "Accept",
+      "acceptA11y": "Accept request from {{name}}",
+      "decline": "Decline request from {{name}}"
     },
     "blockedScreen": {
       "notice": "You could unblock users here. \nUnblocking enables sending friend requests again.",
-      "empty": "You have no blocked users"
+      "empty": "You have no blocked users",
+      "unblock": "Unblock",
+      "unblockA11y": "Unblock {{name}}"
     },
     "removeScreen": {
       "notice": "Removing a friend will remove yourself from their friend list.\nBlocking a friend will make you completely unreachable.",
@@ -131,7 +203,23 @@
     "rejectedSuccess": "Rejected friend request",
     "removedSuccess": "Friend Removed",
     "unblockedSuccess": "User unblocked successfully",
-    "blockedSuccess": "User blocked successfully"
+    "blockedSuccess": "User blocked successfully",
+    "swipeHint": "Swipe left on a friend, or tap them, to remove or block.",
+    "hub": {
+      "addById": "Add by ID",
+      "addByIdSubtitle": "Enter a friend's unique ID",
+      "scanQr": "QR code",
+      "scanQrSubtitle": "Show yours or scan a friend's",
+      "requestsTitle": "Requests",
+      "manageTitle": "Manage",
+      "allFriends": "All friends",
+      "idPrefix": "ID · {{id}}"
+    },
+    "qr": {
+      "hint": "Friends can scan this code to add you.",
+      "scanButton": "Scan a friend's code",
+      "a11y": "Your friend QR code for ID {{id}}"
+    }
   },
   "group": {
     "createTitle": "New Group",
@@ -153,7 +241,10 @@
     "createFailed": "Failed to create group",
     "addMembersFailed": "Failed to add members",
     "removeMemberFailed": "Failed to remove member",
-    "updateFailed": "Failed to update group"
+    "updateFailed": "Failed to update group",
+    "removeMemberA11y": "Remove {{name}} from the group",
+    "removedFromGroupTitle": "Removed from group",
+    "removedFromGroupMessage": "You are no longer a member of this group"
   },
   "eula": {
     "welcomeTitle": "Welcome to bTChatty2",
@@ -191,7 +282,9 @@
       "failedTitle": "Signup failed",
       "eulaPrefix": "By signing up, you agree to our ",
       "eulaLink": "EULA",
-      "eulaSuffix": "."
+      "eulaSuffix": ".",
+      "title": "Create your account",
+      "loginAfterSignupFailed": "Your account was created, but logging in failed. Please log in."
     },
     "forgotPassword": {
       "subtitle": "Matching username and email required for password reset.",
@@ -201,7 +294,8 @@
       "backToLogin": "Back to Login",
       "forgotUsernameLink": "Forgot Username?",
       "validationErrorTitle": "Validation Error",
-      "validationErrorMessage": "Please fill in all fields"
+      "validationErrorMessage": "Please fill in all fields",
+      "sentSuccess": "A temporary password has been sent to your email"
     },
     "forgotUsername": {
       "subtitle": "Enter your email address and we'll send you your username",
@@ -210,8 +304,11 @@
       "backToLogin": "Back to Login",
       "forgotPasswordLink": "Forgot Password?",
       "validationErrorTitle": "Validation Error",
-      "validationErrorMessage": "Please enter your email address"
-    }
+      "validationErrorMessage": "Please enter your email address",
+      "title": "Find your username",
+      "sentSuccess": "Your username has been sent to your email"
+    },
+    "recoveryFailed": "Error, please try again later"
   },
   "settings": {
     "sections": {
@@ -219,7 +316,8 @@
       "preferences": "Preferences",
       "legal": "Legal",
       "version": "Version",
-      "dangerZone": "Danger zone"
+      "dangerZone": "Danger zone",
+      "about": "About"
     },
     "languageRow": "Language",
     "language": {
@@ -247,7 +345,8 @@
       "currentLabel": "Current Email",
       "currentPasswordLabel": "Current Password",
       "newLabel": "Email",
-      "updatedFallback": "Email updated"
+      "updatedFallback": "Email updated",
+      "rowLabel": "Email"
     },
     "password": {
       "title": "Change Password",
@@ -257,7 +356,8 @@
       "changedSuccess": "Password changed"
     },
     "profileImage": {
-      "updateFailed": "Failed to update profile image"
+      "updateFailed": "Failed to update profile image",
+      "change": "Change profile photo"
     },
     "deleteAccount": {
       "buttonLabel": "Delete Account",
@@ -265,16 +365,31 @@
       "confirmMessage": "Are you sure you want to delete your account? This action cannot be undone.",
       "userIdNotFoundError": "Unable to delete account. User ID not found.",
       "deletedTitle": "Account Deleted",
-      "deletedMessage": "Your account has been deleted successfully."
+      "deletedMessage": "Your account has been deleted successfully.",
+      "failed": "Failed to delete account"
     },
     "changeIcon": {
-      "rowLabel": "Change App Icon",
+      "rowLabel": "App icon",
       "subtitle": "Choose an icon for your home screen",
-      "resetButton": "Reset to Default Icon"
+      "chooseLabel": "Choose an icon",
+      "systemNote": "iOS confirms the change with a short system message.",
+      "names": {
+        "default": "Default",
+        "icon1": "Connect",
+        "icon2": "Spark",
+        "icon3": "Leaf",
+        "icon4": "Flight"
+      }
     },
     "legal": {
       "privacyPolicy": "Privacy Policy",
       "eula": "EULA"
+    },
+    "appearance": {
+      "title": "Appearance",
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
     }
   },
   "errors": {
@@ -290,6 +405,42 @@
     "noInternetLoadRequests": "Please check your connection to load friend requests",
     "noInternetDeleteMessages": "Please check your connection to delete messages",
     "noInternetReportUsers": "Please check your connection to report users",
-    "noInternetSendMessages": "Please check your connection to send messages"
+    "noInternetSendMessages": "Please check your connection to send messages",
+    "server": {
+      "userNotFound": "User not found",
+      "cannotAddYourself": "You can't add yourself",
+      "requestAlreadySent": "Friend request already sent",
+      "alreadyFriends": "You're already friends",
+      "unblockFirst": "Unblock this user first",
+      "noFriendRequest": "This friend request is no longer available",
+      "notInFriendList": "This user is not in your friend list",
+      "alreadyBlocked": "This user is already blocked",
+      "notBlocked": "This user is not blocked",
+      "cannotBlockYourself": "You can't block yourself",
+      "cannotReportYourself": "You can't report yourself",
+      "onlyMessageFriends": "You can only message friends",
+      "cannotStartConversation": "You can't start a chat with this user",
+      "onlyAddOwnFriends": "You can only add your own friends to a group",
+      "ownerOnly": "Only the group owner can do this",
+      "notAMember": "You're not a member of this chat",
+      "conversationNotFound": "This chat no longer exists",
+      "usernameTaken": "This username is already taken",
+      "uniqueIdTaken": "This ID is already taken",
+      "emailTaken": "This email address is already in use",
+      "inviterIdIncorrect": "Your friend's ID is incorrect",
+      "invalidLogin": "Incorrect username or password",
+      "passwordIncorrect": "Password is incorrect",
+      "samePassword": "The new password must be different from the current one",
+      "emailNotFound": "Email not found",
+      "usernameOrEmailNotFound": "Username or email not found",
+      "tooManyRequests": "Too many requests. Please try again later"
+    }
+  },
+  "validation": {
+    "passwordsMismatch": "Passwords do not match",
+    "usernameLength": "Username must be between 6 and 20 characters",
+    "passwordLength": "Password must be between 6 and 72 characters",
+    "alphanumericOnly": "Only letters and numbers are allowed",
+    "invalidEmail": "Invalid email format"
   }
 }

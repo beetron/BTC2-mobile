@@ -3,7 +3,7 @@ import SettingsContainer from "../../../components/SettingsContainer";
 
 const Settings = () => {
   return (
-    <View className="flex-1 bg-btc500">
+    <View className="flex-1 bg-bg">
       <SettingsContainer />
     </View>
   );
